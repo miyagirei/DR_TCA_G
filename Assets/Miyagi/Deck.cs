@@ -8,11 +8,7 @@ public class Deck : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < 10; i++)
-        {
-            _cards.Add( new Card("test", i) );
-            Debug.Log(_cards[i]._card_name + ":" + _cards[i]._damage_dealt);
-        }
+        DebugAddNewCard();
 
     }
 
@@ -28,8 +24,21 @@ public class Deck : MonoBehaviour
 
         int choiceNum = _cards.IndexOf(card);
         _cards.RemoveAt(choiceNum);
+        Destroy(card.gameObject);
+        
         Debug.Log(_cards.Count);
     }
 
     
+    void DebugAddNewCard() {
+        for (int i = 0; i < 10; i++) {
+            GameObject card_obj = new GameObject(i + "test");
+            card_obj.transform.SetParent(this.transform);
+            Card card = card_obj.AddComponent<Card>();
+            card.init("test",i);
+            _cards.Add(card);
+            Debug.Log(_cards[i].name);
+        }
+    }
 }
+
