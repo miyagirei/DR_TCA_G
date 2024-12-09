@@ -79,10 +79,11 @@ public class Hands : MonoBehaviour
         GameObject obj = Instantiate(_card_prefab, transform);
         int new_card_count = _hands.Count - 1;
 
-        obj.transform.position = new Vector2(new_card_count * 2, 0);
+        obj.transform.position = new Vector3(new_card_count * 2, -4);
         obj.name = _hands[new_card_count].getName();
         obj.GetComponent<Card>().setName(_hands[new_card_count].getName());
         obj.GetComponent<Card>().setDamage(_hands[new_card_count].getDamage());
+        obj.GetComponent<Card>().setPos(obj.transform.position);
     }
 
 }
