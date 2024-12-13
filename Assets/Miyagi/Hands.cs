@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Hands : MonoBehaviour
 {
-    List<Card> _hands = new List<Card>();
+    [SerializeField]List<Card> _hands_card = new List<Card>();
     [SerializeField]GameObject _card_prefab;
 
 
@@ -15,38 +15,48 @@ public class Hands : MonoBehaviour
 
     void Update()
     {
-        pickDrawDeck();
-        check();
+        Check();
     }
 
-    void pickDrawDeck() {
-        if (Input.GetMouseButtonDown(0))
+    public void addHands(Deck deck) {
+        //deck.DrawDeck(_hands);
+        //_hands.Add(deck.DrawDeck());
+        DisplayCard(deck.DrawDeck());
+    }
+
+    public Deck PickDrawDeck(Deck mine) {
+        if (!Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.origin , 0.01f);
-            Debug.DrawRay(ray.origin, ray.direction * 10, Color.green, 3, false);
-            if (!hit2d.collider)
-            {
-                return;
-            }
-
-            Deck selectObj = hit2d.transform.gameObject.GetComponent<Deck>();
-            if (selectObj == null) {
-                return;
-            }
-
-            if (selectObj.TryGetComponent<Deck>(out Deck deck))
-            {
-                deck.drawDeck(_hands);
-                displayCard();
-                Debug.Log(deck.name);
-                Debug.Log(hit2d.transform.gameObject.name);
-            }
-
+            return null;
         }
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.origin , 0.01f);
+        Debug.DrawRay(ray.origin, ray.direction * 10, Color.green, 3, false);
+            
+        if (!hit2d.collider)
+        {
+            return null;
+        }
+
+        Deck selectObj = hit2d.transform.gameObject.GetComponent<Deck>();
+        if (selectObj == null) {
+            return null;
+        }
+
+        if (selectObj.TryGetComponent<Deck>(out Deck deck))
+        {
+            if (mine != deck) {
+                return null;
+            }
+
+            return deck;
+        }
+
+        return null;
     }
 
-    void check() {
+    void Check() {
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -62,7 +72,7 @@ public class Hands : MonoBehaviour
                 return;
             }
 
-            Debug.Log(card.getName() + ":" + card.getDamage());
+            //Debug.Log(card.GetName() + ":" + card.GetDamage());
 
         }
 
@@ -70,20 +80,37 @@ public class Hands : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < _hands.Count; i++) {
-            Debug.Log(_hands[i].getName() + ":" + _hands[i].getDamage());
+        for (int i = 0; i < _hands_card.Count; i++) {
+            //Debug.Log(_hands[i].GetName() + ":" + _hands[i].GetDamage());
         }
     }
 
-    void displayCard() {
-        GameObject obj = Instantiate(_card_prefab, transform);
-        int new_card_count = _hands.Count - 1;
+    public void DisplayCard(Card origin) {
+        int new_card_count = _hands_card.Count - 1;
+        GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, -4) , Quaternion.identity);
+        card_obj.transform.SetParent(this.transform);
+        Card new_card = card_obj.GetComponent<Card>();
+        new_card.Init(origin.GetName(), origin.GetDamage());
 
-        obj.transform.position = new Vector3(new_card_count * 2, -4);
-        obj.name = _hands[new_card_count].getName();
-        obj.GetComponent<Card>().setName(_hands[new_card_count].getName());
-        obj.GetComponent<Card>().setDamage(_hands[new_card_count].getDamage());
-        obj.GetComponent<Card>().setPos(obj.transform.position);
+        new_card.SetPos(new Vector3(new_card_count * 2, -4));
+
+        _hands_card.Add(new_card);
     }
 
+    public Card IsPlayedCard() {
+        foreach(Card card in _hands_card) {
+
+            if (card.GetPlayed()) {
+                return card;
+            }
+        }
+
+        return null;
+    }
+
+    public void TrashCard(Card card) {
+        int choiceNum = _hands_card.IndexOf(card);
+        _hands_card.RemoveAt(choiceNum);
+        card.Trash();
+    }
 }

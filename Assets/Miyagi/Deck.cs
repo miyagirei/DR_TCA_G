@@ -4,29 +4,27 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
-    List<Card> _cards = new List<Card>();
-
+    [SerializeField]List<Card> _deck_card = new List<Card>();
     private void Start()
     {
         DebugAddNewCard();
 
     }
 
-    public void drawDeck( List<Card> hands ) {
-        if (_cards.Count == 0) {
+    public Card DrawDeck( ) {
+        if (_deck_card.Count == 0) {
             Debug.Log("Not Card in Deck");
-            return;
+            return null;
         }
 
-        Card card = _cards[Random.Range(0, _cards.Count)];
+        Card card = _deck_card[Random.Range(0, _deck_card.Count)];
 
-        hands.Add(card);
 
-        int choiceNum = _cards.IndexOf(card);
-        _cards.RemoveAt(choiceNum);
+        int choiceNum = _deck_card.IndexOf(card);
+        _deck_card.RemoveAt(choiceNum);
         Destroy(card.gameObject);
-        
-        Debug.Log(_cards.Count);
+
+        return card;
     }
 
     
@@ -35,9 +33,9 @@ public class Deck : MonoBehaviour
             GameObject card_obj = new GameObject(i + "test");
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();
-            card.init("test",i);
-            _cards.Add(card);
-            Debug.Log(_cards[i].name);
+            card.Init("test",i);
+            _deck_card.Add(card);
+            //Debug.Log(_cards[i].name);
         }
     }
 }
