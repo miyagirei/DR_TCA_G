@@ -11,8 +11,10 @@ public class Card : MonoBehaviour
     [SerializeField]Vector3 _return_pos;
     [SerializeField]bool _is_dragging = false;
     [SerializeField]bool _is_card_played = false;
+    [SerializeField] Player _player;
+    [SerializeField] bool _draggable = false;   
 
-    public void Init(string name , int dmg) {
+    public void Init(string name , int dmg ) {
         _card_name = name;
         _damage_dealt = dmg;
         _return_pos = transform.position;
@@ -29,6 +31,7 @@ public class Card : MonoBehaviour
 
     public bool GetPlayed() => _is_card_played;
     public void SetPlayed(bool played) => _is_card_played = played;
+    public void SetDraggable(bool drag) => _draggable = drag;
 
     private void Update()
     {
@@ -37,6 +40,10 @@ public class Card : MonoBehaviour
 
     void DragAndDrop()
     {
+        if (!_draggable) {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0) && !_is_dragging)
         {
             StartDragging();

@@ -12,6 +12,8 @@ public class DataController : MonoBehaviour
     [SerializeField]
     bool DebugWaitingText = true;
 
+    bool waiting = false;
+
     [SerializeField]
     private string sheet_name = "testSub";
 
@@ -23,6 +25,7 @@ public class DataController : MonoBehaviour
 
     private void Start()
     {
+        waiting = false;
         StartCoroutine(GetDataFromSheet());
     }
 
@@ -107,6 +110,7 @@ public class DataController : MonoBehaviour
             await Task.Yield();
         }
 
+        waiting = true;
         if (paramDataF.TryGetValue(paramName, out float value))
         {
             return value;
@@ -171,4 +175,6 @@ public class DataController : MonoBehaviour
             return null;
         }
     }
+
+    public bool isWaiting() => waiting;
 }
