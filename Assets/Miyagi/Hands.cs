@@ -88,7 +88,7 @@ public class Hands : MonoBehaviour
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
         new_card.Init(origin.GetName(), origin.GetDamage() , origin.GetCost());
-
+        new_card.CreatePopup();
         new_card.SetPos(new Vector3(new_card_count * 2, y));
 
         _hands_card.Add(new_card);

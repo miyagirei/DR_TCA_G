@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
     const float EFFECT_DISTANCE = 3;
+    [SerializeField]GameObject _popup_prefab;
+    GameObject _popup_instance;
+    [SerializeField] bool _is_hovering = false;
 
+    [Header("ステータス")]
     [SerializeField]string _card_name;//名前
     [SerializeField]int _damage_dealt;//攻撃力
     [SerializeField]int _cost;//コスト
@@ -21,6 +26,11 @@ public class Card : MonoBehaviour
         _damage_dealt = dmg;
         _cost = cost;
         _return_pos = transform.position;
+    }
+
+    private void Start()
+    {
+        
     }
 
     public string GetName() => _card_name;
@@ -45,6 +55,7 @@ public class Card : MonoBehaviour
     {
         DragAndDrop();
         TrashSelect();
+        DisplayPopup();
     }
 
     /// <summary>
@@ -120,6 +131,9 @@ public class Card : MonoBehaviour
     /// カードを捨てる
     /// </summary>
     public void Trash() {
+        if(_popup_instance != null) { 
+            Destroy(_popup_instance);
+        }
         Destroy(this.gameObject);
     }
 
@@ -146,5 +160,33 @@ public class Card : MonoBehaviour
         }
 
         _is_discarded = !_is_discarded;
+    }
+
+    /// <summary>
+    /// ポップアップ
+    /// </summary>
+    private void OnMouseEnter()
+    {
+        _is_hovering = true;
+        _popup_instance.SetActive(true);
+    }
+
+    void DisplayPopup() {
+        if (_is_hovering) {
+            _popup_instance.transform.position = Input.mousePosition;
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        _is_hovering = false;
+        _popup_instance.SetActive(false);
+    }
+
+    public void CreatePopup() {
+        _popup_instance = Instantiate(_popup_prefab, FindObjectOfType<Canvas>().transform);
+        _popup_instance.SetActive(false);
+        Text popup_text = _popup_instance.GetComponentInChildren<Text>();
+        popup_text.text = _card_name + "\ndamage : " + _damage_dealt + "\ncost : " + _cost;
     }
 }

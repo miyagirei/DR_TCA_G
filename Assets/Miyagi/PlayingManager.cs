@@ -53,7 +53,7 @@ public class PlayingManager : MonoBehaviour
     void PlayerMoveing(Player player , Player enemy) {
         if (Input.GetMouseButtonDown(0))
         {
-            if (player.GetHands().PickDrawDeck(player.GetDeck()) == null)
+            if (player.GetHands().PickDrawDeck(player.GetDeck()) == null && player.GetDeck().DrawDeck() == null)
             {
                 return;
             }
