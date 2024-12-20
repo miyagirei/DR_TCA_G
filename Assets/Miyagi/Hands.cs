@@ -18,6 +18,8 @@ public class Hands : MonoBehaviour
         Check();
     }
 
+    public int GetCardCount() => _hands_card.Count;
+
     public void addHands(Player player,Deck deck , Vector2 pos) {
         //deck.DrawDeck(_hands);
         //_hands.Add(deck.DrawDeck());
@@ -85,11 +87,13 @@ public class Hands : MonoBehaviour
         GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
-        new_card.Init(origin.GetName(), origin.GetDamage());
+        new_card.Init(origin.GetName(), origin.GetDamage() , origin.GetCost());
 
         new_card.SetPos(new Vector3(new_card_count * 2, y));
 
         _hands_card.Add(new_card);
+
+        arrangeCards(y);
     }
 
     public Card IsPlayedCard() {
@@ -103,6 +107,7 @@ public class Hands : MonoBehaviour
         return null;
     }
 
+    //カードを捨てる時にリストから排除する
     public void TrashCard(Card card) {
         int choiceNum = _hands_card.IndexOf(card);
         _hands_card.RemoveAt(choiceNum);
@@ -115,11 +120,18 @@ public class Hands : MonoBehaviour
             return null;
         }
         Card high_card = new Card();
+        bool change = false;
         for (int i = 0; i < _hands_card.Count; i++) {
-            if(high_card.GetDamage() < _hands_card[i].GetDamage()) { 
+            if(high_card.GetDamage() < _hands_card[i].GetDamage() && _hands_card.Count > _hands_card[i].GetCost()) { 
                 high_card = _hands_card[i];
+                change = true;
             }
         }
+
+        if (!change) {
+            return null;
+        }
+
         return high_card;
     }
 
@@ -128,6 +140,49 @@ public class Hands : MonoBehaviour
         {
             _hands_card[i].SetDraggable(playable);
             
+        }
+    }
+
+    public void ShowAvailableCards() {
+        for (int i = 0; i < _hands_card.Count; i++) {
+            if (IsPlayedCard() == _hands_card[i]) {
+                continue;
+            }
+
+            _hands_card[i].temporarilySetPosition(new Vector3(_hands_card[i].GetPos().x , _hands_card[i].GetPos().y + 1));
+            _hands_card[i].SetCanSelected(true);
+        }
+    }
+
+    public bool isCardSelectionValid(int cost) {
+        int count = 0;
+        for (int i = 0; i < _hands_card.Count; i++) {
+            if (_hands_card[i].GetDiscard()) {
+                count++;
+            }
+        }
+        return count >= cost;
+    }
+
+    public void discardSelectedCards() {
+        for (int i = 0; i < _hands_card.Count; i++)
+        {
+            if (_hands_card[i].GetDiscard())
+            {
+                TrashCard(_hands_card[i]);
+            }
+            else
+            {
+                _hands_card[i].SetCanSelected(false);
+            }
+        }
+    }
+
+    public void arrangeCards(float y) {
+        float correction = -(_hands_card.Count - 1) / 2;
+        for (int i = 0; i < _hands_card.Count; i++) {
+            _hands_card[i].SetPos( new Vector3(i * 2 + correction, y));
+            _hands_card[i].ReturnPos();
         }
     }
 }

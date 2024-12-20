@@ -60,12 +60,24 @@ public class PlayingManager : MonoBehaviour
             player.GetHands().addHands(player , player.GetHands().PickDrawDeck(player.GetDeck()) , new Vector2(0,-4));
             player.GetHands().SelectedPlayable(true);
         }
-        if (player.GetHands().IsPlayedCard() != null)
+        if (player.GetHands().IsPlayedCard() != null)//プレイできるカードがあるとき
         {
+            if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard().GetCost()) {
+                player.GetHands().IsPlayedCard().ReturnCard();
+                return;//カードの枚数がコストを下回っていたら使えない
+            }
+
+            if (!player.GetHands().isCardSelectionValid(player.GetHands().IsPlayedCard().GetCost())) {
+                player.GetHands().ShowAvailableCards();
+                return;
+            }
+
             int previous_hp = enemy.GetHP();
             enemy.AddHP(-player.GetHands().IsPlayedCard().GetDamage());
             player.GetHands().TrashCard(player.GetHands().IsPlayedCard());
             Debug.Log(previous_hp + " > " + enemy.GetHP());
+            player.GetHands().discardSelectedCards();
+            player.GetHands().arrangeCards(-4);
             TurnChange(enemy);
         }
     }
@@ -87,11 +99,20 @@ public class PlayingManager : MonoBehaviour
             return;
         }
         if (player.GetHands().checkHighDamageCard() != null) {
+
             int previous_hp = enemy.GetHP();
             enemy.AddHP(-player.GetHands().checkHighDamageCard().GetDamage());
             player.GetHands().TrashCard(player.GetHands().checkHighDamageCard());
             Debug.Log(previous_hp + " > " + enemy.GetHP());
             TurnChange(enemy);
+            return;
+        }
+
+        if (player.GetHands().checkHighDamageCard() == null)
+        {
+            Debug.Log("Non-Card");
+            TurnChange(enemy);
+            return;//カードの枚数がコストを下回っていたら使えない
         }
     }
 

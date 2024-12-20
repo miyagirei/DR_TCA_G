@@ -657,7 +657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d950f5203b4a5f74c96e54f8491ea122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugWaitingText: 0
+  DebugWaitingText: 1
   sheet_name: sheet1
 --- !u!4 &1022006257
 Transform:
@@ -908,6 +908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec628abb14d432a4b9c455d10957b824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _data_controller: {fileID: 1022006256}
   _turn_Text: {fileID: 854595979}
   _result_Text: {fileID: 1145286948}
   _deck1: {fileID: 1094009660}

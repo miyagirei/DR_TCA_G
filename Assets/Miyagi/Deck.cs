@@ -33,7 +33,7 @@ public class Deck : MonoBehaviour
             GameObject card_obj = new GameObject(i + "test");
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();
-            card.Init("test",i );
+            card.Init("test",i , i);
             _deck_card.Add(card);
             //Debug.Log(_cards[i].name);
         }
