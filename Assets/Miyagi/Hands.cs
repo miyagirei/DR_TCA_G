@@ -165,11 +165,12 @@ public class Hands : MonoBehaviour
     }
 
     public void discardSelectedCards() {
-        for (int i = 0; i < _hands_card.Count; i++)
+        for (int i = _hands_card.Count - 1; i >= 0; i--)
         {
             if (_hands_card[i].GetDiscard())
             {
                 TrashCard(_hands_card[i]);
+                
             }
             else
             {

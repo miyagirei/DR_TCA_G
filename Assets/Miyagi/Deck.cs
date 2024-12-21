@@ -27,6 +27,7 @@ public class Deck : MonoBehaviour
         return card;
     }
 
+    public int GetDeckCount() => _deck_card.Count;
     
     void DebugAddNewCard() {
         for (int i = 0; i < 10; i++) {
