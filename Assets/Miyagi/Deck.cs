@@ -35,16 +35,8 @@ public class Deck : MonoBehaviour
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();
             int amount = Random.Range(1, 5);
-            string effect = "Attack";
-            int effect_choice = Random.Range(0, 2);
-            switch (effect_choice) {
-                case 0:
-                    effect = "Attack";
-                    break;
-                case 1:
-                    effect = "Heal";
-                    break;
-            }
+            int effect_choice = Random.Range(0, 3);
+            string effect = card.GetEffect(effect_choice);
             card.Init("test", amount, amount, effect);
             _deck_card.Add(card);
             //Debug.Log(_cards[i].name);

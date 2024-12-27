@@ -7,6 +7,7 @@ public class Card : MonoBehaviour
 {
     const string EFFECT_ATTACK_TEXT = "Attack";
     const string EFFECT_HEAL_TEXT = "Heal";
+    const string EFFECT_DRAW_TEXT = "Draw";
     
     const float EFFECT_DISTANCE = 3;
     [SerializeField]GameObject _popup_prefab;
@@ -17,6 +18,7 @@ public class Card : MonoBehaviour
     [SerializeField]string _card_name;//名前
     [SerializeField]int _damage_dealt;//攻撃力
     [SerializeField] int _healing_amount;//回復量
+    [SerializeField] int _draw_amount;
     [SerializeField]int _cost;//コスト
     [SerializeField]string _effect;//効果
     [SerializeField]Vector3 _return_pos;//戻るときの場所
@@ -35,6 +37,9 @@ public class Card : MonoBehaviour
                 break;
             case EFFECT_HEAL_TEXT:
                 _healing_amount = amount;
+                break;
+            case EFFECT_DRAW_TEXT:
+                _draw_amount = amount;
                 break;
         }
         _cost = cost;
@@ -68,6 +73,8 @@ public class Card : MonoBehaviour
     public void SetEffect(string effect) => _effect = effect;
     public int GetHealAmount() => _healing_amount;
     public void SetHealAmount(int amount) => _healing_amount = amount;
+    public int GetDrawAmount() => _draw_amount;
+    public void SetDrawAmount(int amount) => _draw_amount = amount; 
 
     private void Update()
     {
@@ -218,12 +225,15 @@ public class Card : MonoBehaviour
             case EFFECT_HEAL_TEXT:
                 amount = GetHealAmount();
                 break;
+            case EFFECT_DRAW_TEXT:
+                amount = GetDrawAmount();
+                break;
         }
 
         popup_text.text = _card_name + "\neffect : " + _effect + "\ncost : " + _cost + "\namount : " + amount;
     }
 
-    public void Effect(Player player , Player enemy) {
+    public void Effect(Player player , Player enemy , Vector3 location ) {
         switch (_effect) {
             case EFFECT_ATTACK_TEXT:
                 enemy.AddHP(-GetDamage());
@@ -231,17 +241,40 @@ public class Card : MonoBehaviour
             case EFFECT_HEAL_TEXT:
                 player.AddHP(GetHealAmount());
                 break;
+            case EFFECT_DRAW_TEXT:
+                for (int i = 0; i < GetDrawAmount();i++) {
+                    player.GetHands().CreateCard(player.GetDeck().DrawDeck() , location.y );
+                }
+                break;
         }
     }
 
+    //エフェクトに応じて呼び出す数値を変える
     public int GetEffectAmount(string effect) {
         switch (effect) {
             case EFFECT_ATTACK_TEXT:
-                return _damage_dealt;
+                return GetDamage();
             case EFFECT_HEAL_TEXT:
-                return _healing_amount;
+                return GetHealAmount();
+            case EFFECT_DRAW_TEXT:
+                return GetDrawAmount();
         }
 
         return 0;
+    }
+
+    //効果を数字で呼び出す//デバック用
+    public string GetEffect( int effect_number ) {
+        switch (effect_number)
+        {
+            case 0:
+                return EFFECT_ATTACK_TEXT;
+            case 1:
+                return EFFECT_HEAL_TEXT;
+            case 2:
+                return EFFECT_DRAW_TEXT;
+        }
+
+        return null;
     }
 }

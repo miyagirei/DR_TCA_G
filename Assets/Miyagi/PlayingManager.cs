@@ -74,8 +74,7 @@ public class PlayingManager : MonoBehaviour
             }
 
             int previous_hp = enemy.GetHP();
-            player.GetHands().IsPlayedCard().Effect(player , enemy);
-            //enemy.AddHP(-player.GetHands().IsPlayedCard().GetDamage());
+            player.GetHands().IsPlayedCard().Effect(player , enemy , new Vector3(0,-4));
             player.GetHands().TrashCard(player.GetHands().IsPlayedCard());
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
