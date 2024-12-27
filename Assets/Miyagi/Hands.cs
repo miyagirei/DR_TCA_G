@@ -20,12 +20,7 @@ public class Hands : MonoBehaviour
 
     public int GetCardCount() => _hands_card.Count;
 
-    public void addHands(Player player,Deck deck , Vector2 pos) {
-        //deck.DrawDeck(_hands);
-        //_hands.Add(deck.DrawDeck());
-        DisplayCard(player , deck.DrawDeck() , pos.y);
-    }
-
+    //カーソル上にあるデッキを取得する
     public Deck PickDrawDeck(Deck mine) {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.origin , 0.01f);
@@ -53,6 +48,7 @@ public class Hands : MonoBehaviour
         return null;
     }
 
+    //破棄してよし
     void Check() {
         if (Input.GetMouseButtonDown(0))
         {
@@ -82,12 +78,13 @@ public class Hands : MonoBehaviour
         }
     }
 
-    public void DisplayCard(Player player, Card origin , float y) {
+    //カードを生成し、整列させる//大体はデッキから手札に移したときに使われる
+    public void CreateCard(Card origin , float y) {
         int new_card_count = _hands_card.Count - 1;
         GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
-        new_card.Init(origin.GetName(), origin.GetDamage() , origin.GetCost());
+        new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffect()) , origin.GetCost() , origin.GetEffect());
         new_card.CreatePopup();
         new_card.SetPos(new Vector3(new_card_count * 2, y));
 
@@ -95,7 +92,8 @@ public class Hands : MonoBehaviour
 
         arrangeCards(y);
     }
-
+    
+    //現在使われたカードがあるかどうかを判定する
     public Card IsPlayedCard() {
         foreach(Card card in _hands_card) {
 
@@ -114,6 +112,7 @@ public class Hands : MonoBehaviour
         card.Trash();
     }
 
+    //一番ダメージが高いかつ、コストが払えるカードを取得する
     public Card checkHighDamageCard()
     {
         if (_hands_card.Count == 0) {
@@ -135,6 +134,7 @@ public class Hands : MonoBehaviour
         return high_card;
     }
 
+    //すべての手札が、ドラッグができるかどうかを操作する
     public void SelectedPlayable(bool playable) {
         for (int i = 0; i < _hands_card.Count; i++)
         {
@@ -143,6 +143,7 @@ public class Hands : MonoBehaviour
         }
     }
 
+    //捨てるカードを選ぶときに、選択できるカードの位置をずらし、選べるようにする
     public void ShowAvailableCards() {
         for (int i = 0; i < _hands_card.Count; i++) {
             if (IsPlayedCard() == _hands_card[i]) {
@@ -154,6 +155,7 @@ public class Hands : MonoBehaviour
         }
     }
 
+    //選択されているカードが同等以上かを判定する
     public bool isCardSelectionValid(int cost) {
         int count = 0;
         for (int i = 0; i < _hands_card.Count; i++) {
@@ -164,6 +166,7 @@ public class Hands : MonoBehaviour
         return count >= cost;
     }
 
+    //選択されているカードをすべてトラッシュし、それ以外のカードを選択できないようにする
     public void discardSelectedCards() {
         for (int i = _hands_card.Count - 1; i >= 0; i--)
         {
@@ -179,11 +182,41 @@ public class Hands : MonoBehaviour
         }
     }
 
+    //手札のカードを整列させる
     public void arrangeCards(float y) {
         float correction = -(_hands_card.Count - 1) / 2;
         for (int i = 0; i < _hands_card.Count; i++) {
             _hands_card[i].SetPos( new Vector3(i * 2 + correction, y));
             _hands_card[i].ReturnPos();
+        }
+    }
+
+    //初期の枚数を越していた場合、ランダムに捨てるかつ、初期の枚数を下回っていた場合、初期枚数まで新しくカードを引く
+    public void ResetHandCards(int cards , Deck deck , Vector3 pos) {
+        if (cards == _hands_card.Count) {
+            return;
+        }
+
+        if (cards < _hands_card.Count) {
+            int diff = (_hands_card.Count) - cards;
+
+            for (int i = 0; i < diff; i++) {
+                Card card = _hands_card[Random.Range(0, _hands_card.Count)];
+
+                TrashCard(card);
+            }
+        }
+
+        if (cards > _hands_card.Count) {
+            int diff = cards - (_hands_card.Count);
+
+            for (int i = 0; i < diff; i++) {
+                if (deck.GetDeckCount() <= 0) {
+                    return;
+                }
+
+                CreateCard(deck.DrawDeck(), pos.y);
+            }
         }
     }
 }

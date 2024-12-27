@@ -50,6 +50,7 @@ public class PlayingManager : MonoBehaviour
         }
     }
 
+    //プレイヤーが操作
     void PlayerMoveing(Player player , Player enemy) {
         if (Input.GetMouseButtonDown(0))
         {
@@ -57,14 +58,14 @@ public class PlayingManager : MonoBehaviour
             {
                 return;
             }
-            player.GetHands().addHands(player , player.GetHands().PickDrawDeck(player.GetDeck()) , new Vector2(0,-4));
+            player.GetHands().ResetHandCards(4, player.GetHands().PickDrawDeck(player.GetDeck()), new Vector3(0, -4));
             player.GetHands().SelectedPlayable(true);
         }
-        if (player.GetHands().IsPlayedCard() != null)//プレイできるカードがあるとき
+        if (player.GetHands().IsPlayedCard() != null)
         {
             if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard().GetCost()) {
                 player.GetHands().IsPlayedCard().ReturnCard();
-                return;//カードの枚数がコストを下回っていたら使えない
+                return;
             }
 
             if (!player.GetHands().isCardSelectionValid(player.GetHands().IsPlayedCard().GetCost())) {
@@ -73,24 +74,26 @@ public class PlayingManager : MonoBehaviour
             }
 
             int previous_hp = enemy.GetHP();
-            enemy.AddHP(-player.GetHands().IsPlayedCard().GetDamage());
+            player.GetHands().IsPlayedCard().Effect(player , enemy);
+            //enemy.AddHP(-player.GetHands().IsPlayedCard().GetDamage());
             player.GetHands().TrashCard(player.GetHands().IsPlayedCard());
             Debug.Log(previous_hp + " > " + enemy.GetHP());
+
             player.GetHands().discardSelectedCards();
             player.GetHands().arrangeCards(-4);
             TurnChange(enemy);
         }
     }
 
+    //CPUが操作
     void CPUMoving(Player player , Player enemy) {
         if (_progress_time < CPU_THINGKING_TIME)
         {
             return;
         }
         if (!_cpu_draw) {
-            for(int i = 0; i < 4; i++) {
-                player.GetHands().addHands(player, player.GetDeck(), new Vector2(0, 4));
-            }
+
+            player.GetHands().ResetHandCards(4, player.GetDeck() , new Vector3(0, 4));
             _cpu_draw = true;
             _progress_time = 0;
         }
@@ -116,18 +119,21 @@ public class PlayingManager : MonoBehaviour
         }
     }
 
+    //ターンを終了して相手に行動を移す
     void TurnChange(Player turn) {
         turn.SetCurrentPlayer(true);
-        turn.GetHands().SelectedPlayable(true);//次のターンのプレイヤー
+        turn.GetHands().SelectedPlayable(true);
 
         Hostile(turn).SetCurrentPlayer(false);
-        Hostile(turn).GetHands().SelectedPlayable(false);//終了したプレイヤー
+        Hostile(turn).GetHands().SelectedPlayable(false);
 
         _turn_Text.text = turn.GetName() + " Turn";
         _progress_time = 0;
+        _cpu_draw = false;
         checkResult();
     }
 
+    //プレイヤー1ならプレイヤー2に、プレイヤー2ならプレイヤー1を返す
     Player Hostile(Player my) {
         if (my == _player1) {
             return _player2;
@@ -136,6 +142,7 @@ public class PlayingManager : MonoBehaviour
         return _player1;
     }
 
+    //引き分けかどちらかが勝っているかを判定する
     void checkResult() {
         if (_player1.GetHP() <= 0 && _player2.GetHP() <= 0) {
             Debug.Log("引き分け");

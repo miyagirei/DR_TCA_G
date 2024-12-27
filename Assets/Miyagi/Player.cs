@@ -21,12 +21,14 @@ public class Player {
     }
 
     public string GetName() => _name;
-    public int GetHP() => _hp;
-    public int GetMaxHP => _max_hp;
-    public Deck GetDeck() => _deck;
-    public Hands GetHands() => _hands;
-    public bool IsCurrentPlayer() => _is_current_player;
-    public void SetCurrentPlayer(bool played) => _is_current_player = played;
+    public int GetHP() => _hp;//現在HPを取得
+    public int GetMaxHP => _max_hp;//最大HPを取得
+    public Deck GetDeck() => _deck;//山札を取得
+    public Hands GetHands() => _hands;//手札を取得
+    public bool IsCurrentPlayer() => _is_current_player;//自身が動けるかどうかを取得
+    public void SetCurrentPlayer(bool played) => _is_current_player = played;//自身が動けるかどうかを操作
+
+    //HPを操作する//最大以上の場合は最大に変更する
     public void AddHP(int value) {
         _hp += value;
 

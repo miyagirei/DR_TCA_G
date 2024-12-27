@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
+    const string EFFECT_ATTACK_TEXT = "Attack";
+    const string EFFECT_HEAL_TEXT = "Heal";
+    
     const float EFFECT_DISTANCE = 3;
     [SerializeField]GameObject _popup_prefab;
     GameObject _popup_instance;
@@ -13,18 +16,29 @@ public class Card : MonoBehaviour
     [Header("ステータス")]
     [SerializeField]string _card_name;//名前
     [SerializeField]int _damage_dealt;//攻撃力
+    [SerializeField] int _healing_amount;//回復量
     [SerializeField]int _cost;//コスト
+    [SerializeField]string _effect;//効果
     [SerializeField]Vector3 _return_pos;//戻るときの場所
     [SerializeField]bool _is_card_played = false;//プレイするカードかどうか
     [SerializeField]bool _is_dragging = false;//ドラッグ中かどうかの判定
     [SerializeField]bool _draggable = false;//ドラッグができるかどうか
     [SerializeField]bool _can_selected = false;//選択できるかどうかの判定
-    [SerializeField] bool _is_discarded = false;//捨てるかどうかの判定
+    [SerializeField]bool _is_discarded = false;//捨てるかどうかの判定
 
-    public void Init(string name , int dmg , int cost) {
+    public void Init(string name , int amount , int cost , string effect) {
         _card_name = name;
-        _damage_dealt = dmg;
+        switch (effect)
+        {
+            case EFFECT_ATTACK_TEXT:
+                _damage_dealt = amount;
+                break;
+            case EFFECT_HEAL_TEXT:
+                _healing_amount = amount;
+                break;
+        }
         _cost = cost;
+        _effect = effect;
         _return_pos = transform.position;
     }
 
@@ -50,6 +64,10 @@ public class Card : MonoBehaviour
     public void SetCanSelected(bool can) => _can_selected = can;
     public bool GetDiscard() => _is_discarded;
     public void SetDiscarded(bool discard) => _is_discarded = discard;
+    public string GetEffect() => _effect;
+    public void SetEffect(string effect) => _effect = effect;
+    public int GetHealAmount() => _healing_amount;
+    public void SetHealAmount(int amount) => _healing_amount = amount;
 
     private void Update()
     {
@@ -91,6 +109,7 @@ public class Card : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(mouseScreenPosition);
     }
 
+    //ドラッグ開始
     void StartDragging() {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, Vector2.zero , Mathf.Infinity);
@@ -106,10 +125,12 @@ public class Card : MonoBehaviour
             }
     }
 
+    //ドラッグ中
     void Drag() {
         this.transform.position = GetMouseWorldPosition();
     }
 
+    //ドラッグ終了
     void EndDragging() {
         if(Vector3.Distance(this.transform.position , _return_pos) >= EFFECT_DISTANCE)
         {
@@ -121,15 +142,14 @@ public class Card : MonoBehaviour
         ReturnCard();
     }
 
+    //カードを初期位置に戻し、プレイされていない状態にする
     public void ReturnCard() {
         ReturnPos();
         _is_dragging = false;
         SetPlayed(false);
     }
 
-    /// <summary>
-    /// カードを捨てる
-    /// </summary>
+    //ポップアップの情報を消し、カードの情報を破棄
     public void Trash() {
         if(_popup_instance != null) { 
             Destroy(_popup_instance);
@@ -137,6 +157,7 @@ public class Card : MonoBehaviour
         Destroy(this.gameObject);
     }
 
+    //捨てるカードを選択する
     void TrashSelect() {
         if (!Input.GetMouseButtonDown(0)){
             return;
@@ -162,31 +183,65 @@ public class Card : MonoBehaviour
         _is_discarded = !_is_discarded;
     }
 
-    /// <summary>
-    /// ポップアップ
-    /// </summary>
+    //マウスがオブジェクト内にあるときポップアップの表示
     private void OnMouseEnter()
     {
         _is_hovering = true;
         _popup_instance.SetActive(true);
     }
 
+    //ポップアップ表示
     void DisplayPopup() {
         if (_is_hovering) {
             _popup_instance.transform.position = Input.mousePosition;
         }
     }
 
+    //マウスがオブジェクト外に行ったときポップアップの非表示
     private void OnMouseExit()
     {
         _is_hovering = false;
         _popup_instance.SetActive(false);
     }
 
+    //新しいポップアップの作成
     public void CreatePopup() {
         _popup_instance = Instantiate(_popup_prefab, FindObjectOfType<Canvas>().transform);
         _popup_instance.SetActive(false);
         Text popup_text = _popup_instance.GetComponentInChildren<Text>();
-        popup_text.text = _card_name + "\ndamage : " + _damage_dealt + "\ncost : " + _cost;
+        int amount = 0;
+        switch (_effect)
+        {
+            case EFFECT_ATTACK_TEXT:
+                amount = GetDamage();
+                break;
+            case EFFECT_HEAL_TEXT:
+                amount = GetHealAmount();
+                break;
+        }
+
+        popup_text.text = _card_name + "\neffect : " + _effect + "\ncost : " + _cost + "\namount : " + amount;
+    }
+
+    public void Effect(Player player , Player enemy) {
+        switch (_effect) {
+            case EFFECT_ATTACK_TEXT:
+                enemy.AddHP(-GetDamage());
+                break;
+            case EFFECT_HEAL_TEXT:
+                player.AddHP(GetHealAmount());
+                break;
+        }
+    }
+
+    public int GetEffectAmount(string effect) {
+        switch (effect) {
+            case EFFECT_ATTACK_TEXT:
+                return _damage_dealt;
+            case EFFECT_HEAL_TEXT:
+                return _healing_amount;
+        }
+
+        return 0;
     }
 }
