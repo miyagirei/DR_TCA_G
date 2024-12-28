@@ -7,6 +7,7 @@ public class Player {
     int _max_hp;
     int _hp;
     bool _is_current_player;
+    bool _is_win;
 
     Deck _deck;
     Hands _hands;
@@ -18,15 +19,19 @@ public class Player {
         _is_current_player = is_current_player;
         _deck = deck;
         _hands = hands;
+        _is_win = false;
     }
 
     public string GetName() => _name;
     public int GetHP() => _hp;//現在HPを取得
+    public void SetHP(int hp) => _hp = hp;//HPを操作する
     public int GetMaxHP => _max_hp;//最大HPを取得
     public Deck GetDeck() => _deck;//山札を取得
     public Hands GetHands() => _hands;//手札を取得
     public bool IsCurrentPlayer() => _is_current_player;//自身が動けるかどうかを取得
     public void SetCurrentPlayer(bool played) => _is_current_player = played;//自身が動けるかどうかを操作
+    public bool GetWinning() => _is_win;//勝利しているか取得する
+    public void SetWinningState() => _is_win = true;//勝利している状態にする
 
     //HPを操作する//最大以上の場合は最大に変更する
     public void AddHP(int value) {

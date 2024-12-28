@@ -29,8 +29,9 @@ public class Deck : MonoBehaviour
 
     public int GetDeckCount() => _deck_card.Count;
     
+    //デバック用カード補充
     void DebugAddNewCard() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 40; i++) {
             GameObject card_obj = new GameObject(i + "test");
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();

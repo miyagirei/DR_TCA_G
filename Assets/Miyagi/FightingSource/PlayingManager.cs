@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayingManager : MonoBehaviour
 {
@@ -21,13 +22,18 @@ public class PlayingManager : MonoBehaviour
     [SerializeField]PlayerUIManager _player2_UI;
 
     float _progress_time = 0;
+    bool _conclusion = false;
     [HideInInspector]float CPU_THINGKING_TIME = 0;
+    [HideInInspector] float SCENE_CHANGE_TIME = 0;
 
     bool _cpu_draw = false;
     async void Start()
     {
         CPU_THINGKING_TIME = await _data_controller.GetParamValueFloat("CPU_THINGKING_TIME");
+        SCENE_CHANGE_TIME = await _data_controller.GetParamValueInt("SCENE_CHANGE_TIME");
+
         _progress_time = 0;
+        _conclusion = false;
         _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1);
 
         _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2);
@@ -40,13 +46,24 @@ public class PlayingManager : MonoBehaviour
         }
 
         _progress_time += Time.deltaTime;
+
+        if (_conclusion) {
+            if (_progress_time >= SCENE_CHANGE_TIME) {
+                SceneManager.LoadScene("ResultScene");
+                SceneManager.sceneLoaded += OnSceneLoaded;
+                return;
+            }
+            return;
+        }
         _player1_UI.Display(_player1);
         _player2_UI.Display(_player2);
         if (_player1.IsCurrentPlayer()) {
             PlayerMoveing(_player1 , _player2) ;
+            DebugWin();
         }
         if (_player2.IsCurrentPlayer()) {
             CPUMoving(_player2, _player1);
+            DebugLose();
         }
     }
 
@@ -146,19 +163,51 @@ public class PlayingManager : MonoBehaviour
         if (_player1.GetHP() <= 0 && _player2.GetHP() <= 0) {
             Debug.Log("引き分け");
             _result_Text.text = "引き分け";
+            _conclusion = true;
+            _player1.SetWinningState();
+            _player2.SetWinningState();
             return;
         }
 
         if (_player1.GetHP() <= 0) {
             Debug.Log(_player1.GetName() + "の負け");
             _result_Text.text = _player1.GetName() + "の負け";
+            _conclusion = true;
+            _player2.SetWinningState();
             return;
         }        
         
         if (_player2.GetHP() <= 0) {
             Debug.Log(_player2.GetName() + "の負け");
             _result_Text.text = _player2.GetName() + "の負け";
+            _conclusion = true;
+            _player1.SetWinningState();
             return;
+        }
+    }
+
+    //ResultSceneに勝利状況を渡す
+    void OnSceneLoaded(Scene scene , LoadSceneMode mode) {
+        GameObject result_data = GameObject.Find("ResultDataController");
+        if (result_data != null) {
+            result_data.GetComponent<ResultDataController>().SetResultData(_player1.GetWinning() , _player2.GetWinning());
+        }
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    //デバック用//強制的に勝利する
+    void DebugWin() {
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift) && Input.GetKeyDown(KeyCode.Space)) {
+            _player2.SetHP(0);
+            checkResult();
+        }
+    }
+
+    //デバック用//強制的に敗北する
+    void DebugLose() {
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift) && Input.GetKeyDown(KeyCode.Space)) {
+            _player1.SetHP(0);
+            checkResult();
         }
     }
 }

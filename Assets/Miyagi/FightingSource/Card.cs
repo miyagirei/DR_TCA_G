@@ -233,6 +233,7 @@ public class Card : MonoBehaviour
         popup_text.text = _card_name + "\neffect : " + _effect + "\ncost : " + _cost + "\namount : " + amount;
     }
 
+    //カードを出したときの効果
     public void Effect(Player player , Player enemy , Vector3 location ) {
         switch (_effect) {
             case EFFECT_ATTACK_TEXT:
@@ -243,6 +244,10 @@ public class Card : MonoBehaviour
                 break;
             case EFFECT_DRAW_TEXT:
                 for (int i = 0; i < GetDrawAmount();i++) {
+                    if (player.GetDeck().GetDeckCount() == 0) {
+                        break;
+                    }
+
                     player.GetHands().CreateCard(player.GetDeck().DrawDeck() , location.y );
                 }
                 break;
