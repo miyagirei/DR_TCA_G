@@ -84,7 +84,14 @@ public class Hands : MonoBehaviour
         GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
-        new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffect()) , origin.GetCost() , origin.GetEffect());
+        if (origin.GetIfNormalCard())
+        {
+            new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffect()), origin.GetCost(), origin.GetEffect());
+        }
+        else if (!origin.GetIfNormalCard()) {
+            new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetEffectAmount(origin.GetHopeEffect()), origin.GetCostOfHope(), 
+                origin.GetDespairEffect() , origin.GetEffectAmount(origin.GetDespairEffect()) , origin.GetCostOfDespair());
+        }
         new_card.CreatePopup();
         new_card.SetPos(new Vector3(new_card_count * 2, y));
 
@@ -94,12 +101,18 @@ public class Hands : MonoBehaviour
     }
     
     //現在使われたカードがあるかどうかを判定する
-    public Card IsPlayedCard() {
+    public Card IsPlayedCard(Player player) {
         foreach(Card card in _hands_card) {
-
-            if (card.GetPlayed()) {
-                return card;
+            if (!card.GetPlayed()) {
+                continue;
             }
+
+            if (player.GetNormalCondition() && !card.GetIfNormalCard()) {
+                card.ReturnCard();
+                continue;
+            }
+
+            return card;    
         }
 
         return null;
@@ -108,6 +121,7 @@ public class Hands : MonoBehaviour
     //カードを捨てる時にリストから排除する
     public void TrashCard(Card card) {
         int choiceNum = _hands_card.IndexOf(card);
+        Debug.Log("Trash : " + card.GetName());
         _hands_card.RemoveAt(choiceNum);
         card.Trash();
     }
@@ -144,9 +158,9 @@ public class Hands : MonoBehaviour
     }
 
     //捨てるカードを選ぶときに、選択できるカードの位置をずらし、選べるようにする
-    public void ShowAvailableCards() {
+    public void ShowAvailableCards(Card exception) {
         for (int i = 0; i < _hands_card.Count; i++) {
-            if (IsPlayedCard() == _hands_card[i]) {
+            if (exception == _hands_card[i]) {
                 continue;
             }
 

@@ -8,6 +8,8 @@ public class Player {
     int _hp;
     bool _is_current_player;
     bool _is_win;
+    bool _is_hope;
+    bool _is_despair;
 
     Deck _deck;
     Hands _hands;
@@ -20,6 +22,8 @@ public class Player {
         _deck = deck;
         _hands = hands;
         _is_win = false;
+        _is_hope = false;
+        _is_despair = false;
     }
 
     public string GetName() => _name;
@@ -32,11 +36,32 @@ public class Player {
     public void SetCurrentPlayer(bool played) => _is_current_player = played;//©g‚ª“®‚¯‚é‚©‚Ç‚¤‚©‚ğ‘€ì
     public bool GetWinning() => _is_win;//Ÿ—˜‚µ‚Ä‚¢‚é‚©æ“¾‚·‚é
     public void SetWinningState() => _is_win = true;//Ÿ—˜‚µ‚Ä‚¢‚éó‘Ô‚É‚·‚é
+    public bool GetNormalCondition() => !_is_hope && !_is_despair;//•’Êó‘Ô‚©‚Ç‚¤‚©‚ğæ“¾
+    public bool GetHopeCondition() => _is_hope;//Šó–]ó‘Ô‚©‚Ç‚¤‚©‚ğæ“¾
+    public bool GetDespairCondition() => _is_despair;//â–]ó‘Ô‚©‚Ç‚¤‚©‚ğæ“¾
 
     //HP‚ğ‘€ì‚·‚é//Å‘åˆÈã‚Ìê‡‚ÍÅ‘å‚É•ÏX‚·‚é
     public void AddHP(int value) {
         _hp += value;
 
         if (_hp >= _max_hp) _hp = _max_hp;
+    }
+
+    //Šó–]ó‘Ô‚É‚·‚é
+    public void SetHope() {
+        _is_hope = true;
+        _is_despair = false;
+    }    
+    
+    //â–]ó‘Ô‚É‚·‚é
+    public void SetDespair() {
+        _is_hope = false;
+        _is_despair = true;
+    }    
+    
+    //•’Êó‘Ô‚É‚·‚é
+    public void SetNormal() {
+        _is_hope = false;
+        _is_despair = false;
     }
 }

@@ -77,22 +77,24 @@ public class PlayingManager : MonoBehaviour
             }
             player.GetHands().ResetHandCards(4, player.GetHands().PickDrawDeck(player.GetDeck()), new Vector3(0, -4));
             player.GetHands().SelectedPlayable(true);
+            Debug.Log("normal : " + player.GetNormalCondition() );
         }
-        if (player.GetHands().IsPlayedCard() != null)
+        if (player.GetHands().IsPlayedCard(player) != null)
         {
-            if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard().GetCost()) {
-                player.GetHands().IsPlayedCard().ReturnCard();
+            if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard(player).GetCostByCondition(player)) {
+                player.GetHands().IsPlayedCard(player).ReturnCard();
                 return;
             }
 
-            if (!player.GetHands().isCardSelectionValid(player.GetHands().IsPlayedCard().GetCost())) {
-                player.GetHands().ShowAvailableCards();
+            if (!player.GetHands().isCardSelectionValid(player.GetHands().IsPlayedCard(player).GetCostByCondition(player))) {
+                player.GetHands().ShowAvailableCards(player.GetHands().IsPlayedCard(player));
                 return;
             }
 
             int previous_hp = enemy.GetHP();
-            player.GetHands().IsPlayedCard().Effect(player , enemy , new Vector3(0,-4));
-            player.GetHands().TrashCard(player.GetHands().IsPlayedCard());
+            Card played_card = player.GetHands().IsPlayedCard(player);
+            played_card.Effect(player , enemy , new Vector3(0,-4));
+            player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
             player.GetHands().discardSelectedCards();

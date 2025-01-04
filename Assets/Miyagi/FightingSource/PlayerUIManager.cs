@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class PlayerUIManager : MonoBehaviour
 {
     [SerializeField] Text UI_Player_HP;
+    [SerializeField] Text UI_Player_Condition;
     void Start()
     {
         
@@ -18,6 +19,7 @@ public class PlayerUIManager : MonoBehaviour
 
     public void Display(Player player) {
         DisplayPlayerHP(player);
+        DisplayPlayerCondition(player);
     }
 
     void DisplayPlayerHP(Player player) {
@@ -27,4 +29,26 @@ public class PlayerUIManager : MonoBehaviour
         UI_Player_HP.text = player.GetName()+ ":" + $"{player.GetHP()}";
     }
 
+
+    void DisplayPlayerCondition(Player player) {
+        if (player == null)
+        {
+            return;
+        }
+        string condition = "no info";
+
+        if (player.GetNormalCondition())
+        {
+            condition = "Normal";
+        }
+        else if (player.GetHopeCondition())
+        {
+            condition = "Hope";
+        }
+        else if (player.GetDespairCondition()) {
+            condition = "Despair";
+        }
+
+        UI_Player_Condition.text = player.GetName() + ":" + condition;
+    }
 }

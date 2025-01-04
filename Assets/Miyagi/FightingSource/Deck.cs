@@ -31,16 +31,36 @@ public class Deck : MonoBehaviour
     
     //デバック用カード補充
     void DebugAddNewCard() {
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 40; i++)
+        {
             GameObject card_obj = new GameObject(i + "test");
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();
             int amount = Random.Range(1, 5);
-            int effect_choice = Random.Range(0, 3);
-            string effect = card.GetEffect(effect_choice);
+            int effect_choice = Random.Range(0, 5);
+            string effect = card.GetEffectNumber(effect_choice);
             card.Init("test", amount, amount, effect);
             _deck_card.Add(card);
-            //Debug.Log(_cards[i].name);
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            GameObject card_obj = new GameObject(i + "hope_despair");
+            card_obj.transform.SetParent(this.transform);
+            Card card = card_obj.AddComponent<Card>();
+            int h_amount = Random.Range(1, 5);
+            int d_amount = Random.Range(1, 5);
+            int hope_choice = Random.Range(0, 5);
+            int despair_choice;
+            do
+            {
+                despair_choice = Random.Range(0, 5);
+            } while (hope_choice == despair_choice);
+
+            string hope_effect = card.GetEffectNumber(hope_choice);
+            string despair_effect = card.GetEffectNumber(despair_choice);
+            card.Init("test", hope_effect, h_amount, h_amount, despair_effect , d_amount, d_amount);
+            _deck_card.Add(card);
         }
     }
 }
