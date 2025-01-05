@@ -84,19 +84,18 @@ public class Hands : MonoBehaviour
         GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
-        if (origin.GetIfNormalCard())
-        {
-            new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffect()), origin.GetCost(), origin.GetEffect());
-        }
-        else if (!origin.GetIfNormalCard()) {
+        if (origin.GetCardType() == CardType.HopeAndDespair) {
             new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetEffectAmount(origin.GetHopeEffect()), origin.GetCostOfHope(), 
                 origin.GetDespairEffect() , origin.GetEffectAmount(origin.GetDespairEffect()) , origin.GetCostOfDespair());
         }
+        else {
+            new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffectByCardType()), origin.GetCostByCardType(), origin.GetEffectByCardType(), origin.GetCardType());
+        }
+
         new_card.CreatePopup();
         new_card.SetPos(new Vector3(new_card_count * 2, y));
 
         _hands_card.Add(new_card);
-
         arrangeCards(y);
     }
     
@@ -108,6 +107,16 @@ public class Hands : MonoBehaviour
             }
 
             if (player.GetNormalCondition() && !card.GetIfNormalCard()) {
+                card.ReturnCard();
+                continue;
+            }
+
+            if (player.GetHopeCondition() && card.GetCardType() == CardType.OnlyDespair) {
+                card.ReturnCard();
+                continue;
+            }
+            
+            if (player.GetDespairCondition() && card.GetCardType() == CardType.OnlyHope) {
                 card.ReturnCard();
                 continue;
             }

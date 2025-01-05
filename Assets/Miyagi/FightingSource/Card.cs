@@ -34,8 +34,9 @@ public class Card : MonoBehaviour
     [SerializeField] bool _can_selected = false;//選択できるかどうかの判定
     [SerializeField] bool _is_discarded = false;//捨てるかどうかの判定
     [SerializeField] bool _is_normal = true;//通常カードであるかの判定
+    [SerializeField] CardType _card_type;
 
-    public void Init(string name, int amount, int cost, string effect)
+    public void Init(string name, int amount, int cost, string effect, CardType type)
     {
         _card_name = name;
         switch (effect)
@@ -50,10 +51,27 @@ public class Card : MonoBehaviour
                 _draw_amount = amount;
                 break;
         }
-        _cost = cost;
-        _effect = effect;
+        _card_type = type;
+        switch (_card_type)
+        {
+            case CardType.Normal:
+                _cost = cost;
+                _effect = effect;
+                _is_normal = true;
+                break;
+            case CardType.OnlyHope:
+                _cost_hope = cost;
+                _effect_hope = effect;
+                _is_normal = false;
+                break;
+            case CardType.OnlyDespair:
+                _cost_despair = cost;
+                _effect_despair = effect;
+                _is_normal = false;
+                break;
+        }
+
         _return_pos = transform.position;
-        _is_normal = true;
     }
 
     public void Init(string name, string hope, int hope_amount, int hope_cost, string despair, int despair_amount, int despair_cost)
@@ -92,6 +110,7 @@ public class Card : MonoBehaviour
 
         _return_pos = transform.position;
         _is_normal = false;
+        _card_type = CardType.HopeAndDespair;
     }
 
     private void Start()
@@ -127,6 +146,7 @@ public class Card : MonoBehaviour
     public int GetDrawAmount() => _draw_amount;
     public void SetDrawAmount(int amount) => _draw_amount = amount;
     public bool GetIfNormalCard() => _is_normal;
+    public CardType GetCardType() => _card_type;
 
     private void Update()
     {
@@ -283,20 +303,29 @@ public class Card : MonoBehaviour
         _popup_instance.SetActive(false);
         Text popup_text = _popup_instance.GetComponentInChildren<Text>();
 
-        if (GetIfNormalCard())
+        int amount = 0;
+        switch (GetCardType())
         {
-            int normal_amount = GetEffectAmount(_effect);
-            popup_text.text = _card_name + "\neffect : " + _effect + "\ncost : " + _cost + "\namount : " + normal_amount;
+            case CardType.Normal:
+                amount = GetEffectAmount(_effect);
+                popup_text.text = _card_name + "\neffect : " + _effect + "\ncost : " + _cost + "\namount : " + amount;
+                break;
+            case CardType.HopeAndDespair:
+                int hope_amount = GetEffectAmount(_effect_hope);
+                int despair_amount = GetEffectAmount(_effect_despair);
+
+                popup_text.text = _card_name + "\nhope_effect : " + _effect_hope + "\nhope_cost : " + _cost_hope + "\nhope_amount : " + hope_amount
+                    + "\ndespair_effect : " + _effect_despair + "\ndespair_cost : " + _cost_despair + "\ndespair_amount : " + despair_amount;
+                break;
+            case CardType.OnlyHope:
+                amount = GetEffectAmount(_effect_hope);
+                popup_text.text = _card_name + "\neffect : " + _effect_hope + "\ncost : " + _cost_hope + "\namount : " + amount;
+                break; 
+            case CardType.OnlyDespair:
+                amount = GetEffectAmount(_effect_despair);
+                popup_text.text = _card_name + "\neffect : " + _effect_despair + "\ncost : " + _cost_despair + "\namount : " + amount;
+                break;
         }
-        else{
-            int hope_amount = GetEffectAmount(_effect_hope);
-            int despair_amount = GetEffectAmount(_effect_despair);
-
-            popup_text.text = _card_name + "\nhope_effect : " + _effect_hope + "\nhope_cost : " + _cost_hope + "\nhope_amount : " + hope_amount
-                + "\ndespair_effect : " + _effect_despair + "\ndespair_cost : " + _cost_despair + "\ndespair_amount : " + despair_amount;
-        }
-
-
     }
 
     //カードを出したときの効果
@@ -306,7 +335,8 @@ public class Card : MonoBehaviour
         {
             EffectList(_effect, player, enemy, location);
         }
-        else if(!GetIfNormalCard() && player.GetHopeCondition() && !player.GetDespairCondition()) {
+        else if (!GetIfNormalCard() && player.GetHopeCondition() && !player.GetDespairCondition())
+        {
             Debug.Log("Hope Effect");
             EffectList(_effect_hope, player, enemy, location);
         }
@@ -357,7 +387,8 @@ public class Card : MonoBehaviour
         return null;
     }
 
-    void ActivateDraw(Player player , Vector3 location) {
+    void ActivateDraw(Player player, Vector3 location)
+    {
         for (int i = 0; i < GetDrawAmount(); i++)
         {
             if (player.GetDeck().GetDeckCount() == 0)
@@ -369,8 +400,10 @@ public class Card : MonoBehaviour
         }
     }
 
-    void EffectList(string effect_text , Player player , Player enemy , Vector3 location) {
-        switch (effect_text) {
+    void EffectList(string effect_text, Player player, Player enemy, Vector3 location)
+    {
+        switch (effect_text)
+        {
             case EFFECT_ATTACK_TEXT:
                 enemy.AddHP(-GetDamage());
                 break;
@@ -382,26 +415,63 @@ public class Card : MonoBehaviour
                 break;
             case EFFECT_HOPE_CHANGE:
                 player.SetHope();
-                break;            
+                break;
             case EFFECT_DESPAIR_CHANGE:
                 player.SetDespair();
                 break;
         }
     }
 
-    public int GetCostByCondition(Player player) {
-        if (player.GetNormalCondition()) {
-            return GetCost();   
+    public int GetCostByCondition(Player player)
+    {
+        if (player.GetNormalCondition() && GetIfNormalCard())
+        {
+            Debug.Log("NormalCost");
+            return GetCost();
         }
 
-        if (player.GetHopeCondition()) {
+        if (player.GetHopeCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyHope))
+        {
+            Debug.Log("HopeCost");
             return GetCostOfHope();
         }
-        
-        if (player.GetDespairCondition()) {
+
+        if (player.GetDespairCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyDespair))
+        {
+            Debug.Log("DespairCost");
             return GetCostOfDespair();
         }
 
         return 9999;
+    }
+
+    public int GetCostByCardType()
+    {
+        switch (GetCardType())
+        {
+            case CardType.Normal:
+                return GetCost();
+            case CardType.OnlyHope:
+                return GetCostOfHope();
+            case CardType.OnlyDespair:
+                return GetCostOfDespair();
+        }
+
+        return 9999;
+    }
+
+    public string GetEffectByCardType()
+    {
+        switch (GetCardType())
+        {
+            case CardType.Normal:
+                return GetEffect();
+            case CardType.OnlyHope:
+                return GetHopeEffect();
+            case CardType.OnlyDespair:
+                return GetDespairEffect();
+        }
+
+        return null;
     }
 }

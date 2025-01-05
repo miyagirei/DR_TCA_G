@@ -31,7 +31,7 @@ public class Deck : MonoBehaviour
     
     //デバック用カード補充
     void DebugAddNewCard() {
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 10; i++)
         {
             GameObject card_obj = new GameObject(i + "test");
             card_obj.transform.SetParent(this.transform);
@@ -39,11 +39,35 @@ public class Deck : MonoBehaviour
             int amount = Random.Range(1, 5);
             int effect_choice = Random.Range(0, 5);
             string effect = card.GetEffectNumber(effect_choice);
-            card.Init("test", amount, amount, effect);
+            card.Init("normal", amount, amount, effect , CardType.Normal);
+            _deck_card.Add(card);
+        }        
+        
+        for (int i = 0; i < 5; i++)
+        {
+            GameObject card_obj = new GameObject(i + "hope");
+            card_obj.transform.SetParent(this.transform);
+            Card card = card_obj.AddComponent<Card>();
+            int amount = Random.Range(1, 5);
+            int effect_choice = Random.Range(0, 5);
+            string effect = card.GetEffectNumber(effect_choice);
+            card.Init("hope", amount, amount, effect , CardType.OnlyHope);
+            _deck_card.Add(card);
+        }        
+        
+        for (int i = 0; i < 5; i++)
+        {
+            GameObject card_obj = new GameObject(i + "despair");
+            card_obj.transform.SetParent(this.transform);
+            Card card = card_obj.AddComponent<Card>();
+            int amount = Random.Range(1, 5);
+            int effect_choice = Random.Range(0, 5);
+            string effect = card.GetEffectNumber(effect_choice);
+            card.Init("despair", amount, amount, effect , CardType.OnlyDespair);
             _deck_card.Add(card);
         }
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 5; i++)
         {
             GameObject card_obj = new GameObject(i + "hope_despair");
             card_obj.transform.SetParent(this.transform);
@@ -59,7 +83,7 @@ public class Deck : MonoBehaviour
 
             string hope_effect = card.GetEffectNumber(hope_choice);
             string despair_effect = card.GetEffectNumber(despair_choice);
-            card.Init("test", hope_effect, h_amount, h_amount, despair_effect , d_amount, d_amount);
+            card.Init("hope_despair", hope_effect, h_amount, h_amount, despair_effect , d_amount, d_amount);
             _deck_card.Add(card);
         }
     }
