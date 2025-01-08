@@ -424,7 +424,7 @@ public class Card : MonoBehaviour
 
     public int GetCostByCondition(Player player)
     {
-        if (player.GetNormalCondition() && GetIfNormalCard())
+        if (GetIfNormalCard())
         {
             Debug.Log("NormalCost");
             return GetCost();

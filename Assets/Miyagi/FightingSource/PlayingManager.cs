@@ -19,7 +19,7 @@ public class PlayingManager : MonoBehaviour
     [SerializeField]Player _player2;
     [SerializeField]Deck _deck2;
     [SerializeField]Hands _hands2;
-    [SerializeField]PlayerUIManager _player2_UI;
+    [SerializeField]EnemyUIManager _player2_UI;
 
     float _progress_time = 0;
     bool _conclusion = false;
@@ -34,9 +34,11 @@ public class PlayingManager : MonoBehaviour
 
         _progress_time = 0;
         _conclusion = false;
-        _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1);
+        _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4));
 
-        _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2);
+        _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2 , new Vector3(0, 4));
+
+        _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
     }
 
     void Update()
@@ -60,25 +62,17 @@ public class PlayingManager : MonoBehaviour
         if (_player1.IsCurrentPlayer()) {
             PlayerMoveing(_player1 , _player2) ;
             DebugWin();
+            _player1_UI.SetTurnChangeButton(true);
         }
         if (_player2.IsCurrentPlayer()) {
             CPUMoving(_player2, _player1);
             DebugLose();
+            _player1_UI.SetTurnChangeButton(false);
         }
     }
 
     //プレイヤーが操作
     void PlayerMoveing(Player player , Player enemy) {
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (player.GetHands().PickDrawDeck(player.GetDeck()) == null || player.GetDeck().GetDeckCount() == 0)
-            {
-                return;
-            }
-            player.GetHands().ResetHandCards(4, player.GetHands().PickDrawDeck(player.GetDeck()), new Vector3(0, -4));
-            player.GetHands().SelectedPlayable(true);
-            Debug.Log("normal : " + player.GetNormalCondition() );
-        }
         if (player.GetHands().IsPlayedCard(player) != null)
         {
             if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard(player).GetCostByCondition(player)) {
@@ -99,7 +93,8 @@ public class PlayingManager : MonoBehaviour
 
             player.GetHands().discardSelectedCards();
             player.GetHands().arrangeCards(-4);
-            TurnChange(enemy);
+            player.GetHands().SelectedPlayable(true);
+            checkResult();
         }
     }
 
@@ -125,6 +120,7 @@ public class PlayingManager : MonoBehaviour
             enemy.AddHP(-player.GetHands().checkHighDamageCard().GetDamage());
             player.GetHands().TrashCard(player.GetHands().checkHighDamageCard());
             Debug.Log(previous_hp + " > " + enemy.GetHP());
+            checkResult();
             TurnChange(enemy);
             return;
         }
@@ -132,6 +128,7 @@ public class PlayingManager : MonoBehaviour
         if (player.GetHands().checkHighDamageCard() == null)
         {
             Debug.Log("Non-Card");
+            checkResult();
             TurnChange(enemy);
             return;//カードの枚数がコストを下回っていたら使えない
         }
@@ -148,7 +145,11 @@ public class PlayingManager : MonoBehaviour
         _turn_Text.text = turn.GetName() + " Turn";
         _progress_time = 0;
         _cpu_draw = false;
-        checkResult();
+
+        if(turn.GetDeck().GetDeckCount() >= 0) {
+            turn.GetHands().ResetHandCards(4, turn.GetDeck(), turn.GetCardPos());
+            turn.GetHands().SelectedPlayable(true);
+        }
     }
 
     //プレイヤー1ならプレイヤー2に、プレイヤー2ならプレイヤー1を返す

@@ -108,16 +108,19 @@ public class Hands : MonoBehaviour
 
             if (player.GetNormalCondition() && !card.GetIfNormalCard()) {
                 card.ReturnCard();
+                Debug.Log("通常状態かつ特殊カード");
                 continue;
             }
 
             if (player.GetHopeCondition() && card.GetCardType() == CardType.OnlyDespair) {
                 card.ReturnCard();
+                Debug.Log("希望状態かつ絶望カード");
                 continue;
             }
             
             if (player.GetDespairCondition() && card.GetCardType() == CardType.OnlyHope) {
                 card.ReturnCard();
+                Debug.Log("絶望状態かつ希望カード");
                 continue;
             }
 
