@@ -396,7 +396,7 @@ public class Card : MonoBehaviour
                 break;
             }
 
-            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location.y);
+            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location);
         }
     }
 

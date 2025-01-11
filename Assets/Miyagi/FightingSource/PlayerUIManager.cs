@@ -8,8 +8,10 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] Text UI_Player_HP;
     [SerializeField] Text UI_Player_Condition;
     [SerializeField] Button UI_Player_Turn_Change_Button;
+    [SerializeField] GameObject UI_Turn_Change_Panel;
 
-    bool _is_display_turn_change_button = false;
+    bool _view_turn_change_panel = false;
+
     void Start()
     {
 
@@ -68,8 +70,16 @@ public class PlayerUIManager : MonoBehaviour
         AssignButtonAction(UI_Player_Turn_Change_Button, action);
     }
 
+    public void DisplayTurnChangePanel(Player turn_player , bool active) {
+        Text turn_text = UI_Turn_Change_Panel.GetComponentInChildren<Text>();
+        if (turn_text == null) {
+            return;
+        }
+        turn_text.text = turn_player.GetName() + "ÇÃÉ^Å[Éì";
 
-    public void SetTurnChangeButton(bool active) {
-        UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+        if (_view_turn_change_panel) {
+            
+        }
+        UI_Turn_Change_Panel.SetActive(active);
     }
 }

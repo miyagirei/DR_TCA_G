@@ -8,7 +8,6 @@ public class PlayingManager : MonoBehaviour
 {
     [SerializeField] DataController _data_controller;
     const int MAX_HP = 10;
-    [SerializeField] Text _turn_Text;
     [SerializeField] Text _result_Text;
 
     [SerializeField]Player _player1;
@@ -25,16 +24,22 @@ public class PlayingManager : MonoBehaviour
     bool _conclusion = false;
     [HideInInspector]float CPU_THINGKING_TIME = 0;
     [HideInInspector] float SCENE_CHANGE_TIME = 0;
+    [HideInInspector] float TURN_CHANGE_TIME = 0;
 
     bool _cpu_draw = false;
+
+    bool _turn_change_animation = false;
+    Player _turn_player;
     async void Start()
     {
         CPU_THINGKING_TIME = await _data_controller.GetParamValueFloat("CPU_THINGKING_TIME");
-        SCENE_CHANGE_TIME = await _data_controller.GetParamValueInt("SCENE_CHANGE_TIME");
+        SCENE_CHANGE_TIME = await _data_controller.GetParamValueFloat("SCENE_CHANGE_TIME");
+        TURN_CHANGE_TIME = await _data_controller.GetParamValueFloat("TURN_CHANGE_TIME");
 
         _progress_time = 0;
         _conclusion = false;
         _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4));
+        _turn_player = _player1;
 
         _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2 , new Vector3(0, 4));
 
@@ -57,17 +62,27 @@ public class PlayingManager : MonoBehaviour
             }
             return;
         }
+
+
         _player1_UI.Display(_player1);
         _player2_UI.Display(_player2);
+
+
+        if (_turn_change_animation && _progress_time <= TURN_CHANGE_TIME) {
+            _player1_UI.DisplayTurnChangePanel(_turn_player , true );
+            return;
+        } else if (_turn_change_animation && _progress_time >= TURN_CHANGE_TIME) {
+            _player1_UI.DisplayTurnChangePanel(_turn_player, false);
+            _turn_change_animation = false;
+        }
+
         if (_player1.IsCurrentPlayer()) {
             PlayerMoveing(_player1 , _player2) ;
             DebugWin();
-            _player1_UI.SetTurnChangeButton(true);
         }
         if (_player2.IsCurrentPlayer()) {
             CPUMoving(_player2, _player1);
             DebugLose();
-            _player1_UI.SetTurnChangeButton(false);
         }
     }
 
@@ -92,7 +107,7 @@ public class PlayingManager : MonoBehaviour
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
             player.GetHands().discardSelectedCards();
-            player.GetHands().arrangeCards(-4);
+            player.GetHands().arrangeCards(new Vector3(0,-4));
             player.GetHands().SelectedPlayable(true);
             checkResult();
         }
@@ -142,7 +157,7 @@ public class PlayingManager : MonoBehaviour
         Hostile(turn).SetCurrentPlayer(false);
         Hostile(turn).GetHands().SelectedPlayable(false);
 
-        _turn_Text.text = turn.GetName() + " Turn";
+        _turn_player = turn;
         _progress_time = 0;
         _cpu_draw = false;
 
@@ -150,6 +165,7 @@ public class PlayingManager : MonoBehaviour
             turn.GetHands().ResetHandCards(4, turn.GetDeck(), turn.GetCardPos());
             turn.GetHands().SelectedPlayable(true);
         }
+        _turn_change_animation = true;
     }
 
     //プレイヤー1ならプレイヤー2に、プレイヤー2ならプレイヤー1を返す

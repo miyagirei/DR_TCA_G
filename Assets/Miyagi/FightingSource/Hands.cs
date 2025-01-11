@@ -79,9 +79,9 @@ public class Hands : MonoBehaviour
     }
 
     //カードを生成し、整列させる//大体はデッキから手札に移したときに使われる
-    public void CreateCard(Card origin , float y) {
+    public void CreateCard(Card origin , Vector3 pos) {
         int new_card_count = _hands_card.Count - 1;
-        GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, y) , Quaternion.identity);
+        GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, pos.y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
         if (origin.GetCardType() == CardType.HopeAndDespair) {
@@ -93,10 +93,10 @@ public class Hands : MonoBehaviour
         }
 
         new_card.CreatePopup();
-        new_card.SetPos(new Vector3(new_card_count * 2, y));
+        new_card.SetPos(new Vector3(new_card_count * 2, pos.y));
 
         _hands_card.Add(new_card);
-        arrangeCards(y);
+        arrangeCards(new Vector3(0, pos.y));
     }
     
     //現在使われたカードがあるかどうかを判定する
@@ -209,10 +209,10 @@ public class Hands : MonoBehaviour
     }
 
     //手札のカードを整列させる
-    public void arrangeCards(float y) {
+    public void arrangeCards(Vector3 pos) {
         float correction = -(_hands_card.Count - 1) / 2;
         for (int i = 0; i < _hands_card.Count; i++) {
-            _hands_card[i].SetPos( new Vector3(i * 2 + correction, y));
+            _hands_card[i].SetPos( new Vector3(i * 2 + correction + pos.x, pos.y));
             _hands_card[i].ReturnPos();
         }
     }
@@ -241,7 +241,7 @@ public class Hands : MonoBehaviour
                     return;
                 }
 
-                CreateCard(deck.DrawDeck(), pos.y);
+                CreateCard(deck.DrawDeck(), pos);
             }
         }
     }
