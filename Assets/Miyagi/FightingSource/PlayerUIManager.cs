@@ -9,8 +9,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] Text UI_Player_Condition;
     [SerializeField] Button UI_Player_Turn_Change_Button;
     [SerializeField] GameObject UI_Turn_Change_Panel;
-
-    bool _view_turn_change_panel = false;
+    [SerializeField] GameObject UI_Card_Effect_Distance_Panel;
 
     void Start()
     {
@@ -77,9 +76,21 @@ public class PlayerUIManager : MonoBehaviour
         }
         turn_text.text = turn_player.GetName() + "ÇÃÉ^Å[Éì";
 
-        if (_view_turn_change_panel) {
-            
-        }
         UI_Turn_Change_Panel.SetActive(active);
+    }
+
+    public void DisplayCardEffectDistance(float distance , bool active) {
+        if (!active) {
+            UI_Card_Effect_Distance_Panel.SetActive(active);
+            return;
+        }
+
+        float x = UI_Card_Effect_Distance_Panel.gameObject.transform.localScale.x;
+        float z = UI_Card_Effect_Distance_Panel.gameObject.transform.localScale.z;
+
+        Vector3 ui_position = Camera.main.WorldToScreenPoint(new Vector3(0 , -4 + distance));
+        UI_Card_Effect_Distance_Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(ui_position.x , Screen.height - ui_position.y);// new Vector2(0 , Screen.height - (distance + 4));
+        
+        UI_Card_Effect_Distance_Panel.SetActive(active);
     }
 }

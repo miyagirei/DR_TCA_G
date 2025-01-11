@@ -25,6 +25,7 @@ public class PlayingManager : MonoBehaviour
     [HideInInspector]float CPU_THINGKING_TIME = 0;
     [HideInInspector] float SCENE_CHANGE_TIME = 0;
     [HideInInspector] float TURN_CHANGE_TIME = 0;
+    [HideInInspector] float CARD_EFFECT_DISTANCE = 0;
 
     bool _cpu_draw = false;
 
@@ -35,6 +36,7 @@ public class PlayingManager : MonoBehaviour
         CPU_THINGKING_TIME = await _data_controller.GetParamValueFloat("CPU_THINGKING_TIME");
         SCENE_CHANGE_TIME = await _data_controller.GetParamValueFloat("SCENE_CHANGE_TIME");
         TURN_CHANGE_TIME = await _data_controller.GetParamValueFloat("TURN_CHANGE_TIME");
+        CARD_EFFECT_DISTANCE = await _data_controller.GetParamValueFloat("CARD_EFFECT_DISTANCE");
 
         _progress_time = 0;
         _conclusion = false;
@@ -79,6 +81,14 @@ public class PlayingManager : MonoBehaviour
         if (_player1.IsCurrentPlayer()) {
             PlayerMoveing(_player1 , _player2) ;
             DebugWin();
+
+            if (_player1.GetHands().IsDraggingCard())
+            {
+                _player1_UI.DisplayCardEffectDistance(CARD_EFFECT_DISTANCE, true);
+            }
+            else {
+                _player1_UI.DisplayCardEffectDistance(CARD_EFFECT_DISTANCE, false);
+            }
         }
         if (_player2.IsCurrentPlayer()) {
             CPUMoving(_player2, _player1);

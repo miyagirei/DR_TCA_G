@@ -245,4 +245,16 @@ public class Hands : MonoBehaviour
             }
         }
     }
+
+    public bool IsDraggingCard()
+    {
+        foreach (Card card in _hands_card)
+        {
+            if (card.GetDragging())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

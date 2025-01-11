@@ -11,7 +11,8 @@ public class Card : MonoBehaviour
     const string EFFECT_HOPE_CHANGE = "Hope";
     const string EFFECT_DESPAIR_CHANGE = "DESPAIR";
 
-    const float EFFECT_DISTANCE = 3;
+    DataController _data_controller;
+    float EFFECT_DISTANCE = 100;
     [SerializeField] GameObject _popup_prefab;
     GameObject _popup_instance;
     [SerializeField] bool _is_hovering = false;
@@ -113,9 +114,10 @@ public class Card : MonoBehaviour
         _card_type = CardType.HopeAndDespair;
     }
 
-    private void Start()
+    async void Start()
     {
-
+        _data_controller = GameObject.Find("DataController").GetComponent<DataController>();
+        EFFECT_DISTANCE = await _data_controller.GetParamValueFloat("CARD_EFFECT_DISTANCE");
     }
 
     public string GetName() => _card_name;
@@ -147,6 +149,7 @@ public class Card : MonoBehaviour
     public void SetDrawAmount(int amount) => _draw_amount = amount;
     public bool GetIfNormalCard() => _is_normal;
     public CardType GetCardType() => _card_type;
+    public bool GetDragging() => _is_dragging;
 
     private void Update()
     {
@@ -160,6 +163,7 @@ public class Card : MonoBehaviour
     /// </summary>
     void DragAndDrop()
     {
+
         if (!_draggable || _can_selected)
         {
             return;
@@ -216,7 +220,7 @@ public class Card : MonoBehaviour
     //ドラッグ終了
     void EndDragging()
     {
-        if (Vector3.Distance(this.transform.position, _return_pos) >= EFFECT_DISTANCE)
+        if (this.transform.position.y > _return_pos.y + EFFECT_DISTANCE)
         {
             SetPlayed(true);
             _is_dragging = false;
@@ -426,19 +430,16 @@ public class Card : MonoBehaviour
     {
         if (GetIfNormalCard())
         {
-            Debug.Log("NormalCost");
             return GetCost();
         }
 
         if (player.GetHopeCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyHope))
         {
-            Debug.Log("HopeCost");
             return GetCostOfHope();
         }
 
         if (player.GetDespairCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyDespair))
         {
-            Debug.Log("DespairCost");
             return GetCostOfDespair();
         }
 
