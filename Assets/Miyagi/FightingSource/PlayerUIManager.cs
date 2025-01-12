@@ -11,10 +11,6 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject UI_Turn_Change_Panel;
     [SerializeField] GameObject UI_Card_Effect_Distance_Panel;
 
-    void Start()
-    {
-
-    }
 
     public void Display(Player player)
     {
@@ -69,13 +65,21 @@ public class PlayerUIManager : MonoBehaviour
         AssignButtonAction(UI_Player_Turn_Change_Button, action);
     }
 
+    public void DisplayTurnChangeButton(bool active) {
+        if (!active)
+        {
+            UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+            return;
+        }
+        UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+    }
+
     public void DisplayTurnChangePanel(Player turn_player , bool active) {
         Text turn_text = UI_Turn_Change_Panel.GetComponentInChildren<Text>();
         if (turn_text == null) {
             return;
         }
         turn_text.text = turn_player.GetName() + "ÇÃÉ^Å[Éì";
-
         UI_Turn_Change_Panel.SetActive(active);
     }
 

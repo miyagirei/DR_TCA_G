@@ -11,11 +11,12 @@ public class Player {
     bool _is_hope;
     bool _is_despair;
     Vector3 _card_pos;
+    Vector3 _card_scale;
 
     Deck _deck;
     Hands _hands;
 
-    public Player(string name , int hp , bool is_current_player, Deck deck , Hands hands , Vector3 card_pos) {
+    public Player(string name , int hp , bool is_current_player, Deck deck , Hands hands , Vector3 card_pos , Vector3 card_scale) {
         _name = name;
         _max_hp = hp;
         _hp = hp;
@@ -26,6 +27,7 @@ public class Player {
         _is_hope = false;
         _is_despair = false;
         _card_pos = card_pos;
+        _card_scale = card_scale;
     }
 
     public string GetName() => _name;
@@ -42,6 +44,7 @@ public class Player {
     public bool GetHopeCondition() => _is_hope;//希望状態かどうかを取得
     public bool GetDespairCondition() => _is_despair;//絶望状態かどうかを取得
     public Vector3 GetCardPos() => _card_pos;//カードの設置位置を取得
+    public Vector3 GetCardScale() => _card_scale;//カードの設置サイズを取得
 
     //HPを操作する//最大以上の場合は最大に変更する
     public void AddHP(int value) {

@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Hands : MonoBehaviour
 {
+    [HideInInspector] DataController _data_controller;
     [SerializeField]List<Card> _hands_card = new List<Card>();
     [SerializeField]GameObject _card_prefab;
 
-
-    void Start()
+    [HideInInspector] float TRASH_DECIDED_HEIGHT = 0;
+    [HideInInspector] float TRASH_UNDECIDED_HEIGHT = 0;
+    async void Start()
     {
-        
+        _data_controller = GameObject.Find("DataController").GetComponent<DataController>();
+        TRASH_DECIDED_HEIGHT = await _data_controller.GetParamValueFloat("TRASH_DECIDED_HEIGHT");
+        TRASH_UNDECIDED_HEIGHT = await _data_controller.GetParamValueFloat("TRASH_UNDECIDED_HEIGHT");
     }
 
     void Update()
@@ -79,9 +83,9 @@ public class Hands : MonoBehaviour
     }
 
     //カードを生成し、整列させる//大体はデッキから手札に移したときに使われる
-    public void CreateCard(Card origin , Vector3 pos) {
+    public void CreateCard(Card origin , Vector3 pos , Vector3 scale) {
         int new_card_count = _hands_card.Count - 1;
-        GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * 2, pos.y) , Quaternion.identity);
+        GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * scale.x, pos.y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
         if (origin.GetCardType() == CardType.HopeAndDespair) {
@@ -93,10 +97,10 @@ public class Hands : MonoBehaviour
         }
 
         new_card.CreatePopup();
-        new_card.SetPos(new Vector3(new_card_count * 2, pos.y));
+        new_card.SetPos(new Vector3(new_card_count * scale.x, pos.y));
 
         _hands_card.Add(new_card);
-        arrangeCards(new Vector3(0, pos.y));
+        arrangeCards(new Vector3(pos.x, pos.y) , scale);
     }
     
     //現在使われたカードがあるかどうかを判定する
@@ -176,7 +180,14 @@ public class Hands : MonoBehaviour
                 continue;
             }
 
-            _hands_card[i].temporarilySetPosition(new Vector3(_hands_card[i].GetPos().x , _hands_card[i].GetPos().y + 1));
+            if (_hands_card[i].GetDiscard())
+            {
+                _hands_card[i].temporarilySetPosition(new Vector3(_hands_card[i].GetPos().x, _hands_card[i].GetPos().y + TRASH_DECIDED_HEIGHT));
+            }
+            else {
+                _hands_card[i].temporarilySetPosition(new Vector3(_hands_card[i].GetPos().x, _hands_card[i].GetPos().y + TRASH_UNDECIDED_HEIGHT));
+            }
+
             _hands_card[i].SetCanSelected(true);
         }
     }
@@ -209,16 +220,17 @@ public class Hands : MonoBehaviour
     }
 
     //手札のカードを整列させる
-    public void arrangeCards(Vector3 pos) {
-        float correction = -(_hands_card.Count - 1) / 2;
+    public void arrangeCards(Vector3 pos , Vector3 scale) {
+        float correction = (-(_hands_card.Count - 1) * scale.x) / 2;
         for (int i = 0; i < _hands_card.Count; i++) {
-            _hands_card[i].SetPos( new Vector3(i * 2 + correction + pos.x, pos.y));
+            _hands_card[i].SetPos( new Vector3(i * scale.x + correction + pos.x, pos.y));
+            _hands_card[i].SetScale(scale);
             _hands_card[i].ReturnPos();
         }
     }
 
     //初期の枚数を越していた場合、ランダムに捨てるかつ、初期の枚数を下回っていた場合、初期枚数まで新しくカードを引く
-    public void ResetHandCards(int cards , Deck deck , Vector3 pos) {
+    public void ResetHandCards(int cards , Deck deck , Vector3 pos , Vector3 scale) {
         if (cards == _hands_card.Count) {
             return;
         }
@@ -241,7 +253,7 @@ public class Hands : MonoBehaviour
                     return;
                 }
 
-                CreateCard(deck.DrawDeck(), pos);
+                CreateCard(deck.DrawDeck(), pos , scale);
             }
         }
     }

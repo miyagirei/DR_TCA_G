@@ -40,12 +40,13 @@ public class PlayingManager : MonoBehaviour
 
         _progress_time = 0;
         _conclusion = false;
-        _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4));
+        _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4) , new Vector3(2.8f , 4 , 1));
         _turn_player = _player1;
 
-        _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2 , new Vector3(0, 4));
+        _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2 , new Vector3(3, 0) , new Vector3(0.7f, 1, 1));
 
         _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
+        RandomolyChooseTurnPlayer();
     }
 
     void Update()
@@ -69,18 +70,20 @@ public class PlayingManager : MonoBehaviour
         _player1_UI.Display(_player1);
         _player2_UI.Display(_player2);
 
-
-        if (_turn_change_animation && _progress_time <= TURN_CHANGE_TIME) {
+        if (_turn_change_animation && _progress_time < TURN_CHANGE_TIME) {
             _player1_UI.DisplayTurnChangePanel(_turn_player , true );
+            _player1_UI.DisplayTurnChangeButton(false);
             return;
-        } else if (_turn_change_animation && _progress_time >= TURN_CHANGE_TIME) {
+        }else if (_turn_change_animation && _progress_time > TURN_CHANGE_TIME) {
             _player1_UI.DisplayTurnChangePanel(_turn_player, false);
+           
             _turn_change_animation = false;
         }
 
         if (_player1.IsCurrentPlayer()) {
             PlayerMoveing(_player1 , _player2) ;
             DebugWin();
+            _player1_UI.DisplayTurnChangeButton(true);
 
             if (_player1.GetHands().IsDraggingCard())
             {
@@ -93,6 +96,7 @@ public class PlayingManager : MonoBehaviour
         if (_player2.IsCurrentPlayer()) {
             CPUMoving(_player2, _player1);
             DebugLose();
+            _player1_UI.DisplayTurnChangeButton(false);
         }
     }
 
@@ -112,12 +116,12 @@ public class PlayingManager : MonoBehaviour
 
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().IsPlayedCard(player);
-            played_card.Effect(player , enemy , new Vector3(0,-4));
+            played_card.Effect(player , enemy , player.GetCardPos() , player.GetCardScale());
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
             player.GetHands().discardSelectedCards();
-            player.GetHands().arrangeCards(new Vector3(0,-4));
+            player.GetHands().arrangeCards(new Vector3(0,-4), player.GetCardScale());
             player.GetHands().SelectedPlayable(true);
             checkResult();
         }
@@ -131,7 +135,7 @@ public class PlayingManager : MonoBehaviour
         }
         if (!_cpu_draw) {
 
-            player.GetHands().ResetHandCards(4, player.GetDeck() , new Vector3(0, 4));
+            player.GetHands().ResetHandCards(4, player.GetDeck() , player.GetCardPos() , player.GetCardScale());
             _cpu_draw = true;
             _progress_time = 0;
         }
@@ -172,7 +176,7 @@ public class PlayingManager : MonoBehaviour
         _cpu_draw = false;
 
         if(turn.GetDeck().GetDeckCount() >= 0) {
-            turn.GetHands().ResetHandCards(4, turn.GetDeck(), turn.GetCardPos());
+            turn.GetHands().ResetHandCards(4, turn.GetDeck(), turn.GetCardPos() , turn.GetCardScale());
             turn.GetHands().SelectedPlayable(true);
         }
         _turn_change_animation = true;
@@ -237,6 +241,19 @@ public class PlayingManager : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift) && Input.GetKeyDown(KeyCode.Space)) {
             _player1.SetHP(0);
             checkResult();
+        }
+    }
+
+    //ランダムでターンプレイヤーを決める
+    void RandomolyChooseTurnPlayer() {
+        int random_player = Random.Range(0, 2);
+
+        if (random_player == 0)
+        {
+            TurnChange(_player1);
+        }
+        else {
+            TurnChange(_player2);
         }
     }
 }

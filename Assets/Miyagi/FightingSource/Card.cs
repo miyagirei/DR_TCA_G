@@ -150,6 +150,7 @@ public class Card : MonoBehaviour
     public bool GetIfNormalCard() => _is_normal;
     public CardType GetCardType() => _card_type;
     public bool GetDragging() => _is_dragging;
+    public void SetScale(Vector3 scale) =>this.transform.localScale = scale;
 
     private void Update()
     {
@@ -333,21 +334,21 @@ public class Card : MonoBehaviour
     }
 
     //カードを出したときの効果
-    public void Effect(Player player, Player enemy, Vector3 location)
+    public void Effect(Player player, Player enemy, Vector3 location , Vector3 scale)
     {
         if (GetIfNormalCard() && player.GetNormalCondition())
         {
-            EffectList(_effect, player, enemy, location);
+            EffectList(_effect, player, enemy, location, scale);
         }
         else if (!GetIfNormalCard() && player.GetHopeCondition() && !player.GetDespairCondition())
         {
             Debug.Log("Hope Effect");
-            EffectList(_effect_hope, player, enemy, location);
+            EffectList(_effect_hope, player, enemy, location, scale);
         }
         else if (!GetIfNormalCard() && !player.GetHopeCondition() && player.GetDespairCondition())
         {
             Debug.Log("Despair Effect");
-            EffectList(_effect_despair, player, enemy, location);
+            EffectList(_effect_despair, player, enemy, location, scale);
         }
     }
 
@@ -391,7 +392,7 @@ public class Card : MonoBehaviour
         return null;
     }
 
-    void ActivateDraw(Player player, Vector3 location)
+    void ActivateDraw(Player player, Vector3 location , Vector3 scale)
     {
         for (int i = 0; i < GetDrawAmount(); i++)
         {
@@ -400,11 +401,11 @@ public class Card : MonoBehaviour
                 break;
             }
 
-            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location);
+            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location , scale);
         }
     }
 
-    void EffectList(string effect_text, Player player, Player enemy, Vector3 location)
+    void EffectList(string effect_text, Player player, Player enemy, Vector3 location , Vector3 scale)
     {
         switch (effect_text)
         {
@@ -415,7 +416,7 @@ public class Card : MonoBehaviour
                 player.AddHP(GetHealAmount());
                 break;
             case EFFECT_DRAW_TEXT:
-                ActivateDraw(player, location);
+                ActivateDraw(player, location, scale);
                 break;
             case EFFECT_HOPE_CHANGE:
                 player.SetHope();
