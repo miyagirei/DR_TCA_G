@@ -10,7 +10,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] Button UI_Player_Turn_Change_Button;
     [SerializeField] GameObject UI_Turn_Change_Panel;
     [SerializeField] GameObject UI_Card_Effect_Distance_Panel;
-
+    [SerializeField] Text UI_Timer;
 
     public void Display(Player player)
     {
@@ -96,5 +96,10 @@ public class PlayerUIManager : MonoBehaviour
         UI_Card_Effect_Distance_Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(ui_position.x , Screen.height - ui_position.y);// new Vector2(0 , Screen.height - (distance + 4));
         
         UI_Card_Effect_Distance_Panel.SetActive(active);
+    }
+
+    public void DisplayTimer(float timer , bool active) {
+        UI_Timer.text = "Žc‚è" + (int)timer + "•b";
+        UI_Timer.gameObject.SetActive(active);
     }
 }

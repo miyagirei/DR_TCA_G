@@ -26,19 +26,24 @@ public class PlayingManager : MonoBehaviour
     [HideInInspector] float SCENE_CHANGE_TIME = 0;
     [HideInInspector] float TURN_CHANGE_TIME = 0;
     [HideInInspector] float CARD_EFFECT_DISTANCE = 0;
+    [HideInInspector] float TIME_UNTIL_TIME_RUNS_OUT = 0;
 
     bool _cpu_draw = false;
+    float _cpu_incapacity_time = 0;
 
     bool _turn_change_animation = false;
     Player _turn_player;
+
+    void ResetProgressTime() => _progress_time = 0;
     async void Start()
     {
         CPU_THINGKING_TIME = await _data_controller.GetParamValueFloat("CPU_THINGKING_TIME");
         SCENE_CHANGE_TIME = await _data_controller.GetParamValueFloat("SCENE_CHANGE_TIME");
         TURN_CHANGE_TIME = await _data_controller.GetParamValueFloat("TURN_CHANGE_TIME");
         CARD_EFFECT_DISTANCE = await _data_controller.GetParamValueFloat("CARD_EFFECT_DISTANCE");
+        TIME_UNTIL_TIME_RUNS_OUT = await _data_controller.GetParamValueFloat("TIME_UNTIL_TIME_RUNS_OUT");
 
-        _progress_time = 0;
+        ResetProgressTime();
         _conclusion = false;
         _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4) , new Vector3(2.8f , 4 , 1));
         _turn_player = _player1;
@@ -49,6 +54,7 @@ public class PlayingManager : MonoBehaviour
         RandomolyChooseTurnPlayer();
     }
 
+    public float GetTimer() => TIME_UNTIL_TIME_RUNS_OUT - _progress_time;
     void Update()
     {
         if (!_data_controller.isWaiting()) {
@@ -73,13 +79,16 @@ public class PlayingManager : MonoBehaviour
         if (_turn_change_animation && _progress_time < TURN_CHANGE_TIME) {
             _player1_UI.DisplayTurnChangePanel(_turn_player , true );
             _player1_UI.DisplayTurnChangeButton(false);
+            _player1_UI.DisplayTimer(GetTimer(), false);
             return;
         }else if (_turn_change_animation && _progress_time > TURN_CHANGE_TIME) {
             _player1_UI.DisplayTurnChangePanel(_turn_player, false);
+            ResetProgressTime();
            
             _turn_change_animation = false;
         }
 
+        _player1_UI.DisplayTimer(GetTimer(), true);
         if (_player1.IsCurrentPlayer()) {
             PlayerMoveing(_player1 , _player2) ;
             DebugWin();
@@ -98,6 +107,8 @@ public class PlayingManager : MonoBehaviour
             DebugLose();
             _player1_UI.DisplayTurnChangeButton(false);
         }
+
+        TimeRunsAndTheTurnEnd();
     }
 
     //プレイヤーが操作
@@ -129,7 +140,8 @@ public class PlayingManager : MonoBehaviour
 
     //CPUが操作
     void CPUMoving(Player player , Player enemy) {
-        if (_progress_time < CPU_THINGKING_TIME)
+        _cpu_incapacity_time+=Time.deltaTime;
+        if (_cpu_incapacity_time < CPU_THINGKING_TIME)
         {
             return;
         }
@@ -137,10 +149,10 @@ public class PlayingManager : MonoBehaviour
 
             player.GetHands().ResetHandCards(4, player.GetDeck() , player.GetCardPos() , player.GetCardScale());
             _cpu_draw = true;
-            _progress_time = 0;
+            ResetCPUIncapacityTime();
         }
 
-        if (_progress_time < CPU_THINGKING_TIME) {
+        if (_cpu_incapacity_time < CPU_THINGKING_TIME) {
             return;
         }
         if (player.GetHands().checkHighDamageCard() != null) {
@@ -151,6 +163,7 @@ public class PlayingManager : MonoBehaviour
             Debug.Log(previous_hp + " > " + enemy.GetHP());
             checkResult();
             TurnChange(enemy);
+            ResetCPUIncapacityTime();
             return;
         }
 
@@ -159,9 +172,13 @@ public class PlayingManager : MonoBehaviour
             Debug.Log("Non-Card");
             checkResult();
             TurnChange(enemy);
+            ResetCPUIncapacityTime();
             return;//カードの枚数がコストを下回っていたら使えない
         }
     }
+
+    //CPUの稼働時間をリセットする
+    void ResetCPUIncapacityTime() => _cpu_incapacity_time = 0;
 
     //ターンを終了して相手に行動を移す
     void TurnChange(Player turn) {
@@ -172,7 +189,7 @@ public class PlayingManager : MonoBehaviour
         Hostile(turn).GetHands().SelectedPlayable(false);
 
         _turn_player = turn;
-        _progress_time = 0;
+        ResetProgressTime();
         _cpu_draw = false;
 
         if(turn.GetDeck().GetDeckCount() >= 0) {
@@ -254,6 +271,18 @@ public class PlayingManager : MonoBehaviour
         }
         else {
             TurnChange(_player2);
+        }
+    }
+
+    //時間切れの際に相手にターンを回す
+    void TimeRunsAndTheTurnEnd() {
+        if (TIME_UNTIL_TIME_RUNS_OUT <= TURN_CHANGE_TIME || TIME_UNTIL_TIME_RUNS_OUT <= SCENE_CHANGE_TIME) {
+            Debug.LogWarning("時間切れまでの時間が短すぎます");
+            return;
+        }
+
+        if (_progress_time >= TIME_UNTIL_TIME_RUNS_OUT) {
+            TurnChange(Hostile(_turn_player));
         }
     }
 }
