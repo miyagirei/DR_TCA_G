@@ -164,6 +164,32 @@ public class Hands : MonoBehaviour
         return high_card;
     }
 
+    public Card CheckMostExpensiveCardYouCanPay(Player player) {
+        if (_hands_card.Count == 0)
+        {
+            return null;
+        }
+
+        Card most_card = new Card();
+
+        bool change = false;
+        for (int i = 0; i < _hands_card.Count; i++)
+        {
+            if (most_card.GetCostByCondition(player) < _hands_card[i].GetCostByCondition(player) && _hands_card.Count > _hands_card[i].GetCost())
+            {
+                most_card = _hands_card[i];
+                change = true;
+            }
+        }
+
+        if (!change)
+        {
+            return null;
+        }
+
+        return most_card;
+    }
+
     //すべての手札が、ドラッグができるかどうかを操作する
     public void SelectedPlayable(bool playable) {
         for (int i = 0; i < _hands_card.Count; i++)

@@ -128,11 +128,12 @@ public class PlayingManager : MonoBehaviour
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().IsPlayedCard(player);
             played_card.Effect(player , enemy , player.GetCardPos() , player.GetCardScale());
+            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetEffectAmount(played_card.GetEffectByCondition(player)) + ")", Color.green);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
             player.GetHands().discardSelectedCards();
-            player.GetHands().arrangeCards(new Vector3(0,-4), player.GetCardScale());
+            player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
             player.GetHands().SelectedPlayable(true);
             checkResult();
         }
@@ -155,13 +156,20 @@ public class PlayingManager : MonoBehaviour
         if (_cpu_incapacity_time < CPU_THINGKING_TIME) {
             return;
         }
-        if (player.GetHands().checkHighDamageCard() != null) {
+        if (player.GetHands().CheckMostExpensiveCardYouCanPay(player) != null) {
 
             int previous_hp = enemy.GetHP();
-            enemy.AddHP(-player.GetHands().checkHighDamageCard().GetDamage());
-            player.GetHands().TrashCard(player.GetHands().checkHighDamageCard());
+            Card played_card = player.GetHands().CheckMostExpensiveCardYouCanPay(player);
+            played_card.Effect(player, enemy, player.GetCardPos(), player.GetCardScale());
+            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetEffectAmount(played_card.GetEffectByCondition(player)) + ")", Color.red);
+            player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
+
             checkResult();
+
+            player.GetHands().discardSelectedCards();
+            player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
+            player.GetHands().SelectedPlayable(true);
             TurnChange(enemy);
             ResetCPUIncapacityTime();
             return;

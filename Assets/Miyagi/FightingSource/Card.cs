@@ -476,4 +476,33 @@ public class Card : MonoBehaviour
 
         return null;
     }
+
+    public string GetEffectByCondition(Player player) {
+        if (GetCardType() != CardType.Normal) {
+            if (GetCardType() == CardType.HopeAndDespair) {
+                if (player.GetHopeCondition()) {
+                    return GetHopeEffect();
+                }
+                if (player.GetDespairCondition()) {
+                    return GetDespairEffect();
+                }
+                return null;
+            }
+
+            if (GetCardType() == CardType.OnlyHope) {
+                return GetHopeEffect();
+            }
+            
+            if (GetCardType() == CardType.OnlyDespair) {
+                return GetDespairEffect();
+            }
+        }
+
+        
+        if (GetIfNormalCard()) {
+            return GetEffect();
+        }
+
+        return null;
+    }
 }
