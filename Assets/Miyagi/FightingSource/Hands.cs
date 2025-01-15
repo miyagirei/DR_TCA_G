@@ -83,7 +83,7 @@ public class Hands : MonoBehaviour
     }
 
     //カードを生成し、整列させる//大体はデッキから手札に移したときに使われる
-    public void CreateCard(Card origin , Vector3 pos , Vector3 scale) {
+    public void CreateCard(Card origin , Vector3 pos , Vector3 scale , Deck deck) {
         int new_card_count = _hands_card.Count - 1;
         GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * scale.x, pos.y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
@@ -101,6 +101,8 @@ public class Hands : MonoBehaviour
 
         _hands_card.Add(new_card);
         arrangeCards(new Vector3(pos.x, pos.y) , scale);
+        new_card.temporarilySetPosition(deck.GetPos());
+        new_card.SetMoving(true);
     }
     
     //現在使われたカードがあるかどうかを判定する
@@ -195,7 +197,9 @@ public class Hands : MonoBehaviour
         for (int i = 0; i < _hands_card.Count; i++)
         {
             _hands_card[i].SetDraggable(playable);
-            
+            if (playable) {
+                _hands_card[i].SetMoving(true);
+            }
         }
     }
 
@@ -251,7 +255,7 @@ public class Hands : MonoBehaviour
         for (int i = 0; i < _hands_card.Count; i++) {
             _hands_card[i].SetPos( new Vector3(i * scale.x + correction + pos.x, pos.y));
             _hands_card[i].SetScale(scale);
-            _hands_card[i].ReturnPos();
+            //_hands_card[i].ReturnPos();
         }
     }
 
@@ -279,7 +283,7 @@ public class Hands : MonoBehaviour
                     return;
                 }
 
-                CreateCard(deck.DrawDeck(), pos , scale);
+                CreateCard(deck.DrawDeck(), pos , scale , deck);
             }
         }
     }

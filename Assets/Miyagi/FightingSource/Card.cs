@@ -12,7 +12,8 @@ public class Card : MonoBehaviour
     const string EFFECT_DESPAIR_CHANGE = "DESPAIR";
 
     DataController _data_controller;
-    float EFFECT_DISTANCE = 100;
+    [HideInInspector]float EFFECT_DISTANCE = 100;
+    [SerializeField]float MOVING_SPEED = 2f;
     [SerializeField] GameObject _popup_prefab;
     GameObject _popup_instance;
     [SerializeField] bool _is_hovering = false;
@@ -35,7 +36,8 @@ public class Card : MonoBehaviour
     [SerializeField] bool _can_selected = false;//選択できるかどうかの判定
     [SerializeField] bool _is_discarded = false;//捨てるかどうかの判定
     [SerializeField] bool _is_normal = true;//通常カードであるかの判定
-    [SerializeField] CardType _card_type;
+    [SerializeField] CardType _card_type;//カードタイプ
+    [SerializeField] bool _is_moving = false;
 
     public void Init(string name, int amount, int cost, string effect, CardType type)
     {
@@ -118,6 +120,7 @@ public class Card : MonoBehaviour
     {
         _data_controller = GameObject.Find("DataController").GetComponent<DataController>();
         EFFECT_DISTANCE = await _data_controller.GetParamValueFloat("CARD_EFFECT_DISTANCE");
+        MOVING_SPEED = await _data_controller.GetParamValueFloat("CARD_MOVING_SPEED");
     }
 
     public string GetName() => _card_name;
@@ -151,12 +154,14 @@ public class Card : MonoBehaviour
     public CardType GetCardType() => _card_type;
     public bool GetDragging() => _is_dragging;
     public void SetScale(Vector3 scale) =>this.transform.localScale = scale;
+    public void SetMoving(bool moving) => _is_moving = moving;
 
     private void Update()
     {
         DragAndDrop();
         TrashSelect();
         DisplayPopup();
+        Moving();
     }
 
     /// <summary>
@@ -401,7 +406,7 @@ public class Card : MonoBehaviour
                 break;
             }
 
-            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location , scale);
+            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location , scale , player.GetDeck());
         }
     }
 
@@ -504,5 +509,16 @@ public class Card : MonoBehaviour
         }
 
         return null;
+    }
+
+    void Moving() {
+        if (!_is_moving) {
+            return;
+        }
+        if (Vector3.Distance(transform.position, GetPos()) < 0.01f) {
+            _is_moving = false;
+            return;
+        }
+        this.transform.position = Vector3.MoveTowards(transform.position, GetPos(), MOVING_SPEED * Time.deltaTime);
     }
 }

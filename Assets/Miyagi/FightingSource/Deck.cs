@@ -10,6 +10,7 @@ public class Deck : MonoBehaviour
         DebugAddNewCard();
 
     }
+    public Vector3 GetPos() => this.transform.position;
 
     public Card DrawDeck( ) {
         if (_deck_card.Count == 0) {
