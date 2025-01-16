@@ -11,7 +11,13 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject UI_Turn_Change_Panel;
     [SerializeField] GameObject UI_Card_Effect_Distance_Panel;
     [SerializeField] Text UI_Timer;
+    [SerializeField] Button UI_Playlog_Display_Switching_Button;
+    [SerializeField] GameObject UI_Playlog;
 
+    private void Start()
+    {
+        AssingPlaylogButton();
+    }
     public void Display(Player player)
     {
         DisplayPlayerHP(player);
@@ -101,5 +107,14 @@ public class PlayerUIManager : MonoBehaviour
     public void DisplayTimer(float timer , bool active) {
         UI_Timer.text = "Žc‚è" + (int)timer + "•b";
         UI_Timer.gameObject.SetActive(active);
+    }
+
+    //PlaylogButton‚É
+    void AssingPlaylogButton()
+    {
+        AssignButtonAction(UI_Playlog_Display_Switching_Button, () => PlaylogDisplaySwitching());
+    }
+    void PlaylogDisplaySwitching() {
+        UI_Playlog.SetActive(!UI_Playlog.activeSelf);
     }
 }
