@@ -1,0 +1,16 @@
+{
+    "cards": [
+      {
+        "cardName": "Card 1",
+        "type": "Type A",
+        "effect": "Effect of Card 1",
+        "amount": 1,
+        "cost": 3,
+        "costHope": 1,
+        "costDespair": 2,
+        "effectHope": "Effect Hope 1",
+        "effectDespair": "Effect Despair 1"
+      }
+    ]
+  }
+  
