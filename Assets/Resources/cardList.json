@@ -1,0 +1,114 @@
+{
+  "cards": [
+    {
+      "cardName": "Card 1",
+      "type": "Type A",
+      "effect": "Effect of Card 1",
+      "amount": 1,
+      "cost": 3,
+      "costHope": 1,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 1",
+      "effectDespair": "Effect Despair 1"
+    },
+    {
+      "cardName": "Card 2",
+      "type": "Type B",
+      "effect": "Effect of Card 2",
+      "amount": 2,
+      "cost": 4,
+      "costHope": 2,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 2",
+      "effectDespair": "Effect Despair 2"
+    },
+    {
+      "cardName": "Card 3",
+      "type": "Type C",
+      "effect": "Effect of Card 3",
+      "amount": 1,
+      "cost": 5,
+      "costHope": 3,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 3",
+      "effectDespair": "Effect Despair 3"
+    },
+    {
+      "cardName": "Card 4",
+      "type": "Type D",
+      "effect": "Effect of Card 4",
+      "amount": 1,
+      "cost": 6,
+      "costHope": 4,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 4",
+      "effectDespair": "Effect Despair 4"
+    },
+    {
+      "cardName": "Card 5",
+      "type": "Type E",
+      "effect": "Effect of Card 5",
+      "amount": 1,
+      "cost": 2,
+      "costHope": 1,
+      "costDespair": 1,
+      "effectHope": "Effect Hope 5",
+      "effectDespair": "Effect Despair 5"
+    },
+    {
+      "cardName": "Card 6",
+      "type": "Type F",
+      "effect": "Effect of Card 6",
+      "amount": 1,
+      "cost": 3,
+      "costHope": 1,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 6",
+      "effectDespair": "Effect Despair 6"
+    },
+    {
+      "cardName": "Card 7",
+      "type": "Type G",
+      "effect": "Effect of Card 7",
+      "amount": 1,
+      "cost": 4,
+      "costHope": 2,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 7",
+      "effectDespair": "Effect Despair 7"
+    },
+    {
+      "cardName": "Card 8",
+      "type": "Type H",
+      "effect": "Effect of Card 8",
+      "amount": 1,
+      "cost": 5,
+      "costHope": 3,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 8",
+      "effectDespair": "Effect Despair 8"
+    },
+    {
+      "cardName": "Card 9",
+      "type": "Type I",
+      "effect": "Effect of Card 9",
+      "amount": 1,
+      "cost": 6,
+      "costHope": 4,
+      "costDespair": 2,
+      "effectHope": "Effect Hope 9",
+      "effectDespair": "Effect Despair 9"
+    },
+    {
+      "cardName": "Card 10",
+      "type": "Type J",
+      "effect": "Effect of Card 10",
+      "amount": 1,
+      "cost": 7,
+      "costHope": 4,
+      "costDespair": 3,
+      "effectHope": "Effect Hope 10",
+      "effectDespair": "Effect Despair 10"
+    }
+  ]
+}
