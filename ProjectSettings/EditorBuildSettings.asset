@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Shimoda/CardList/CardListScene.unity
     guid: 0f272fb1114204145b50668b837c18ef
+  - enabled: 1
+    path: Assets/Shimoda/CardDeck/CardDeckScene.unity
+    guid: d2f10eeb0d5d52244ba5f1ab8f7dd77c
   m_configObjects: {}

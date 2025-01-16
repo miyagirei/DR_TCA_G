@@ -21,6 +21,7 @@ public class ButtonManager : MonoBehaviour
         buttonBattle.onClick.AddListener(OnBattleButtonClicked);
         buttonOption.onClick.AddListener(OnOptionButtonClicked);
         buttonCardList.onClick.AddListener(OnCardListButtonClicked);
+        buttonDeck.onClick.AddListener(OnCardDeckButtonClicked);
 
         buttonDeckAndList.SetActive(false);
         buttonStoryAndBattle.SetActive(false);
@@ -66,5 +67,9 @@ public class ButtonManager : MonoBehaviour
     void OnCardListButtonClicked()
     {
         SceneManager.LoadScene("CardListScene");
+    }
+    void OnCardDeckButtonClicked()
+    {
+        SceneManager.LoadScene("CardDeckScene");
     }
 }
