@@ -18,6 +18,12 @@ public class DeckEditor : MonoBehaviour
     private CardLoader cardLoader;
     private GridLayoutGroup cardGridLayout;
     private GridLayoutGroup deckGridLayout;
+    private string[] deckNames = { "Deck1", "Deck2", "Deck3", "Deck4", "Deck5", "Deck6" };
+    private int currentDeckIndex;
+
+    // デッキ選択画面と編集画面のUIを格納するパネル
+    [SerializeField] private GameObject deckSelectPanel;
+    [SerializeField] private GameObject deckEditorPanel;
 
     void Start()
     {
@@ -26,8 +32,8 @@ public class DeckEditor : MonoBehaviour
         deckGridLayout = deckListParent.GetComponent<GridLayoutGroup>();
 
         LoadCardList("cardList"); // 任意のカードリストを読み込む
-        LoadDeck();
-        DisplayCards();
+        LoadDeck(); // 初期デッキを読み込む
+        DisplayCards(); // カードリストを表示
     }
 
     void LoadCardList(string jsonFileName)
@@ -55,8 +61,8 @@ public class DeckEditor : MonoBehaviour
 
     void LoadDeck()
     {
-        // ファイルパスを設定
-        string filePath = Application.persistentDataPath + "/deck.json";
+        // 現在選択されているデッキを読み込む
+        string filePath = Application.persistentDataPath + "/deck" + (currentDeckIndex + 1) + ".json";
 
         if (File.Exists(filePath))
         {
@@ -70,17 +76,20 @@ public class DeckEditor : MonoBehaviour
             {
                 deckList = deckData.cards; // デッキリストに復元
                 Debug.Log("デッキが読み込まれました: " + filePath);
-
                 UpdateDeckUI();
             }
             else
             {
                 Debug.LogError("デッキデータの読み込みに失敗しました");
+                deckList.Clear(); // デッキリストを空にする
+                UpdateDeckUI(); // 空のデッキUIを更新
             }
         }
         else
         {
             Debug.Log("保存されたデッキが見つかりません: " + filePath);
+            deckList.Clear(); // デッキリストを空にする
+            UpdateDeckUI(); // 空のデッキUIを更新
         }
     }
 
@@ -101,17 +110,17 @@ public class DeckEditor : MonoBehaviour
 
     void AddCardToDeck(CardData card)
     {
-        // デッキに同名のカードが4枚未満であれば追加
-        int cardCount = deckList.FindAll(c => c.cardName == card.cardName).Count;
-        if (cardCount < 4) // 同名カードが4枚未満であれば追加
-        {
-            deckList.Add(card);
-            UpdateDeckUI();
-        }
-        else
-        {
-            Debug.Log("このカードは4枚までしか追加できません");
-        }
+            // デッキに同名のカードが4枚未満であれば追加
+            int cardCount = deckList.FindAll(c => c.cardName == card.cardName).Count;
+            if (cardCount < 4) // 同名カードが4枚未満であれば追加
+            {
+                deckList.Add(card);
+                UpdateDeckUI();
+            }
+            else
+            {
+                Debug.Log("このカードは4枚までしか追加できません");
+            }
         AdjustDeckContentHeight();
     }
 
@@ -165,18 +174,50 @@ public class DeckEditor : MonoBehaviour
     // デッキの保存処理
     public void SaveDeck()
     {
-        // デッキのデータをJSON形式に変換
+        // 現在選択されているデッキのデータをJSON形式に変換
         DeckData deckData = new DeckData();
         deckData.cards = deckList;
 
         string json = JsonUtility.ToJson(deckData, true);
 
         // ファイルパスを設定
-        string filePath = Application.persistentDataPath + "/deck.json";
+        string filePath = Application.persistentDataPath + "/deck" + (currentDeckIndex + 1) + ".json";
 
         // JSONファイルを保存
         File.WriteAllText(filePath, json);
         Debug.Log("デッキが保存されました: " + filePath);
+    }
+
+    // デッキ選択ボタンの処理
+    public void OnDeckButtonClicked(int deckIndex)
+    {
+        currentDeckIndex = deckIndex;
+        LoadDeck(); // 選択したデッキを読み込む
+        deckSelectPanel.SetActive(false); // デッキ選択画面を非表示
+        deckEditorPanel.SetActive(true); // デッキ編集画面を表示
+    }
+
+    // 戻るボタン
+    public void OnBackButtonClicked()
+    {
+        deckSelectPanel.SetActive(true); // デッキ選択画面を表示
+        deckEditorPanel.SetActive(false); // デッキ編集画面を非表示
+    }
+
+    // デッキ選択画面のUIボタンを設定
+    void SetDeckButtons()
+    {
+        for (int i = 0; i < deckNames.Length; i++)
+        {
+            GameObject deckButton = new GameObject("DeckButton" + i);
+            Button button = deckButton.AddComponent<Button>();
+            button.GetComponentInChildren<Text>().text = deckNames[i];
+
+            int deckIndex = i;
+            button.onClick.AddListener(() => OnDeckButtonClicked(deckIndex));
+
+            deckButton.transform.SetParent(deckSelectPanel.transform);
+        }
     }
 }
 
@@ -185,3 +226,4 @@ public class DeckData
 {
     public List<CardData> cards;
 }
+
