@@ -29,6 +29,11 @@ public class Card : MonoBehaviour
     [SerializeField] string _effect;//効果
     [SerializeField] string _effect_hope;//希望効果
     [SerializeField] string _effect_despair;//絶望効果
+    [SerializeField] CardType _card_type;//カードタイプ
+    [SerializeField] int _bonus_damage_dealt;//攻撃力:状態一致ボーナス
+    [SerializeField] int _bonus_healing_amount;//回復量:状態一致ボーナス
+    [SerializeField] int _bonus_draw_amount;//ドローする回数:状態一致ボーナス
+
     [SerializeField] Vector3 _return_pos;//戻るときの場所
     [SerializeField] bool _is_card_played = false;//プレイするカードかどうか
     [SerializeField] bool _is_dragging = false;//ドラッグ中かどうかの判定
@@ -36,22 +41,24 @@ public class Card : MonoBehaviour
     [SerializeField] bool _can_selected = false;//選択できるかどうかの判定
     [SerializeField] bool _is_discarded = false;//捨てるかどうかの判定
     [SerializeField] bool _is_normal = true;//通常カードであるかの判定
-    [SerializeField] CardType _card_type;//カードタイプ
-    [SerializeField] bool _is_moving = false;
+    [SerializeField] bool _is_moving = false;//アニメーション移動を起こすかどうかの判定
 
-    public void Init(string name, int amount, int cost, string effect, CardType type)
+    public void Init(string name, int amount, int cost, string effect, CardType type , int bonus_amount = 0)
     {
         _card_name = name;
         switch (effect)
         {
             case EFFECT_ATTACK_TEXT:
                 _damage_dealt = amount;
+                _bonus_damage_dealt = bonus_amount;
                 break;
             case EFFECT_HEAL_TEXT:
                 _healing_amount = amount;
+                _bonus_healing_amount = bonus_amount;
                 break;
             case EFFECT_DRAW_TEXT:
                 _draw_amount = amount;
+                _bonus_draw_amount = bonus_amount;
                 break;
         }
         _card_type = type;
@@ -77,19 +84,22 @@ public class Card : MonoBehaviour
         _return_pos = transform.position;
     }
 
-    public void Init(string name, string hope, int hope_amount, int hope_cost, string despair, int despair_amount, int despair_cost)
+    public void Init(string name, string hope, int hope_amount,int bonus_hope, int hope_cost, string despair, int despair_amount, int bonus_despair, int despair_cost)
     {
         _card_name = name;
         switch (hope)
         {
             case EFFECT_ATTACK_TEXT:
                 _damage_dealt = hope_amount;
+                _bonus_damage_dealt = bonus_hope;
                 break;
             case EFFECT_HEAL_TEXT:
                 _healing_amount = hope_amount;
+                _bonus_healing_amount = bonus_hope;
                 break;
             case EFFECT_DRAW_TEXT:
                 _draw_amount = hope_amount;
+                _bonus_draw_amount = bonus_hope;
                 break;
         }
 
@@ -97,12 +107,15 @@ public class Card : MonoBehaviour
         {
             case EFFECT_ATTACK_TEXT:
                 _damage_dealt = despair_amount;
+                _bonus_damage_dealt = bonus_despair;
                 break;
             case EFFECT_HEAL_TEXT:
                 _healing_amount = despair_amount;
+                _bonus_healing_amount = bonus_despair;
                 break;
             case EFFECT_DRAW_TEXT:
                 _draw_amount = despair_amount;
+                _bonus_draw_amount = bonus_despair;
                 break;
         }
         _cost_hope = hope_cost;
@@ -127,6 +140,7 @@ public class Card : MonoBehaviour
     public void SetName(string name) => _card_name = name;
     public int GetDamage() => _damage_dealt;
     public void SetDamage(int dmg) => _damage_dealt = dmg;
+    public int GetBonusDamage() => _bonus_damage_dealt;
     public Vector2 GetPos() => _return_pos;
     public void SetPos(Vector3 pos) => _return_pos = pos;
     public void ReturnPos() => this.transform.position = _return_pos;
@@ -148,8 +162,10 @@ public class Card : MonoBehaviour
     public void SetEffect(string effect) => _effect = effect;
     public int GetHealAmount() => _healing_amount;
     public void SetHealAmount(int amount) => _healing_amount = amount;
+    public int GetBonusHealAmount() => _bonus_healing_amount;
     public int GetDrawAmount() => _draw_amount;
     public void SetDrawAmount(int amount) => _draw_amount = amount;
+    public int GetBonusDrawAmount() => _bonus_draw_amount;
     public bool GetIfNormalCard() => _is_normal;
     public CardType GetCardType() => _card_type;
     public bool GetDragging() => _is_dragging;
@@ -339,7 +355,7 @@ public class Card : MonoBehaviour
     }
 
     //カードを出したときの効果
-    public void Effect(Player player, Player enemy, Vector3 location , Vector3 scale)
+    public void Effect(Player player, Player enemy, Vector3 location , Vector3 scale , PlayingSituation situation)
     {
         if (GetIfNormalCard() && player.GetNormalCondition())
         {
@@ -347,12 +363,19 @@ public class Card : MonoBehaviour
         }
         else if (!GetIfNormalCard() && player.GetHopeCondition() && !player.GetDespairCondition())
         {
-            Debug.Log("Hope Effect");
+            if (situation == PlayingSituation.Hopeful) {
+                EffectList(_effect_hope, player, enemy, location, scale , true);
+                return;
+            }
             EffectList(_effect_hope, player, enemy, location, scale);
         }
         else if (!GetIfNormalCard() && !player.GetHopeCondition() && player.GetDespairCondition())
         {
-            Debug.Log("Despair Effect");
+            if (situation == PlayingSituation.Desperate)
+            {
+                EffectList(_effect_despair, player, enemy, location, scale, true);
+                return;
+            }
             EffectList(_effect_despair, player, enemy, location, scale);
         }
     }
@@ -368,6 +391,25 @@ public class Card : MonoBehaviour
                 return GetHealAmount();
             case EFFECT_DRAW_TEXT:
                 return GetDrawAmount();
+            case EFFECT_HOPE_CHANGE:
+                return 1;
+            case EFFECT_DESPAIR_CHANGE:
+                return 1;
+        }
+
+        return 0;
+    }    
+    
+    public int GetEffectBonusAmount(string effect)
+    {
+        switch (effect)
+        {
+            case EFFECT_ATTACK_TEXT:
+                return GetBonusDamage();
+            case EFFECT_HEAL_TEXT:
+                return GetBonusHealAmount();
+            case EFFECT_DRAW_TEXT:
+                return GetBonusDrawAmount();
             case EFFECT_HOPE_CHANGE:
                 return 1;
             case EFFECT_DESPAIR_CHANGE:
@@ -397,9 +439,9 @@ public class Card : MonoBehaviour
         return null;
     }
 
-    void ActivateDraw(Player player, Vector3 location , Vector3 scale)
+    void ActivateDraw(Player player, Vector3 location , Vector3 scale , int amount)
     {
-        for (int i = 0; i < GetDrawAmount(); i++)
+        for (int i = 0; i < amount; i++)
         {
             if (player.GetDeck().GetDeckCount() == 0)
             {
@@ -410,18 +452,32 @@ public class Card : MonoBehaviour
         }
     }
 
-    void EffectList(string effect_text, Player player, Player enemy, Vector3 location , Vector3 scale)
+    void EffectList(string effect_text, Player player, Player enemy, Vector3 location , Vector3 scale , bool situation_match = false)
     {
         switch (effect_text)
         {
             case EFFECT_ATTACK_TEXT:
+                if (situation_match) {
+                    enemy.AddHP(-GetBonusDamage());
+                    break;
+                }
                 enemy.AddHP(-GetDamage());
                 break;
             case EFFECT_HEAL_TEXT:
+                if (situation_match)
+                {
+                    enemy.AddHP(GetBonusHealAmount());
+                    break;
+                }
                 player.AddHP(GetHealAmount());
                 break;
             case EFFECT_DRAW_TEXT:
-                ActivateDraw(player, location, scale);
+                if (situation_match)
+                {
+                    ActivateDraw(player, location, scale, GetBonusDrawAmount());
+                    break;
+                }
+                ActivateDraw(player, location, scale , GetDrawAmount());
                 break;
             case EFFECT_HOPE_CHANGE:
                 player.SetHope();

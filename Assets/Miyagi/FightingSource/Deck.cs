@@ -52,7 +52,7 @@ public class Deck : MonoBehaviour
             int amount = Random.Range(1, 5);
             int effect_choice = Random.Range(0, 5);
             string effect = card.GetEffectNumber(effect_choice);
-            card.Init("hope", amount, amount, effect , CardType.OnlyHope);
+            card.Init("hope", amount, amount, effect , CardType.OnlyHope , amount * 2);
             _deck_card.Add(card);
         }        
         
@@ -64,7 +64,7 @@ public class Deck : MonoBehaviour
             int amount = Random.Range(1, 5);
             int effect_choice = Random.Range(0, 5);
             string effect = card.GetEffectNumber(effect_choice);
-            card.Init("despair", amount, amount, effect , CardType.OnlyDespair);
+            card.Init("despair", amount, amount, effect , CardType.OnlyDespair , amount * 2);
             _deck_card.Add(card);
         }
 
@@ -84,7 +84,7 @@ public class Deck : MonoBehaviour
 
             string hope_effect = card.GetEffectNumber(hope_choice);
             string despair_effect = card.GetEffectNumber(despair_choice);
-            card.Init("hope_despair", hope_effect, h_amount, h_amount, despair_effect , d_amount, d_amount);
+            card.Init("hope_despair", hope_effect, h_amount,h_amount * 2, h_amount, despair_effect , d_amount,d_amount * 2, d_amount);
             _deck_card.Add(card);
         }
     }

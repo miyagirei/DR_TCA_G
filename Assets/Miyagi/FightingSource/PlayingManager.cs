@@ -27,12 +27,15 @@ public class PlayingManager : MonoBehaviour
     [HideInInspector] float TURN_CHANGE_TIME = 0;
     [HideInInspector] float CARD_EFFECT_DISTANCE = 0;
     [HideInInspector] float TIME_UNTIL_TIME_RUNS_OUT = 0;
+    [HideInInspector] int RESET_CARDS_COUNT = 0;
 
     bool _cpu_draw = false;
     float _cpu_incapacity_time = 0;
 
     bool _turn_change_animation = false;
     Player _turn_player;
+
+    PlayingSituation _turn_situation = PlayingSituation.Hopeful;
 
     void ResetProgressTime() => _progress_time = 0;
     async void Start()
@@ -42,6 +45,7 @@ public class PlayingManager : MonoBehaviour
         TURN_CHANGE_TIME = await _data_controller.GetParamValueFloat("TURN_CHANGE_TIME");
         CARD_EFFECT_DISTANCE = await _data_controller.GetParamValueFloat("CARD_EFFECT_DISTANCE");
         TIME_UNTIL_TIME_RUNS_OUT = await _data_controller.GetParamValueFloat("TIME_UNTIL_TIME_RUNS_OUT");
+        RESET_CARDS_COUNT = await _data_controller.GetParamValueInt("RESET_CARDS_COUNT");
 
         ResetProgressTime();
         _conclusion = false;
@@ -77,12 +81,12 @@ public class PlayingManager : MonoBehaviour
         _player2_UI.Display(_player2);
 
         if (_turn_change_animation && _progress_time < TURN_CHANGE_TIME) {
-            _player1_UI.DisplayTurnChangePanel(_turn_player , true );
+            _player1_UI.DisplayTurnChangePanel(_turn_player ,_turn_situation, true );
             _player1_UI.DisplayTurnChangeButton(false);
             _player1_UI.DisplayTimer(GetTimer(), false);
             return;
         }else if (_turn_change_animation && _progress_time > TURN_CHANGE_TIME) {
-            _player1_UI.DisplayTurnChangePanel(_turn_player, false);
+            _player1_UI.DisplayTurnChangePanel(_turn_player, _turn_situation, false);
             ResetProgressTime();
            
             _turn_change_animation = false;
@@ -127,7 +131,7 @@ public class PlayingManager : MonoBehaviour
 
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().IsPlayedCard(player);
-            played_card.Effect(player , enemy , player.GetCardPos() , player.GetCardScale());
+            played_card.Effect(player , enemy , player.GetCardPos() , player.GetCardScale() , _turn_situation);
             PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetEffectAmount(played_card.GetEffectByCondition(player)) + ")", Color.green);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
@@ -148,7 +152,7 @@ public class PlayingManager : MonoBehaviour
         }
         if (!_cpu_draw) {
 
-            player.GetHands().ResetHandCards(4, player.GetDeck() , player.GetCardPos() , player.GetCardScale());
+            player.GetHands().ResetHandCards(RESET_CARDS_COUNT, player.GetDeck() , player.GetCardPos() , player.GetCardScale());
             _cpu_draw = true;
             ResetCPUIncapacityTime();
         }
@@ -160,7 +164,7 @@ public class PlayingManager : MonoBehaviour
 
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().CheckMostExpensiveCardYouCanPay(player);
-            played_card.Effect(player, enemy, player.GetCardPos(), player.GetCardScale());
+            played_card.Effect(player, enemy, player.GetCardPos(), player.GetCardScale() , _turn_situation);
             PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetEffectAmount(played_card.GetEffectByCondition(player)) + ")", Color.red);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
@@ -201,7 +205,7 @@ public class PlayingManager : MonoBehaviour
         _cpu_draw = false;
 
         if(turn.GetDeck().GetDeckCount() >= 0) {
-            turn.GetHands().ResetHandCards(4, turn.GetDeck(), turn.GetCardPos() , turn.GetCardScale());
+            turn.GetHands().ResetHandCards(RESET_CARDS_COUNT, turn.GetDeck(), turn.GetCardPos() , turn.GetCardScale());
             turn.GetHands().SelectedPlayable(true);
         }
         _turn_change_animation = true;
@@ -291,6 +295,17 @@ public class PlayingManager : MonoBehaviour
 
         if (_progress_time >= TIME_UNTIL_TIME_RUNS_OUT) {
             TurnChange(Hostile(_turn_player));
+        }
+    }
+
+    void ChangeSituation() {
+        if (_turn_situation == PlayingSituation.Hopeful)
+        {
+            _turn_situation = PlayingSituation.Desperate;
+        }
+        else 
+        {
+            _turn_situation = PlayingSituation.Hopeful;
         }
     }
 }

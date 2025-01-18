@@ -9,11 +9,12 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] Text UI_Player_Condition;
     [SerializeField] Button UI_Player_Turn_Change_Button;
     [SerializeField] GameObject UI_Turn_Change_Panel;
+    [SerializeField] Text UI_Turn_Change_Player;
+    [SerializeField] Text UI_Turn_Situation;
     [SerializeField] GameObject UI_Card_Effect_Distance_Panel;
     [SerializeField] Text UI_Timer;
     [SerializeField] Button UI_Playlog_Display_Switching_Button;
     [SerializeField] GameObject UI_Playlog;
-
     private void Start()
     {
         AssingPlaylogButton();
@@ -80,12 +81,18 @@ public class PlayerUIManager : MonoBehaviour
         UI_Player_Turn_Change_Button.gameObject.SetActive(active);
     }
 
-    public void DisplayTurnChangePanel(Player turn_player , bool active) {
-        Text turn_text = UI_Turn_Change_Panel.GetComponentInChildren<Text>();
-        if (turn_text == null) {
-            return;
+    public void DisplayTurnChangePanel(Player turn_player , PlayingSituation situation ,bool active) {
+        UI_Turn_Change_Player.text = turn_player.GetName() + "のターン";
+        switch (situation) {
+            case PlayingSituation.Hopeful:
+                UI_Turn_Situation.text = "希望ターン";
+                UI_Turn_Situation.color = Color.yellow;
+                break;
+            case PlayingSituation.Desperate:
+                UI_Turn_Situation.text = "絶望ターン";
+                UI_Turn_Situation.color = new Color(1,0,1);
+                break;
         }
-        turn_text.text = turn_player.GetName() + "のターン";
         UI_Turn_Change_Panel.SetActive(active);
     }
 

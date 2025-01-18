@@ -89,11 +89,11 @@ public class Hands : MonoBehaviour
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
         if (origin.GetCardType() == CardType.HopeAndDespair) {
-            new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetEffectAmount(origin.GetHopeEffect()), origin.GetCostOfHope(), 
-                origin.GetDespairEffect() , origin.GetEffectAmount(origin.GetDespairEffect()) , origin.GetCostOfDespair());
+            new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetEffectAmount(origin.GetHopeEffect()), origin.GetEffectBonusAmount(origin.GetHopeEffect()), origin.GetCostOfHope(), 
+                origin.GetDespairEffect() , origin.GetEffectAmount(origin.GetDespairEffect()) , origin.GetEffectBonusAmount(origin.GetDespairEffect()), origin.GetCostOfDespair());
         }
         else {
-            new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffectByCardType()), origin.GetCostByCardType(), origin.GetEffectByCardType(), origin.GetCardType());
+            new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffectByCardType()), origin.GetCostByCardType(), origin.GetEffectByCardType(), origin.GetCardType(), origin.GetEffectBonusAmount(origin.GetEffectByCardType()));
         }
 
         new_card.CreatePopup();
