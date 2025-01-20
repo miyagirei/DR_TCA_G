@@ -50,36 +50,28 @@ public class PlayerUIManager : MonoBehaviour
             return;
         }
         string condition = "no info";
-        var module_left = UI_Particle_Side_Left.main;
-        var module_right = UI_Particle_Side_Right.main;
 
         if (player.GetNormalCondition())
         {
             condition = "Normal";
-            ParticleColorChange(UI_Particle_Side_Left, Color.clear) ;
-            ParticleColorChange(UI_Particle_Side_Right, Color.clear);
-            module_left.startColor = Color.clear;
-            module_right.startColor = Color.clear;
+            ChangeParticleColor(UI_Particle_Side_Left, Color.clear) ;
+            ChangeParticleColor(UI_Particle_Side_Right, Color.clear);
             UI_Particle_Side_Left.GetComponent<Renderer>().enabled = false;
             UI_Particle_Side_Right.GetComponent<Renderer>().enabled = false;
         }
         else if (player.GetHopeCondition())
         {
             condition = "Hope";
-            ParticleColorChange(UI_Particle_Side_Left , Color.white);
-            ParticleColorChange(UI_Particle_Side_Right , Color.white);
-            module_left.startColor = Color.white;
-            module_right.startColor = Color.white;
+            ChangeParticleColor(UI_Particle_Side_Left , Color.white);
+            ChangeParticleColor(UI_Particle_Side_Right , Color.white);
             UI_Particle_Side_Left.GetComponent<Renderer>().enabled = true;
             UI_Particle_Side_Right.GetComponent<Renderer>().enabled = true;
         }
         else if (player.GetDespairCondition())
         {
             condition = "Despair";
-            ParticleColorChange(UI_Particle_Side_Left, Color.black);
-            ParticleColorChange(UI_Particle_Side_Right, Color.black);
-            module_left.startColor = Color.black;
-            module_right.startColor = Color.black;
+            ChangeParticleColor(UI_Particle_Side_Left, Color.black);
+            ChangeParticleColor(UI_Particle_Side_Right, Color.black);
             UI_Particle_Side_Left.gameObject.GetComponent<Renderer>().enabled = true;
             UI_Particle_Side_Right.gameObject.GetComponent<Renderer>().enabled = true;
         }
@@ -87,10 +79,12 @@ public class PlayerUIManager : MonoBehaviour
         UI_Player_Condition.text = player.GetName() + ":" + condition;
     }
 
-    void ParticleColorChange(ParticleSystem particle , Color color) {
+    void ChangeParticleColor(ParticleSystem particle , Color color) {
         if (particle.main.startColor.color == color) {
             return;
         }
+        var module = particle.main;
+        module.startColor = color;
 
         ParticleSystem.Particle[] particles = new ParticleSystem.Particle[particle.particleCount];
         int particle_count = particle.GetParticles(particles);
