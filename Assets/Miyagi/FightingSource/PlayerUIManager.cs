@@ -20,6 +20,12 @@ public class PlayerUIManager : MonoBehaviour
     private void Start()
     {
         AssingPlaylogButton();
+        var module_left = UI_Particle_Side_Left.main;
+        var module_right = UI_Particle_Side_Right.main;
+        module_left.startColor = Color.clear;
+        module_right.startColor = Color.clear;
+        UI_Particle_Side_Left.Play();
+        UI_Particle_Side_Right.Play();
     }
     public void Display(Player player)
     {
@@ -50,27 +56,50 @@ public class PlayerUIManager : MonoBehaviour
         if (player.GetNormalCondition())
         {
             condition = "Normal";
-            UI_Particle_Side_Left.Stop();
-            UI_Particle_Side_Right.Stop();
+            ParticleColorChange(UI_Particle_Side_Left, Color.clear) ;
+            ParticleColorChange(UI_Particle_Side_Right, Color.clear);
+            module_left.startColor = Color.clear;
+            module_right.startColor = Color.clear;
+            UI_Particle_Side_Left.GetComponent<Renderer>().enabled = false;
+            UI_Particle_Side_Right.GetComponent<Renderer>().enabled = false;
         }
         else if (player.GetHopeCondition())
         {
             condition = "Hope";
+            ParticleColorChange(UI_Particle_Side_Left , Color.white);
+            ParticleColorChange(UI_Particle_Side_Right , Color.white);
             module_left.startColor = Color.white;
             module_right.startColor = Color.white;
-            UI_Particle_Side_Left.Play();
-            UI_Particle_Side_Right.Play();
+            UI_Particle_Side_Left.GetComponent<Renderer>().enabled = true;
+            UI_Particle_Side_Right.GetComponent<Renderer>().enabled = true;
         }
         else if (player.GetDespairCondition())
         {
             condition = "Despair";
+            ParticleColorChange(UI_Particle_Side_Left, Color.black);
+            ParticleColorChange(UI_Particle_Side_Right, Color.black);
             module_left.startColor = Color.black;
             module_right.startColor = Color.black;
-            UI_Particle_Side_Left.Play();
-            UI_Particle_Side_Right.Play();
+            UI_Particle_Side_Left.gameObject.GetComponent<Renderer>().enabled = true;
+            UI_Particle_Side_Right.gameObject.GetComponent<Renderer>().enabled = true;
         }
 
         UI_Player_Condition.text = player.GetName() + ":" + condition;
+    }
+
+    void ParticleColorChange(ParticleSystem particle , Color color) {
+        if (particle.main.startColor.color == color) {
+            return;
+        }
+
+        ParticleSystem.Particle[] particles = new ParticleSystem.Particle[particle.particleCount];
+        int particle_count = particle.GetParticles(particles);
+
+        for (int i = 0; i < particle_count; i++) {
+            particles[i].startColor = color;
+        }
+
+        particle.SetParticles(particles, particle_count);
     }
 
     void AssignButtonAction(Button button, System.Action action)
