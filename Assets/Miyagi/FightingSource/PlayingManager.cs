@@ -179,7 +179,7 @@ public class PlayingManager : MonoBehaviour
             return;
         }
 
-        if (player.GetHands().checkHighDamageCard() == null)
+        if (player.GetHands().CheckMostExpensiveCardYouCanPay(player) == null)
         {
             Debug.Log("Non-Card");
             checkResult();
@@ -187,6 +187,8 @@ public class PlayingManager : MonoBehaviour
             ResetCPUIncapacityTime();
             return;//カードの枚数がコストを下回っていたら使えない
         }
+
+        Debug.LogError("CPUが想定していない動きをしています");
     }
 
     //CPUの稼働時間をリセットする

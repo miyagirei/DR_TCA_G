@@ -15,6 +15,8 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] Text UI_Timer;
     [SerializeField] Button UI_Playlog_Display_Switching_Button;
     [SerializeField] GameObject UI_Playlog;
+    [SerializeField] ParticleSystem UI_Particle_Side_Left;
+    [SerializeField] ParticleSystem UI_Particle_Side_Right;
     private void Start()
     {
         AssingPlaylogButton();
@@ -42,18 +44,30 @@ public class PlayerUIManager : MonoBehaviour
             return;
         }
         string condition = "no info";
+        var module_left = UI_Particle_Side_Left.main;
+        var module_right = UI_Particle_Side_Right.main;
 
         if (player.GetNormalCondition())
         {
             condition = "Normal";
+            UI_Particle_Side_Left.Stop();
+            UI_Particle_Side_Right.Stop();
         }
         else if (player.GetHopeCondition())
         {
             condition = "Hope";
+            module_left.startColor = Color.white;
+            module_right.startColor = Color.white;
+            UI_Particle_Side_Left.Play();
+            UI_Particle_Side_Right.Play();
         }
         else if (player.GetDespairCondition())
         {
             condition = "Despair";
+            module_left.startColor = Color.black;
+            module_right.startColor = Color.black;
+            UI_Particle_Side_Left.Play();
+            UI_Particle_Side_Right.Play();
         }
 
         UI_Player_Condition.text = player.GetName() + ":" + condition;

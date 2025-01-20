@@ -139,7 +139,6 @@ public class Hands : MonoBehaviour
     //カードを捨てる時にリストから排除する
     public void TrashCard(Card card) {
         int choiceNum = _hands_card.IndexOf(card);
-        Debug.Log("Trash : " + card.GetName());
         _hands_card.RemoveAt(choiceNum);
         card.Trash();
     }
@@ -177,7 +176,7 @@ public class Hands : MonoBehaviour
         bool change = false;
         for (int i = 0; i < _hands_card.Count; i++)
         {
-            if (most_card.GetCostByCondition(player) < _hands_card[i].GetCostByCondition(player) && _hands_card.Count > _hands_card[i].GetCost())
+            if (most_card.GetCostByCondition(player) < _hands_card[i].GetCostByCondition(player) && _hands_card.Count - 1 > _hands_card[i].GetCostByCondition(player))
             {
                 most_card = _hands_card[i];
                 change = true;

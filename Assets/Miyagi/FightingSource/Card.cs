@@ -357,9 +357,10 @@ public class Card : MonoBehaviour
     //カードを出したときの効果
     public void Effect(Player player, Player enemy, Vector3 location , Vector3 scale , PlayingSituation situation)
     {
-        if (GetIfNormalCard() && player.GetNormalCondition())
+        if (GetIfNormalCard())
         {
             EffectList(_effect, player, enemy, location, scale);
+            return;
         }
         else if (!GetIfNormalCard() && player.GetHopeCondition() && !player.GetDespairCondition())
         {
@@ -368,6 +369,7 @@ public class Card : MonoBehaviour
                 return;
             }
             EffectList(_effect_hope, player, enemy, location, scale);
+            return;
         }
         else if (!GetIfNormalCard() && !player.GetHopeCondition() && player.GetDespairCondition())
         {
@@ -377,7 +379,9 @@ public class Card : MonoBehaviour
                 return;
             }
             EffectList(_effect_despair, player, enemy, location, scale);
+            return;
         }
+        Debug.LogError("効果が発動できませんでした");
     }
 
     //エフェクトに応じて対応した数値を呼び出す
@@ -457,6 +461,7 @@ public class Card : MonoBehaviour
         switch (effect_text)
         {
             case EFFECT_ATTACK_TEXT:
+                Debug.Log("攻撃:" + GetDamage() + "or" + GetBonusDamage());
                 if (situation_match) {
                     enemy.AddHP(-GetBonusDamage());
                     break;
@@ -464,6 +469,7 @@ public class Card : MonoBehaviour
                 enemy.AddHP(-GetDamage());
                 break;
             case EFFECT_HEAL_TEXT:
+                Debug.Log("回復:" + GetHealAmount() + "or" + GetBonusHealAmount());
                 if (situation_match)
                 {
                     enemy.AddHP(GetBonusHealAmount());
@@ -472,6 +478,7 @@ public class Card : MonoBehaviour
                 player.AddHP(GetHealAmount());
                 break;
             case EFFECT_DRAW_TEXT:
+                Debug.Log("ドロー:" + GetDrawAmount() + "or" + GetBonusDrawAmount());
                 if (situation_match)
                 {
                     ActivateDraw(player, location, scale, GetBonusDrawAmount());
@@ -480,9 +487,11 @@ public class Card : MonoBehaviour
                 ActivateDraw(player, location, scale , GetDrawAmount());
                 break;
             case EFFECT_HOPE_CHANGE:
+                Debug.Log("希望チェンジ");
                 player.SetHope();
                 break;
             case EFFECT_DESPAIR_CHANGE:
+                Debug.Log("絶望チェンジ");
                 player.SetDespair();
                 break;
         }
