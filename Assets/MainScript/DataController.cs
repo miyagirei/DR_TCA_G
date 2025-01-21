@@ -17,7 +17,7 @@ public class DataController : MonoBehaviour
     [SerializeField]
     private string sheet_name = "testSub";
 
-    private string apiUrl = "https://script.google.com/macros/s/AKfycbzzqu6xIEUy7hOwxiYOi-g69hUqZYBDhSiGxKEjqVcCFS0y-Z1RaElyEOhvxY94lbyE/exec";
+    private string apiUrl = "https://script.google.com/macros/s/AKfycbw_56ss0h8ivlSZ79cCv-tUsdesk10E0Oxsh2fbRWRjDjclytSG0yyJHoJRmVW8mSH-/exec";
 
     private Dictionary<string, float> paramDataF = new Dictionary<string, float>();
     private Dictionary<string, int> paramDataI = new Dictionary<string, int>();
@@ -44,7 +44,13 @@ public class DataController : MonoBehaviour
         else
         {
             // 取得したデータを処理
-            ProcessSheetData(www.downloadHandler.text);
+            if (sheetName == "CardDataList")
+            {
+                ProcessCardData(www.downloadHandler.text);
+            }
+            else {
+                ProcessSheetData(www.downloadHandler.text); 
+            }
         }
     }
 
@@ -74,6 +80,49 @@ public class DataController : MonoBehaviour
                 paramDataS.Add(paramName, value);
                 Debug.Log(paramName + ":" + value);
             }
+        }
+    }
+
+    void ProcessCardData(string json_data) {
+        // JSONデータを解析
+        JArray data = JArray.Parse(json_data);
+
+        foreach (JObject row in data)
+        {
+            string card = row["card"].ToString();
+            string card_type = row["cardType"].ToString();
+            string normal_damage = row["normal_damage"].ToString();
+            string normal_heal_amount = row["normal_heal_amount"].ToString();
+            string normal_draw_amount = row["normal_draw_amount"].ToString();
+            string normal_effect = row["normal_effect"].ToString();
+            string normal_cost = row["normal_cost"].ToString();
+            string hope_effect = row["hope_effect"].ToString();
+            string hope_cost = row["hope_cost"].ToString();
+            string despair_effect = row["despair_effect"].ToString();
+            string despair_cost = row["despair_cost"].ToString();
+            string bonus_damage = row["bonus_damage"].ToString();
+            string bonus_heal_amount = row["bonus_heal_amount"].ToString();
+            string bonus_draw_amount = row["bonus_draw_amount"].ToString();
+            string image = row["image"].ToString();
+            //Debug.Log($"Param: {paramName}, Value:{value}");
+
+            /*
+            if (!paramDataF.ContainsKey(paramName) && float.TryParse(value, out float floatValue))
+            {
+                paramDataF.Add(paramName, floatValue);
+            }
+
+            if (!paramDataI.ContainsKey(paramName) && int.TryParse(value, out int intValue))
+            {
+                paramDataI.Add(paramName, intValue);
+            }
+
+            if (!paramDataS.ContainsKey(paramName))
+            {
+                paramDataS.Add(paramName, value);
+                Debug.Log(paramName + ":" + value);
+            }
+            */
         }
     }
 
