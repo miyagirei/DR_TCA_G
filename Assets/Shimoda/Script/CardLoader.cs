@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class CardLoader : MonoBehaviour
 {
@@ -29,6 +30,35 @@ public class CardLoader : MonoBehaviour
             Debug.LogError("JSONファイルが見つかりません: " + jsonFileName);
         }
     }
+    public List<CardData> LoadCardDeck(string jsonFileName)
+    {
+        string filePath = Application.persistentDataPath + "/" + jsonFileName + ".json";
+        List<CardData> index = null;
+
+        if (File.Exists(filePath))
+        {
+            // ファイルからJSONを読み込み
+            string json = File.ReadAllText(filePath);
+
+            // JSONをデッキデータに変換
+            DeckData deckData = JsonUtility.FromJson<DeckData>(json);
+
+            if (deckData != null && deckData.cards != null)
+            {
+                index = deckData.cards; // デッキリストに復元
+                Debug.Log("デッキが読み込まれました: " + filePath);
+            }
+            else
+            {
+                Debug.LogError("デッキデータの読み込みに失敗しました");
+            }
+        }
+        else
+        {
+            Debug.Log("保存されたデッキが見つかりません: " + filePath);
+        }
+        return index;
+    }
 
     // カードリストを返す
     public List<CardData> GetCardList()
@@ -44,12 +74,17 @@ public class CardData
     public string type;
     public string effect;
     public int amount;
+    public int amountHope;
+    public int amountDespair;
     public int cost;
     public int costHope;
     public int costDespair;
     public string effectHope;
     public string effectDespair;
     public int despairAmount;
+    public int effectType;
+    public int effectTypeHope;
+    public int effectTypeDespair;
 }
 
 [System.Serializable]
