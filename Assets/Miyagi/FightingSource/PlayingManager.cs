@@ -61,6 +61,11 @@ public class PlayingManager : MonoBehaviour
     public float GetTimer() => TIME_UNTIL_TIME_RUNS_OUT - _progress_time;
     void Update()
     {
+        if (_data_controller.isDataError()) {
+            SceneManager.LoadScene("ResultScene");
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
         if (!_data_controller.isWaiting()) {
             return;
         }

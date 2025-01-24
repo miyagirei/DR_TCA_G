@@ -14,6 +14,7 @@ public class DataController : MonoBehaviour
 
     bool _waiting = false;
     bool _complete_save_card_list = false;
+    bool _error = false;
 
     [SerializeField]
     private string sheet_name = "testSub";
@@ -29,6 +30,7 @@ public class DataController : MonoBehaviour
     {
         _waiting = false;
         _complete_save_card_list = false;
+        _error = false;
         StartCoroutine(GetDataFromSheet());
     }
 
@@ -43,18 +45,17 @@ public class DataController : MonoBehaviour
         if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
         {
             Debug.LogError(www.error);
+            _error = true;
         }
         else
         {
             // Žæ“¾‚µ‚½ƒf[ƒ^‚ðˆ—
             if (sheetName == "CardDataList")
             {
-                Debug.Log(www.downloadHandler.text + ":card_data");
                 ProcessCardData(www.downloadHandler.text);
             }
             else
             {
-                Debug.Log(www.downloadHandler.text + ":other_data");
                 ProcessSheetData(www.downloadHandler.text);
             }
         }
@@ -245,6 +246,8 @@ public class DataController : MonoBehaviour
 
     public bool isWaiting() => _waiting;
     public bool isCompleteSave() => _complete_save_card_list;
+
+    public bool isDataError() => _error;
 
     CardListWrapper ConvertDictionaryToWrapper(Dictionary<string, CardData> dictionary) {
         var wrapper = new CardListWrapper
