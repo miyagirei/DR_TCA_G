@@ -17,7 +17,7 @@ public class CardDisplay : MonoBehaviour
         if (cardLoader != null)
         {
             // 任意のシーンや設定に応じて、異なるJSONファイルを指定
-            cardLoader.LoadCardList("cardList"); // cardList.json を読み込む
+            cardLoader.LoadNetworkCardData("card_data");
             DisplayCards();
         }
         else
