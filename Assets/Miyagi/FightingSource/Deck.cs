@@ -17,7 +17,7 @@ public class Deck : MonoBehaviour
             cardLoader = GetComponent<CardLoader>();
             if (cardLoader != null)
             {
-                _deckList = cardLoader.LoadCardDeck("deck1"); // deck1.json を読み込む(一旦デバッグとして１つ目のデッキを読み込む)
+                _deckList = cardLoader.LoadCardDeck("deck"+ PlayerPrefs.GetInt("SelectedDeck", 0)); // deck1.json を読み込む(一旦デバッグとして１つ目のデッキを読み込む)
             }
             else
             {

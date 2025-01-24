@@ -188,6 +188,13 @@ public class DeckEditor : MonoBehaviour
         Debug.Log("デッキが保存されました: " + filePath);
     }
 
+    public void SetMainDeck()
+    {
+        PlayerPrefs.SetInt("SelectedDeck", (currentDeckIndex + 1));
+        PlayerPrefs.Save();
+        Debug.Log($"デッキ "+(currentDeckIndex + 1)+" が選択されました");
+    }
+
     // デッキ選択ボタンの処理
     public void OnDeckButtonClicked(int deckIndex)
     {

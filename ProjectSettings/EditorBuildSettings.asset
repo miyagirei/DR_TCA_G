@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Shimoda/CardDeck/CardDeckScene.unity
     guid: d2f10eeb0d5d52244ba5f1ab8f7dd77c
+  - enabled: 1
+    path: Assets/Shimoda/ChooseDeck/ChooseDeckScene.unity
+    guid: a47d7d6dba61d0a4d9904ea72d69820d
+  - enabled: 1
+    path: Assets/Miyagi/FightingSource/GameFightingScene.unity
+    guid: 4c82ac730c5b01345bd6625334b822ad
   m_configObjects: {}
