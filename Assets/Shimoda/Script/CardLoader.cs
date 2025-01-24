@@ -60,6 +60,28 @@ public class CardLoader : MonoBehaviour
         return index;
     }
 
+    public void LoadNetworkCardData(string json_file_name) {
+        string file_path = Path.Combine(Application.streamingAssetsPath, json_file_name + ".json");
+        
+        if (File.Exists(file_path))
+        {
+            string json = File.ReadAllText(file_path);
+
+            CardListWrapper card_list_wrapper = JsonUtility.FromJson<CardListWrapper>(json);
+            Debug.Log(card_list_wrapper.cards);
+            Debug.Log(file_path);
+
+            cardList = card_list_wrapper.cards;
+            Debug.Log("Success");
+        }
+        else {
+            Debug.LogError("ファイルが存在しません");
+            return;
+        }
+
+
+    }
+
     // カードリストを返す
     public List<CardData> GetCardList()
     {
@@ -74,17 +96,15 @@ public class CardData
     public string type;
     public string effect;
     public int amount;
-    public int amountHope;
-    public int amountDespair;
     public int cost;
-    public int costHope;
-    public int costDespair;
     public string effectHope;
+    public int amountHope;
+    public int costHope;
+    public int amount_bonus_hope;
     public string effectDespair;
-    public int despairAmount;
-    public int effectType;
-    public int effectTypeHope;
-    public int effectTypeDespair;
+    public int amountDespair;
+    public int costDespair;
+    public int amount_bonus_despair;
 }
 
 [System.Serializable]

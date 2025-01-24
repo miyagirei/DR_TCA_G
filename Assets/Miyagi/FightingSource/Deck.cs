@@ -64,27 +64,27 @@ public class Deck : MonoBehaviour
             switch (data.type)
             {
                 case "Normal":
-                    effect = card.GetEffectNumber(data.effectType);
+                    effect = data.effect;
                     card.Init(data.cardName, data.amount, data.cost, effect, CardType.Normal);
                     _deck_card.Add(card);
 
                     break;
                 case "OnlyDespair":
-                    effect = card.GetEffectNumber(data.effectTypeDespair);
-                    card.Init(data.cardName, data.amount, data.cost, effect, CardType.OnlyDespair);
+                    effect = data.effectDespair;
+                    card.Init(data.cardName, data.amount, data.cost, effect, CardType.OnlyDespair, data.amount_bonus_despair);
                     _deck_card.Add(card);
 
                     break;
                 case "OnlyHope":
-                    effect = card.GetEffectNumber(data.effectTypeHope);
-                    card.Init(data.cardName, data.amount, data.cost, effect, CardType.OnlyDespair);
+                    effect = data.effectHope;
+                    card.Init(data.cardName, data.amount, data.cost, effect, CardType.OnlyDespair, data.amount_bonus_hope);
                     _deck_card.Add(card);
 
                     break;
                 case "HopeAndDespair":
-                    string hope_effect = card.GetEffectNumber(data.effectTypeDespair);
-                    string despair_effect = card.GetEffectNumber(data.effectTypeHope);
-                    card.Init(data.cardName, hope_effect, data.amountHope, data.amountHope * 2, data.costHope, despair_effect, data.amountDespair, data.amountDespair * 2, data.costDespair);
+                    string hope_effect = data.effectHope;
+                    string despair_effect = data.effectDespair;
+                    card.Init(data.cardName, hope_effect, data.amountHope, data.amount_bonus_hope, data.costHope, despair_effect, data.amountDespair, data.amount_bonus_despair, data.costDespair);
                     _deck_card.Add(card);
 
                     break;
