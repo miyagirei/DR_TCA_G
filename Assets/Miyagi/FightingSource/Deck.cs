@@ -17,7 +17,7 @@ public class Deck : MonoBehaviour
             cardLoader = GetComponent<CardLoader>();
             if (cardLoader != null)
             {
-                _deckList = cardLoader.LoadCardDeck("deck"+ PlayerPrefs.GetInt("SelectedDeck", 0)); // deck1.json を読み込む(一旦デバッグとして１つ目のデッキを読み込む)
+                _deckList = cardLoader.LoadCardDeck("deck" + PlayerPrefs.GetInt("SelectedDeck", 0)); // deck1.json を読み込む(一旦デバッグとして１つ目のデッキを読み込む)
             }
             else
             {
@@ -57,34 +57,34 @@ public class Deck : MonoBehaviour
         int index = 0;
         foreach (var data in _deckList)
         {
-            GameObject card_obj = new GameObject(index + data.cardName);
+            GameObject card_obj = new GameObject(index + data.card_name);
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();
             string effect;
             switch (data.type)
             {
                 case "Normal":
-                    effect = data.effect;
-                    card.Init(data.cardName, data.amount, data.cost, effect, CardType.Normal);
+                    effect = data.normal_effect;
+                    card.Init(data.card_name, CardType.Normal, effect, data.normal_amount, data.normal_cost);
                     _deck_card.Add(card);
 
                     break;
                 case "OnlyDespair":
-                    effect = data.effectDespair;
-                    card.Init(data.cardName, data.amount, data.cost, effect, CardType.OnlyDespair, data.amount_bonus_despair);
+                    effect = data.despair_effect;
+                    card.Init(data.card_name, CardType.OnlyDespair, effect, data.despair_amount, data.despair_cost, data.despair_bonus_amount);
                     _deck_card.Add(card);
 
                     break;
                 case "OnlyHope":
-                    effect = data.effectHope;
-                    card.Init(data.cardName, data.amount, data.cost, effect, CardType.OnlyDespair, data.amount_bonus_hope);
+                    effect = data.hope_effect;
+                    card.Init(data.card_name, CardType.OnlyHope, effect, data.hope_amount, data.hope_cost, data.hope_bonus_amount);
                     _deck_card.Add(card);
 
                     break;
                 case "HopeAndDespair":
-                    string hope_effect = data.effectHope;
-                    string despair_effect = data.effectDespair;
-                    card.Init(data.cardName, hope_effect, data.amountHope, data.amount_bonus_hope, data.costHope, despair_effect, data.amountDespair, data.amount_bonus_despair, data.costDespair);
+                    string hope_effect = data.hope_effect;
+                    string despair_effect = data.despair_effect;
+                    card.Init(data.card_name, hope_effect, data.hope_amount, data.hope_bonus_amount, data.hope_cost, despair_effect, data.despair_amount, data.despair_bonus_amount, data.despair_cost);
                     _deck_card.Add(card);
 
                     break;
@@ -105,7 +105,7 @@ public class Deck : MonoBehaviour
             int amount = Random.Range(1, 5);
             int effect_choice = Random.Range(0, 5);
             string effect = card.GetEffectNumber(effect_choice);
-            card.Init("normal", amount, amount, effect, CardType.Normal);
+            card.Init("normal", CardType.Normal, effect, amount, amount);
             _deck_card.Add(card);
         }
 
@@ -117,7 +117,7 @@ public class Deck : MonoBehaviour
             int amount = Random.Range(1, 5);
             int effect_choice = Random.Range(0, 5);
             string effect = card.GetEffectNumber(effect_choice);
-            card.Init("hope", amount, amount, effect, CardType.OnlyHope, amount * 2);
+            card.Init("hope", CardType.OnlyHope, effect, amount, amount, amount * 2);
             _deck_card.Add(card);
         }
 
@@ -129,7 +129,7 @@ public class Deck : MonoBehaviour
             int amount = Random.Range(1, 5);
             int effect_choice = Random.Range(0, 5);
             string effect = card.GetEffectNumber(effect_choice);
-            card.Init("despair", amount, amount, effect, CardType.OnlyDespair, amount * 2);
+            card.Init("despair", CardType.OnlyDespair, effect, amount, amount, amount * 2);
             _deck_card.Add(card);
         }
 

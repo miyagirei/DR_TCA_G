@@ -11,9 +11,9 @@ public class CardUI : MonoBehaviour
 
     public void SetCardData(CardData card)
     {
-        cardNameText.text = card.cardName;
+        cardNameText.text = card.card_name;
         cardTypeText.text = "Type: " + card.type;
-        cardEffectText.text = "Effect: " + (string.IsNullOrEmpty(card.effect) ? card.effectHope + " / " + card.effectDespair : card.effect);
-        cardCostText.text = "Cost: " + card.cost;
+        cardEffectText.text = "Effect: " + (string.IsNullOrEmpty(card.normal_effect) ? card.hope_effect + " / " + card.despair_effect : card.normal_effect);
+        cardCostText.text = "Cost: " + card.normal_cost;
     }
 }

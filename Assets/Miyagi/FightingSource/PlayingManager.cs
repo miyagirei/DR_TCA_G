@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayingManager : MonoBehaviour
 {
-    [SerializeField] DataController _data_controller;
+    [SerializeField] ParameterData _parameter_data_controller;
+
     const int MAX_HP = 10;
     [SerializeField] Text _result_Text;
 
@@ -38,14 +39,15 @@ public class PlayingManager : MonoBehaviour
     PlayingSituation _turn_situation = PlayingSituation.Hopeful;
 
     void ResetProgressTime() => _progress_time = 0;
-    async void Start()
+    void Start()
     {
-        CPU_THINGKING_TIME = await _data_controller.GetParamValueFloat("CPU_THINGKING_TIME");
-        SCENE_CHANGE_TIME = await _data_controller.GetParamValueFloat("SCENE_CHANGE_TIME");
-        TURN_CHANGE_TIME = await _data_controller.GetParamValueFloat("TURN_CHANGE_TIME");
-        CARD_EFFECT_DISTANCE = await _data_controller.GetParamValueFloat("CARD_EFFECT_DISTANCE");
-        TIME_UNTIL_TIME_RUNS_OUT = await _data_controller.GetParamValueFloat("TIME_UNTIL_TIME_RUNS_OUT");
-        RESET_CARDS_COUNT = await _data_controller.GetParamValueInt("RESET_CARDS_COUNT");
+        Parameter parameter_data = _parameter_data_controller.GetParameterData("parameter_data");
+        CPU_THINGKING_TIME = parameter_data.CPU_THINGKING_TIME;
+        SCENE_CHANGE_TIME = parameter_data.SCENE_CHANGE_TIME;
+        TURN_CHANGE_TIME = parameter_data.TURN_CHANGE_TIME;
+        CARD_EFFECT_DISTANCE = parameter_data.CARD_EFFECT_DISTANCE;
+        TIME_UNTIL_TIME_RUNS_OUT = parameter_data.TIME_UNTIL_TIME_RUNS_OUT;
+        RESET_CARDS_COUNT = parameter_data.RESET_CARD_COUNT;
 
         ResetProgressTime();
         _conclusion = false;
@@ -56,18 +58,16 @@ public class PlayingManager : MonoBehaviour
 
         _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
         RandomolyChooseTurnPlayer();
+        Debug.Log(RESET_CARDS_COUNT);
     }
 
     public float GetTimer() => TIME_UNTIL_TIME_RUNS_OUT - _progress_time;
     void Update()
     {
-        if (_data_controller.isDataError()) {
+        if (_parameter_data_controller.GetParameterData("parameter_data") == null) {
             SceneManager.LoadScene("ResultScene");
             SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        if (!_data_controller.isWaiting()) {
-            return;
+            Debug.LogWarning("parameter_data‚ª‘¶Ý‚µ‚Ü‚¹‚ñ");
         }
 
         _progress_time += Time.deltaTime;
@@ -137,7 +137,7 @@ public class PlayingManager : MonoBehaviour
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().IsPlayedCard(player);
             played_card.Effect(player , enemy , player.GetCardPos() , player.GetCardScale() , _turn_situation);
-            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetEffectAmount(played_card.GetEffectByCondition(player)) + ")", Color.green);
+            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player , _turn_situation) + ")", Color.green);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
@@ -170,7 +170,7 @@ public class PlayingManager : MonoBehaviour
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().CheckMostExpensiveCardYouCanPay(player);
             played_card.Effect(player, enemy, player.GetCardPos(), player.GetCardScale() , _turn_situation);
-            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetEffectAmount(played_card.GetEffectByCondition(player)) + ")", Color.red);
+            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player, _turn_situation) + ")", Color.red);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 

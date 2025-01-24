@@ -97,22 +97,22 @@ public class DataController : MonoBehaviour
         foreach (JObject row in data)
         {
             CardData card_data = new CardData();
-            card_data.cardName = row["card"].ToString();
+            card_data.card_name = row["card"].ToString();
             card_data.type = row["card_type"].ToString();
-            card_data.effect = row["normal_effect"].ToString();
-            card_data.amount = int.Parse(row["normal_amount"].ToString());
-            card_data.cost = int.Parse(row["normal_cost"].ToString());
-            card_data.effectHope = row["hope_effect"].ToString();
-            card_data.amountHope = int.Parse(row["hope_amount"].ToString());
-            card_data.costHope = int.Parse(row["hope_cost"].ToString());
-            card_data.amount_bonus_hope = int.Parse(row["hope_bonus_amount"].ToString());
-            card_data.effectDespair = row["despair_effect"].ToString();
-            card_data.amountDespair = int.Parse(row["despair_amount"].ToString());
-            card_data.costHope = int.Parse(row["despair_cost"].ToString());
-            card_data.amount_bonus_despair = int.Parse(row["despair_bonus_amount"].ToString());
+            card_data.normal_effect = row["normal_effect"].ToString();
+            card_data.normal_amount = int.Parse(row["normal_amount"].ToString());
+            card_data.normal_cost = int.Parse(row["normal_cost"].ToString());
+            card_data.hope_effect = row["hope_effect"].ToString();
+            card_data.hope_amount = int.Parse(row["hope_amount"].ToString());
+            card_data.hope_cost = int.Parse(row["hope_cost"].ToString());
+            card_data.hope_bonus_amount = int.Parse(row["hope_bonus_amount"].ToString());
+            card_data.despair_effect = row["despair_effect"].ToString();
+            card_data.despair_amount = int.Parse(row["despair_amount"].ToString());
+            card_data.hope_cost = int.Parse(row["despair_cost"].ToString());
+            card_data.despair_bonus_amount = int.Parse(row["despair_bonus_amount"].ToString());
             string image = row["image"].ToString();//âÊëúÉfÅ[É^Ç‹Çæì«Ç›çûÇﬂÇ‹ÇπÇÒ
 
-            paramDataCard.Add(card_data.cardName, card_data);
+            paramDataCard.Add(card_data.card_name, card_data);
         }
     }
 

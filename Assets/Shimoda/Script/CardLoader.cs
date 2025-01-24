@@ -98,19 +98,19 @@ public class CardLoader : MonoBehaviour
 [System.Serializable]
 public class CardData
 {
-    public string cardName;
+    public string card_name;
     public string type;
-    public string effect;
-    public int amount;
-    public int cost;
-    public string effectHope;
-    public int amountHope;
-    public int costHope;
-    public int amount_bonus_hope;
-    public string effectDespair;
-    public int amountDespair;
-    public int costDespair;
-    public int amount_bonus_despair;
+    public string normal_effect;
+    public int normal_amount;
+    public int normal_cost;
+    public string hope_effect;
+    public int hope_amount;
+    public int hope_cost;
+    public int hope_bonus_amount;
+    public string despair_effect;
+    public int despair_amount;
+    public int despair_cost;
+    public int despair_bonus_amount;
 }
 
 [System.Serializable]

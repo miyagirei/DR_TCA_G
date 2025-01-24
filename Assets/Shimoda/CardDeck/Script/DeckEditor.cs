@@ -111,7 +111,7 @@ public class DeckEditor : MonoBehaviour
     void AddCardToDeck(CardData card)
     {
             // デッキに同名のカードが4枚未満であれば追加
-            int cardCount = deckList.FindAll(c => c.cardName == card.cardName).Count;
+            int cardCount = deckList.FindAll(c => c.card_name == card.card_name).Count;
             if (cardCount < 4) // 同名カードが4枚未満であれば追加
             {
                 deckList.Add(card);

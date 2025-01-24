@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class Hands : MonoBehaviour
 {
-    [HideInInspector] DataController _data_controller;
+    ParameterData _parameter_data_controller;
     [SerializeField]List<Card> _hands_card = new List<Card>();
     [SerializeField]GameObject _card_prefab;
 
     [HideInInspector] float TRASH_DECIDED_HEIGHT = 0;
     [HideInInspector] float TRASH_UNDECIDED_HEIGHT = 0;
-    async void Start()
+    void Start()
     {
-        _data_controller = GameObject.Find("DataController").GetComponent<DataController>();
-        TRASH_DECIDED_HEIGHT = await _data_controller.GetParamValueFloat("TRASH_DECIDED_HEIGHT");
-        TRASH_UNDECIDED_HEIGHT = await _data_controller.GetParamValueFloat("TRASH_UNDECIDED_HEIGHT");
+        _parameter_data_controller = GameObject.Find("ParameterDataController").GetComponent<ParameterData>();
+        Parameter parameter_data = _parameter_data_controller.GetParameterData("parameter_data");
+
+        TRASH_DECIDED_HEIGHT = parameter_data.TRASH_DECIDED_HEIGHT;
+        TRASH_UNDECIDED_HEIGHT = parameter_data.TRASH_UNDECIDED_HEIGHT;
     }
 
     void Update()
@@ -89,11 +91,11 @@ public class Hands : MonoBehaviour
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
         if (origin.GetCardType() == CardType.HopeAndDespair) {
-            new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetEffectAmount(origin.GetHopeEffect()), origin.GetEffectBonusAmount(origin.GetHopeEffect()), origin.GetCostOfHope(), 
-                origin.GetDespairEffect() , origin.GetEffectAmount(origin.GetDespairEffect()) , origin.GetEffectBonusAmount(origin.GetDespairEffect()), origin.GetCostOfDespair());
+            new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetHopeAmount(), origin.GetHopeBonusAmount(), origin.GetCostOfHope(), 
+                origin.GetDespairEffect() , origin.GetDespairAmount() , origin.GetDespairBonusAmount(), origin.GetCostOfDespair());
         }
         else {
-            new_card.Init(origin.GetName(), origin.GetEffectAmount(origin.GetEffectByCardType()), origin.GetCostByCardType(), origin.GetEffectByCardType(), origin.GetCardType(), origin.GetEffectBonusAmount(origin.GetEffectByCardType()));
+            new_card.Init(origin.GetName(), origin.GetCardType(), origin.GetEffectByCardType(origin.GetCardType()), origin.GetAmountByCardType(origin.GetCardType()),origin.GetCostByCardType(origin.GetCardType()), origin.GetBonusAmountByCardType(origin.GetCardType()));
         }
 
         new_card.CreatePopup();
@@ -141,28 +143,6 @@ public class Hands : MonoBehaviour
         int choiceNum = _hands_card.IndexOf(card);
         _hands_card.RemoveAt(choiceNum);
         card.Trash();
-    }
-
-    //一番ダメージが高いかつ、コストが払えるカードを取得する
-    public Card checkHighDamageCard()
-    {
-        if (_hands_card.Count == 0) {
-            return null;
-        }
-        Card high_card = new Card();
-        bool change = false;
-        for (int i = 0; i < _hands_card.Count; i++) {
-            if(high_card.GetDamage() < _hands_card[i].GetDamage() && _hands_card.Count > _hands_card[i].GetCost()) { 
-                high_card = _hands_card[i];
-                change = true;
-            }
-        }
-
-        if (!change) {
-            return null;
-        }
-
-        return high_card;
     }
 
     public Card CheckMostExpensiveCardYouCanPay(Player player) {

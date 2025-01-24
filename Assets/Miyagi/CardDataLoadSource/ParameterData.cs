@@ -42,13 +42,17 @@ public class ParameterData : MonoBehaviour
         TRASH_UNDECIDED_HEIGHT = await _data_controller.GetParamValueFloat("TRASH_UNDECIDED_HEIGHT");
         TIME_UNTIL_TIME_RUNS_OUT = await _data_controller.GetParamValueFloat("TIME_UNTIL_TIME_RUNS_OUT");
         CARD_MOVING_SPEED = await _data_controller.GetParamValueFloat("CARD_MOVING_SPEED");
-        RESET_CARD_COUNT = await _data_controller.GetParamValueInt("RESET_CARD_COUNT");
+        RESET_CARD_COUNT = await _data_controller.GetParamValueInt("RESET_CARDS_COUNT");
         VERSION = await _data_controller.GetParamValueFloat("VERSION");
         _loaded = true;
     }
 
     void Update()
     {
+        if (!isLoaded()) {
+            return;
+        }
+
         if (!_data_controller.isWaiting()) {
             return;
         }
@@ -79,9 +83,6 @@ public class ParameterData : MonoBehaviour
             string json = File.ReadAllText(file_path);
 
             Parameter parameter = JsonUtility.FromJson<Parameter>(json);
-            Debug.Log(file_path);
-
-            Debug.Log("Success");
             return parameter;
         }
         else
