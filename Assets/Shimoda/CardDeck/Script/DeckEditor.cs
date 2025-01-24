@@ -15,7 +15,7 @@ public class DeckEditor : MonoBehaviour
     private List<CardData> cardList = new List<CardData>();
     private List<CardData> deckList = new List<CardData>(); // デッキに追加されたカード
 
-    private CardLoader cardLoader;
+    [SerializeField]private CardLoader cardLoader;
     private GridLayoutGroup cardGridLayout;
     private GridLayoutGroup deckGridLayout;
     private string[] deckNames = { "Deck1", "Deck2", "Deck3", "Deck4", "Deck5", "Deck6" };
@@ -31,7 +31,7 @@ public class DeckEditor : MonoBehaviour
         cardGridLayout = cardListParent.GetComponent<GridLayoutGroup>();
         deckGridLayout = deckListParent.GetComponent<GridLayoutGroup>();
 
-        LoadCardList("cardList"); // 任意のカードリストを読み込む
+        cardList = cardLoader.GetNetworkCardData("card_data");
         LoadDeck(); // 初期デッキを読み込む
         DisplayCards(); // カードリストを表示
     }

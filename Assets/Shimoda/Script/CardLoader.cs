@@ -60,9 +60,14 @@ public class CardLoader : MonoBehaviour
         return index;
     }
 
-    public void LoadNetworkCardData(string json_file_name) {
+    public void Get(string json_file_name) {
+        cardList = GetNetworkCardData(json_file_name);
+    }
+
+    public List<CardData> GetNetworkCardData(string json_file_name)
+    {
         string file_path = Path.Combine(Application.streamingAssetsPath, json_file_name + ".json");
-        
+
         if (File.Exists(file_path))
         {
             string json = File.ReadAllText(file_path);
@@ -71,12 +76,13 @@ public class CardLoader : MonoBehaviour
             Debug.Log(card_list_wrapper.cards);
             Debug.Log(file_path);
 
-            cardList = card_list_wrapper.cards;
             Debug.Log("Success");
+            return card_list_wrapper.cards;
         }
-        else {
+        else
+        {
             Debug.LogError("ÉtÉ@ÉCÉãÇ™ë∂ç›ÇµÇ‹ÇπÇÒ");
-            return;
+            return null;
         }
 
 
