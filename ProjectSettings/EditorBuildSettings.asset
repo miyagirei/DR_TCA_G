@@ -6,18 +6,24 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Shimoda/Home/HomeScene.unity
+    path: Assets/Scene/HomeScene.unity
     guid: e125353a7ae55d749aad4ea97cdf5eb4
   - enabled: 1
-    path: Assets/Shimoda/CardList/CardListScene.unity
+    path: Assets/Scene/CardListScene.unity
     guid: 0f272fb1114204145b50668b837c18ef
   - enabled: 1
-    path: Assets/Shimoda/CardDeck/CardDeckScene.unity
+    path: Assets/Scene/CardDeckScene.unity
     guid: d2f10eeb0d5d52244ba5f1ab8f7dd77c
   - enabled: 1
-    path: Assets/Shimoda/ChooseDeck/ChooseDeckScene.unity
+    path: Assets/Scene/ChooseDeckScene.unity
     guid: a47d7d6dba61d0a4d9904ea72d69820d
   - enabled: 1
-    path: Assets/Miyagi/FightingSource/GameFightingScene.unity
+    path: Assets/Scene/GameFightingScene.unity
     guid: 4c82ac730c5b01345bd6625334b822ad
+  - enabled: 1
+    path: Assets/Scene/CardDataLoadScene.unity
+    guid: 2352ffd335b9606499d55b3c9089b693
+  - enabled: 1
+    path: Assets/Scene/ResultScene.unity
+    guid: 0818231549d876442875719046853a8e
   m_configObjects: {}
