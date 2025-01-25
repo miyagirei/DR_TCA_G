@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.Networking;
+using System.Net;
 
 public class ImageDownloader : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class ImageDownloader : MonoBehaviour
 
     private void Start()
     {
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         _file_id = null;
         if (!Directory.Exists(_folder_path)) {
             Directory.CreateDirectory(_folder_path);
@@ -23,6 +25,13 @@ public class ImageDownloader : MonoBehaviour
     public void DownloadAndSave(string png_name , string file_id)
     {
         string file_name = png_name + ".png";
+        string image_path = Path.Combine(Application.streamingAssetsPath, "Image", file_name);
+        if (File.Exists(image_path)) {
+            _is_finish = true;
+            Debug.Log("ë∂ç›ÇµÇƒÇ¢ÇÈÉtÉ@ÉCÉãÇ≈Ç∑");
+            return;
+        }
+
         string save_path = Path.Combine(_folder_path, file_name);
 
         if (png_name == null || file_id == null) {

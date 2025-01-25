@@ -14,6 +14,7 @@ public class LoadingCardData : MonoBehaviour
     Queue<CardData> _download_queue = new Queue<CardData>();
     bool _is_image_downloading = false;
     int _download_count = 0;
+    bool _is_download_start = false;
 
     void Start() {
         _parameter_data = GameObject.Find("ParameterData").GetComponent<ParameterData>();
@@ -23,6 +24,7 @@ public class LoadingCardData : MonoBehaviour
         
         _null_check = true;
         _is_image_downloading = false;
+        _is_download_start = false;
         _parameter_data.LoadParameterData();
     }
 
@@ -41,10 +43,9 @@ public class LoadingCardData : MonoBehaviour
             _null_check = false;
         }
 
-        if (_card_data_controller.isCompleteSave() ) {
+        if (_card_data_controller.isCompleteSave()) {
             _card_data_controller.SaveCardDataList();
             EnqueueDownloads();
-        
         }
 
         if(!_is_image_downloading && _download_queue.Count > 0)
@@ -63,7 +64,11 @@ public class LoadingCardData : MonoBehaviour
     }
 
     void EnqueueDownloads() {
-        _download_count = _card_loader.GetNetworkCardData("card_data").Count;
+        if (!_is_download_start)
+        {
+            _download_count = _card_loader.GetNetworkCardData("card_data").Count;
+            _is_download_start = true;
+        }
         Debug.Log("download:" + _download_count);
         foreach (CardData card_data in _card_loader.GetNetworkCardData("card_data"))
         {
@@ -77,6 +82,7 @@ public class LoadingCardData : MonoBehaviour
             CardData current_card = _download_queue.Dequeue();
             _image_downloader.DownloadAndSave(current_card.card_name, current_card.image);
             while (!_image_downloader.IsFinish()) {
+                Debug.Log("not_finish");
                 yield return null;
             }
         }
@@ -86,5 +92,5 @@ public class LoadingCardData : MonoBehaviour
         _is_image_downloading = false;
     }
 
-    public void ReduceDownloadCount() => _download_count--;
+    public void ReduceDownloadCount() => _download_count-=1;
 }
