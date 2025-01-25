@@ -13,7 +13,8 @@
             "despair_effect": "",
             "despair_amount": 0,
             "despair_cost": 0,
-            "despair_bonus_amount": 0
+            "despair_bonus_amount": 0,
+            "image": "1gfLwSlrwI91Wx-8VXtke_y5WqwqnufOR"
         },
         {
             "card_name": "test_hope",
@@ -28,7 +29,8 @@
             "despair_effect": "",
             "despair_amount": 0,
             "despair_cost": 0,
-            "despair_bonus_amount": 0
+            "despair_bonus_amount": 0,
+            "image": "1gfLwSlrwI91Wx-8VXtke_y5WqwqnufOR"
         },
         {
             "card_name": "test_despair",
@@ -43,7 +45,8 @@
             "despair_effect": "Draw",
             "despair_amount": 2,
             "despair_cost": 0,
-            "despair_bonus_amount": 4
+            "despair_bonus_amount": 4,
+            "image": "1gfLwSlrwI91Wx-8VXtke_y5WqwqnufOR"
         },
         {
             "card_name": "test_both",
@@ -58,7 +61,8 @@
             "despair_effect": "Attack",
             "despair_amount": 3,
             "despair_cost": 0,
-            "despair_bonus_amount": 9
+            "despair_bonus_amount": 9,
+            "image": "1gfLwSlrwI91Wx-8VXtke_y5WqwqnufOR"
         }
     ]
 }

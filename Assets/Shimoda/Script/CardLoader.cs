@@ -73,10 +73,8 @@ public class CardLoader : MonoBehaviour
             string json = File.ReadAllText(file_path);
 
             CardListWrapper card_list_wrapper = JsonUtility.FromJson<CardListWrapper>(json);
-            Debug.Log(card_list_wrapper.cards);
-            Debug.Log(file_path);
-
-            Debug.Log("Success");
+            //Debug.Log(card_list_wrapper.cards);
+            //Debug.Log(file_path);
             return card_list_wrapper.cards;
         }
         else
@@ -111,6 +109,7 @@ public class CardData
     public int despair_amount;
     public int despair_cost;
     public int despair_bonus_amount;
+    public string image;
 }
 
 [System.Serializable]

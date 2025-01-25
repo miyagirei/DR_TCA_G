@@ -110,7 +110,7 @@ public class DataController : MonoBehaviour
             card_data.despair_amount = int.Parse(row["despair_amount"].ToString());
             card_data.hope_cost = int.Parse(row["despair_cost"].ToString());
             card_data.despair_bonus_amount = int.Parse(row["despair_bonus_amount"].ToString());
-            string image = row["image"].ToString();//‰æ‘œƒf[ƒ^‚Ü‚¾“Ç‚İ‚ß‚Ü‚¹‚ñ
+            card_data.image = row["image"].ToString();
 
             paramDataCard.Add(card_data.card_name, card_data);
         }
