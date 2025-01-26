@@ -84,25 +84,6 @@ public class Hands : MonoBehaviour
         }
     }
 
-    Texture2D ResizeTexture(Texture2D source, int target_width, int target_heihgt) {
-        Texture2D resized = new Texture2D(target_width, target_heihgt);
-        Graphics.ConvertTexture(source, resized);
-        //Color[] pixels = resized.GetPixels(0, 0, target_width, target_heihgt);
-
-        //for (int y = 0; y < target_heihgt; y++) {
-        //    for (int x = 0; x < target_width; x++) {
-        //        float u = (float)x / target_width;
-        //        float v = (float)y / target_heihgt;
-        //        pixels[y * target_width + x] = source.GetPixelBilinear(u, v);
-        //    }
-        //}
-
-        //resized.SetPixels(pixels);
-        //resized.Apply();
-
-        return resized;
-    }
-
     //
     private void ApplyTextureWithPixelsPerUnit(Texture2D texture, float pixels_per_unit , GameObject obj)
     {
