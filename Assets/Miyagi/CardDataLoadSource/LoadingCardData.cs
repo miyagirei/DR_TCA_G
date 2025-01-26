@@ -53,7 +53,7 @@ public class LoadingCardData : MonoBehaviour
             StartCoroutine(ProcessDownloadQueue());
         }
 
-        if (_image_downloader.IsFinish() && _download_queue.Count == 0 && _download_count <= 0) {
+        if (_download_queue.Count == 0 && _download_count <= 0) {
             SceneManager.LoadScene("HomeScene");
         }
 
@@ -67,28 +67,31 @@ public class LoadingCardData : MonoBehaviour
         if (!_is_download_start)
         {
             _download_count = _card_loader.GetNetworkCardData("card_data").Count;
+            foreach (CardData card_data in _card_loader.GetNetworkCardData("card_data"))
+            {
+                _download_queue.Enqueue(card_data);
+            }
             _is_download_start = true;
         }
         Debug.Log("download:" + _download_count);
-        foreach (CardData card_data in _card_loader.GetNetworkCardData("card_data"))
-        {
-            _download_queue.Enqueue(card_data);
-        }
     }
 
     IEnumerator ProcessDownloadQueue() {
         _is_image_downloading = true;
         while (_download_queue.Count > 0) {
-            CardData current_card = _download_queue.Dequeue();
+            CardData current_card = _download_queue.Peek();
+            Debug.Log(current_card.card_name + ":"+ _download_count );
             _image_downloader.DownloadAndSave(current_card.card_name, current_card.image);
             while (!_image_downloader.IsFinish()) {
                 Debug.Log("not_finish");
                 yield return null;
             }
+            _image_downloader.resetFinish();
+            CardData load_card = _download_queue.Dequeue();
+            ReduceDownloadCount();
+            Debug.Log(_download_count + ":" + load_card.card_name);
         }
 
-        ReduceDownloadCount();
-        Debug.Log(_download_count);
         _is_image_downloading = false;
     }
 

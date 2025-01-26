@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 368091840779260069}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -2, z: 0}
-  m_LocalScale: {x: 3.5, y: 5, z: 1}
+  m_LocalScale: {x: 2, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -98,17 +98,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee7e7805d2873994aae9166a6b6e0796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MOVING_SPEED: 2
   _popup_prefab: {fileID: 6799928403003730088, guid: 683bce80b3331024ea83faefd1d387cc, type: 3}
   _is_hovering: 0
   _card_name: 
-  _damage_dealt: 0
-  _cost: 0
+  _card_type: 0
+  _normal_effect: 
+  _normal_amount: 0
+  _normal_cost: 0
+  _effect_hope: 
+  _hope_amount: 0
+  _cost_hope: 0
+  _hope_bonus_amount: 0
+  _effect_despair: 
+  _despair_amount: 0
+  _cost_despair: 0
+  _despair_bonus_amount: 0
   _return_pos: {x: 0, y: 0, z: 0}
   _is_card_played: 0
   _is_dragging: 0
   _draggable: 0
   _can_selected: 0
   _is_discarded: 0
+  _is_normal: 1
+  _is_moving: 0
 --- !u!61 &7190922119030279315
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -51,7 +51,7 @@ public class PlayingManager : MonoBehaviour
 
         ResetProgressTime();
         _conclusion = false;
-        _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4) , new Vector3(2.8f , 4 , 1));
+        _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4) , new Vector3(2.8f , 4f , 1));
         _turn_player = _player1;
 
         _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2 , new Vector3(3, 0) , new Vector3(0.7f, 1, 1));

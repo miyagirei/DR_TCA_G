@@ -12,6 +12,7 @@ public class ImageDownloader : MonoBehaviour
     bool _is_finish = false;
 
     public bool IsFinish() => _is_finish;
+    public void resetFinish() => _is_finish = false;
 
     private void Start()
     {
@@ -34,7 +35,8 @@ public class ImageDownloader : MonoBehaviour
 
         string save_path = Path.Combine(_folder_path, file_name);
 
-        if (png_name == null || file_id == null) {
+        if (png_name == null || file_id == null || png_name == "" || file_id == "") {
+            _is_finish = true;
             Debug.LogError("ğŒ‚ğ–‚½‚µ‚Ä‚¢‚È‚¢");
         }
 

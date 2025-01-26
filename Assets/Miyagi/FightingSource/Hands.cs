@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.IO;
 public class Hands : MonoBehaviour
 {
     ParameterData _parameter_data_controller;
@@ -84,12 +84,56 @@ public class Hands : MonoBehaviour
         }
     }
 
+    Texture2D ResizeTexture(Texture2D source, int target_width, int target_heihgt) {
+        Texture2D resized = new Texture2D(target_width, target_heihgt);
+        Graphics.ConvertTexture(source, resized);
+        //Color[] pixels = resized.GetPixels(0, 0, target_width, target_heihgt);
+
+        //for (int y = 0; y < target_heihgt; y++) {
+        //    for (int x = 0; x < target_width; x++) {
+        //        float u = (float)x / target_width;
+        //        float v = (float)y / target_heihgt;
+        //        pixels[y * target_width + x] = source.GetPixelBilinear(u, v);
+        //    }
+        //}
+
+        //resized.SetPixels(pixels);
+        //resized.Apply();
+
+        return resized;
+    }
+
+    //
+    private void ApplyTextureWithPixelsPerUnit(Texture2D texture, float pixels_per_unit , GameObject obj)
+    {
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixels_per_unit);
+
+        obj.GetComponent<SpriteRenderer>().sprite = sprite;
+    }
+
     //カードを生成し、整列させる//大体はデッキから手札に移したときに使われる
     public void CreateCard(Card origin , Vector3 pos , Vector3 scale , Deck deck) {
         int new_card_count = _hands_card.Count - 1;
         GameObject card_obj = Instantiate(_card_prefab, new Vector3(new_card_count * scale.x, pos.y) , Quaternion.identity);
         card_obj.transform.SetParent(this.transform);
         Card new_card = card_obj.GetComponent<Card>();
+
+        string file_name = origin.GetName() + ".png";
+        string image_path = Path.Combine(Application.streamingAssetsPath, "Image", file_name);
+
+        if (File.Exists(image_path))
+        {
+            byte[] image_data = File.ReadAllBytes(image_path);
+            Texture2D texture = new Texture2D(2, 2);
+            texture.LoadImage(image_data);
+            ApplyTextureWithPixelsPerUnit(texture, 2560 , card_obj);
+            Debug.Log(file_name + "success");
+        }
+        else {
+            Debug.Log(file_name + "failed");
+        }
+
+        
         if (origin.GetCardType() == CardType.HopeAndDespair) {
             new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetHopeAmount(), origin.GetHopeBonusAmount(), origin.GetCostOfHope(), 
                 origin.GetDespairEffect() , origin.GetDespairAmount() , origin.GetDespairBonusAmount(), origin.GetCostOfDespair());
