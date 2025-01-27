@@ -827,6 +827,7 @@ MonoBehaviour:
   UI_Playlog: {fileID: 1334525053}
   UI_Particle_Side_Left: {fileID: 1719009053}
   UI_Particle_Side_Right: {fileID: 1512464800}
+  Image_Player: {fileID: 1188913974}
 --- !u!4 &392828741
 Transform:
   m_ObjectHideFlags: 0
@@ -1351,6 +1352,7 @@ MonoBehaviour:
   UI_Enemy_HP: {fileID: 1510139332}
   UI_Enemy_HP_Image: {fileID: 1564830302}
   UI_Enemy_Condition: {fileID: 1680231849}
+  Image_Enemy: {fileID: 1662469764}
 --- !u!1 &923407663
 GameObject:
   m_ObjectHideFlags: 0

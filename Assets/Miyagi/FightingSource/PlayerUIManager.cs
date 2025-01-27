@@ -17,6 +17,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject UI_Playlog;
     [SerializeField] ParticleSystem UI_Particle_Side_Left;
     [SerializeField] ParticleSystem UI_Particle_Side_Right;
+    [SerializeField] SpriteRenderer Image_Player;
 
     int _current_hp;
     float _hp_cooltime;
@@ -174,5 +175,19 @@ public class PlayerUIManager : MonoBehaviour
     }
     void PlaylogDisplaySwitching() {
         UI_Playlog.SetActive(!UI_Playlog.activeSelf);
+    }
+
+    public void ChangePlayerImage(CharacterType character) {
+        CharacterTypeInfomation character_info = new CharacterTypeInfomation();
+        Image_Player.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character)));
+    }
+
+    Sprite TextureToSprite(Texture2D texture)
+    {
+        return Sprite.Create(
+            texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 1.0f)
+        );
     }
 }

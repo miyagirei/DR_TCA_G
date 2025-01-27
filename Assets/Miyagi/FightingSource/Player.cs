@@ -15,8 +15,9 @@ public class Player {
 
     Deck _deck;
     Hands _hands;
+    CharacterType _character_type;
 
-    public Player(string name , int hp , bool is_current_player, Deck deck , Hands hands , Vector3 card_pos , Vector3 card_scale) {
+    public Player(string name , int hp , bool is_current_player, Deck deck , Hands hands , Vector3 card_pos , Vector3 card_scale , CharacterType character) {
         _name = name;
         _max_hp = hp;
         _hp = hp;
@@ -28,6 +29,7 @@ public class Player {
         _is_despair = false;
         _card_pos = card_pos;
         _card_scale = card_scale;
+        _character_type = character;
     }
 
     public string GetName() => _name;
@@ -45,7 +47,8 @@ public class Player {
     public bool GetDespairCondition() => _is_despair;//絶望状態かどうかを取得
     public Vector3 GetCardPos() => _card_pos;//カードの設置位置を取得
     public Vector3 GetCardScale() => _card_scale;//カードの設置サイズを取得
-
+    public void SetCharacterType(CharacterType character) => _character_type = character;//キャラクタータイプを設定する
+    public CharacterType GetCharacterType() => _character_type;//キャラクタータイプを取得する
     //HPを操作する//最大以上の場合は最大に変更する
     public void AddHP(int value) {
         _hp += value;

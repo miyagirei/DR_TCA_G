@@ -8,6 +8,7 @@ public class EnemyUIManager : MonoBehaviour
     [SerializeField] Text UI_Enemy_HP;
     [SerializeField] Slider UI_Enemy_HP_Image;
     [SerializeField] Text UI_Enemy_Condition;
+    [SerializeField] SpriteRenderer Image_Enemy;
 
     int _current_hp;
     float _hp_cooltime;
@@ -74,4 +75,18 @@ public class EnemyUIManager : MonoBehaviour
         UI_Enemy_Condition.text = player.GetName() + ":" + condition;
     }
 
+    public void ChangePlayerImage(CharacterType character)
+    {
+        CharacterTypeInfomation character_info = new CharacterTypeInfomation();
+        Image_Enemy.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character)));
+    }
+
+    Sprite TextureToSprite(Texture2D texture)
+    {
+        return Sprite.Create(
+            texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 1.0f)
+        );
+    }
 }
