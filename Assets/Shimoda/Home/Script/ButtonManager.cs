@@ -15,6 +15,11 @@ public class ButtonManager : MonoBehaviour
     public GameObject buttonStoryAndBattle;
     public GameObject buttonPlayerAndSetting;
 
+    [SerializeField] Button _button_exit;
+    [SerializeField] GameObject _check_the_end_panel;
+    [SerializeField] Button _button_yes;
+    [SerializeField] Button _button_no;
+
     void Start()
     {
         buttonCard.onClick.AddListener(OnCardButtonClicked);
@@ -24,6 +29,10 @@ public class ButtonManager : MonoBehaviour
         buttonCardList.onClick.AddListener(OnCardListButtonClicked);
         buttonDeck.onClick.AddListener(OnCardDeckButtonClicked);
         buttonBattleToBattle.onClick.AddListener(OnBattleToBattleButtonClicked);
+
+        _button_exit.onClick.AddListener(() =>OnCheckTheEndButton(true));
+        _button_yes.onClick.AddListener(OnExitButtonClicked);
+        _button_no.onClick.AddListener(() =>OnCheckTheEndButton(false));
 
         buttonDeckAndList.SetActive(false);
         buttonStoryAndBattle.SetActive(false);
@@ -77,5 +86,18 @@ public class ButtonManager : MonoBehaviour
     void OnBattleToBattleButtonClicked()
     {
         SceneManager.LoadScene("ChooseDeckScene");
+    }
+
+    void OnExitButtonClicked()
+    {
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();//ゲームプレイ終了
+        #endif
+    }
+
+    void OnCheckTheEndButton(bool view) {
+        _check_the_end_panel.gameObject.SetActive(view);
     }
 }
