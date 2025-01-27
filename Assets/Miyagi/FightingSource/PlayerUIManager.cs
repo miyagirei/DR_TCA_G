@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PlayerUIManager : MonoBehaviour
 {
     [SerializeField] Text UI_Player_HP;
-    [SerializeField] Text UI_Player_Condition;
+    [SerializeField] Slider UI_Player_HP_Image;
     [SerializeField] Button UI_Player_Turn_Change_Button;
     [SerializeField] GameObject UI_Turn_Change_Panel;
     [SerializeField] Text UI_Turn_Change_Player;
@@ -17,6 +17,9 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject UI_Playlog;
     [SerializeField] ParticleSystem UI_Particle_Side_Left;
     [SerializeField] ParticleSystem UI_Particle_Side_Right;
+
+    int _current_hp;
+    float _hp_cooltime;
     private void Start()
     {
         AssingPlaylogButton();
@@ -26,6 +29,8 @@ public class PlayerUIManager : MonoBehaviour
         module_right.startColor = Color.clear;
         UI_Particle_Side_Left.Play();
         UI_Particle_Side_Right.Play();
+        _current_hp = 100;
+        _hp_cooltime = 0;
     }
     public void Display(Player player)
     {
@@ -39,7 +44,22 @@ public class PlayerUIManager : MonoBehaviour
         {
             return;
         }
-        UI_Player_HP.text = player.GetName() + ":" + $"{player.GetHP()}";
+        UI_Player_HP.text = "" + player.GetHP();
+        if (_current_hp > player.GetHP() * 10)
+        {
+            _hp_cooltime += Time.deltaTime;
+            if (_hp_cooltime >= 0.1) {
+                _hp_cooltime = 0;
+                _current_hp--;
+            }
+        }
+        else {
+            _current_hp = player.GetHP() * 10;
+        }
+
+        UI_Player_HP_Image.value = _current_hp;
+        UI_Player_HP_Image.maxValue = player.GetMaxHP() * 10;
+        UI_Player_HP_Image.minValue = 0;
     }
 
 
@@ -49,11 +69,9 @@ public class PlayerUIManager : MonoBehaviour
         {
             return;
         }
-        string condition = "no info";
 
         if (player.GetNormalCondition())
         {
-            condition = "Normal";
             ChangeParticleColor(UI_Particle_Side_Left, Color.clear) ;
             ChangeParticleColor(UI_Particle_Side_Right, Color.clear);
             UI_Particle_Side_Left.GetComponent<Renderer>().enabled = false;
@@ -61,7 +79,6 @@ public class PlayerUIManager : MonoBehaviour
         }
         else if (player.GetHopeCondition())
         {
-            condition = "Hope";
             ChangeParticleColor(UI_Particle_Side_Left , Color.white);
             ChangeParticleColor(UI_Particle_Side_Right , Color.white);
             UI_Particle_Side_Left.GetComponent<Renderer>().enabled = true;
@@ -69,14 +86,11 @@ public class PlayerUIManager : MonoBehaviour
         }
         else if (player.GetDespairCondition())
         {
-            condition = "Despair";
             ChangeParticleColor(UI_Particle_Side_Left, Color.black);
             ChangeParticleColor(UI_Particle_Side_Right, Color.black);
             UI_Particle_Side_Left.gameObject.GetComponent<Renderer>().enabled = true;
             UI_Particle_Side_Right.gameObject.GetComponent<Renderer>().enabled = true;
         }
-
-        UI_Player_Condition.text = player.GetName() + ":" + condition;
     }
 
     void ChangeParticleColor(ParticleSystem particle , Color color) {

@@ -6,7 +6,11 @@ using UnityEngine.UI;
 public class EnemyUIManager : MonoBehaviour
 {
     [SerializeField] Text UI_Enemy_HP;
+    [SerializeField] Slider UI_Enemy_HP_Image;
     [SerializeField] Text UI_Enemy_Condition;
+
+    int _current_hp;
+    float _hp_cooltime;
     void Start()
     {
 
@@ -24,7 +28,25 @@ public class EnemyUIManager : MonoBehaviour
         {
             return;
         }
-        UI_Enemy_HP.text = player.GetName() + ":" + $"{player.GetHP()}";
+
+        UI_Enemy_HP.text = "" + player.GetHP();
+        if (_current_hp > player.GetHP() * 10)
+        {
+            _hp_cooltime += Time.deltaTime;
+            if (_hp_cooltime >= 0.1)
+            {
+                _hp_cooltime = 0;
+                _current_hp--;
+            }
+        }
+        else
+        {
+            _current_hp = player.GetHP() * 10;
+        }
+
+        UI_Enemy_HP_Image.value = _current_hp;
+        UI_Enemy_HP_Image.maxValue = player.GetMaxHP() * 10;
+        UI_Enemy_HP_Image.minValue = 0;
     }
 
 

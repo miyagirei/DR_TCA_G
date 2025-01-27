@@ -33,7 +33,7 @@ public class Player {
     public string GetName() => _name;
     public int GetHP() => _hp;//Œ»İHP‚ğæ“¾
     public void SetHP(int hp) => _hp = hp;//HP‚ğ‘€ì‚·‚é
-    public int GetMaxHP => _max_hp;//Å‘åHP‚ğæ“¾
+    public int GetMaxHP() => _max_hp;//Å‘åHP‚ğæ“¾
     public Deck GetDeck() => _deck;//RD‚ğæ“¾
     public Hands GetHands() => _hands;//èD‚ğæ“¾
     public bool IsCurrentPlayer() => _is_current_player;//©g‚ª“®‚¯‚é‚©‚Ç‚¤‚©‚ğæ“¾
