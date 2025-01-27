@@ -16,7 +16,7 @@ public class ParameterData : MonoBehaviour
     [HideInInspector] float TIME_UNTIL_TIME_RUNS_OUT = 0;
     [HideInInspector] float CARD_MOVING_SPEED = 2f;
     [HideInInspector] int RESET_CARD_COUNT = 0;
-    [HideInInspector] float VERSION = 0.01f;
+    [HideInInspector] float VERSION = 0.00f;
 
     bool _same_version = false;
     bool _loaded = false;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LoadingCardData : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class LoadingCardData : MonoBehaviour
     bool _is_image_downloading = false;
     int _download_count = 0;
     bool _is_download_start = false;
+
+    [SerializeField] Text _download_count_text;
 
     void Start() {
         _parameter_data = GameObject.Find("ParameterData").GetComponent<ParameterData>();
@@ -30,6 +33,7 @@ public class LoadingCardData : MonoBehaviour
 
     private void Update()
     {
+        _download_count_text.text = "download : " + _download_count + "\n now : " + _image_downloader.getFilesLength() + "\n" + _image_downloader.getDownloadInfo();
         if (!_parameter_data.isLoaded()) {
             return;
         }
@@ -37,7 +41,12 @@ public class LoadingCardData : MonoBehaviour
             return;
         }
 
-        if (!_parameter_data.isSameVersion()) {
+        if (_image_downloader.getError()) {
+            SceneManager.LoadScene("TitleScene");
+            return;
+        }
+
+        if (!_parameter_data.isSameVersion() || !_image_downloader.IsImageData() || _is_image_downloading) {
             _card_data_controller.LoadingCardData();
             _parameter_data.Saving();
             _null_check = false;
@@ -51,15 +60,17 @@ public class LoadingCardData : MonoBehaviour
         if(!_is_image_downloading && _download_queue.Count > 0)
         {
             StartCoroutine(ProcessDownloadQueue());
+            Debug.Log("coroutineTest");
         }
 
-        if (_download_queue.Count == 0 && _download_count <= 0) {
+        if (_parameter_data.isSameVersion() && _null_check && _image_downloader.IsImageData() && !_is_image_downloading) {
+            Debug.Log("SameVersion" + _parameter_data.isSameVersion());
+            _download_count_text.text = _parameter_data.isSameVersion() + ":" + _null_check + ":" + _image_downloader.IsImageData() + ":\n" + _is_image_downloading + ":" + _image_downloader.getFilesLength() + "\n" + _image_downloader.getDownloadInfo();
             SceneManager.LoadScene("HomeScene");
         }
 
-        if (_parameter_data.isSameVersion() && _null_check) {
-            Debug.Log("SameVersion");
-            SceneManager.LoadScene("HomeScene");
+        if (_download_queue.Count == 0 && _download_count <= 0 && !_null_check) {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 
@@ -76,7 +87,7 @@ public class LoadingCardData : MonoBehaviour
         Debug.Log("download:" + _download_count);
     }
 
-    IEnumerator ProcessDownloadQueue() {
+    public IEnumerator ProcessDownloadQueue() {
         _is_image_downloading = true;
         while (_download_queue.Count > 0) {
             CardData current_card = _download_queue.Peek();
@@ -92,6 +103,11 @@ public class LoadingCardData : MonoBehaviour
             Debug.Log(_download_count + ":" + load_card.card_name);
         }
 
+        if (_download_queue.Count > 0) {
+            yield return null;
+        }
+
+        Debug.Log("download_complete");
         _is_image_downloading = false;
     }
 
