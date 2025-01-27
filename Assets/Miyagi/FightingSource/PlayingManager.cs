@@ -29,6 +29,7 @@ public class PlayingManager : MonoBehaviour
     [HideInInspector] float CARD_EFFECT_DISTANCE = 0;
     [HideInInspector] float TIME_UNTIL_TIME_RUNS_OUT = 0;
     [HideInInspector] int RESET_CARDS_COUNT = 0;
+    [HideInInspector] int PLAYER_MAX_HP = 0;
 
     bool _cpu_draw = false;
     float _cpu_incapacity_time = 0;
@@ -48,13 +49,14 @@ public class PlayingManager : MonoBehaviour
         CARD_EFFECT_DISTANCE = parameter_data.CARD_EFFECT_DISTANCE;
         TIME_UNTIL_TIME_RUNS_OUT = parameter_data.TIME_UNTIL_TIME_RUNS_OUT;
         RESET_CARDS_COUNT = parameter_data.RESET_CARD_COUNT;
+        PLAYER_MAX_HP = parameter_data.PLAYER_MAX_HP;
 
         ResetProgressTime();
         _conclusion = false;
-        _player1 = new Player("player" , MAX_HP , true , _deck1 , _hands1 ,new Vector3(0, -4) , new Vector3(2.8f , 4f , 1));
+        _player1 = new Player("player" , PLAYER_MAX_HP, true , _deck1 , _hands1 ,new Vector3(0, -4) , new Vector3(2.8f , 4f , 1));
         _turn_player = _player1;
 
-        _player2 = new Player("enemy" , MAX_HP , false , _deck2 , _hands2 , new Vector3(3, 0) , new Vector3(0.7f, 1, 1));
+        _player2 = new Player("enemy" , PLAYER_MAX_HP, false , _deck2 , _hands2 , new Vector3(3, 0) , new Vector3(0.7f, 1, 1));
 
         _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
         RandomolyChooseTurnPlayer();
@@ -203,20 +205,25 @@ public class PlayingManager : MonoBehaviour
     void TurnChange(Player turn) {
         turn.SetCurrentPlayer(true);
         turn.GetHands().SelectedPlayable(true);
+        turn.GetHands().arrangeCards(turn.GetCardPos(), turn.GetCardScale());
 
+        Hostile(turn).GetHands().ReleaseDragState();
+        Hostile(turn).GetHands().discardSelectedCards();
         Hostile(turn).SetCurrentPlayer(false);
         Hostile(turn).GetHands().SelectedPlayable(false);
+        Hostile(turn).GetHands().arrangeCards(Hostile(turn).GetCardPos(), Hostile(turn).GetCardScale());
 
-        _turn_player = turn;
         ResetProgressTime();
         _cpu_draw = false;
+        _turn_change_animation = true;
+        _turn_player = turn;
 
         if(turn.GetDeck().GetDeckCount() >= 0) {
             turn.GetHands().ResetHandCards(RESET_CARDS_COUNT, turn.GetDeck(), turn.GetCardPos() , turn.GetCardScale());
             turn.GetHands().SelectedPlayable(true);
         }
-        _turn_change_animation = true;
     }
+
 
     //プレイヤー1ならプレイヤー2に、プレイヤー2ならプレイヤー1を返す
     Player Hostile(Player my) {
