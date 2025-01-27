@@ -22,11 +22,13 @@ public class CardUI : MonoBehaviour
 
         if (File.Exists(image_path))
         {
+            PersonalDataController personal_data = new PersonalDataController();
+
+            Debug.Log(file_name + ":" + personal_data.Load().RESOLUTION);
             byte[] image_data = File.ReadAllBytes(image_path);
             Texture2D texture = new Texture2D(2, 2);
             texture.LoadImage(image_data);
-            ApplyTextureWithPixelsPerUnit(texture, 2560, this.gameObject);
-            Debug.Log(file_name + "success");
+            ApplyTextureWithPixelsPerUnit(texture, personal_data.Load().RESOLUTION, this.gameObject);
         }
         else
         {

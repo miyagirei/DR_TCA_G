@@ -128,6 +128,7 @@ public class DeckEditor : MonoBehaviour
     {
         deckList.Remove(card);
         UpdateDeckUI();
+        
     }
 
     void UpdateDeckUI()
@@ -140,15 +141,19 @@ public class DeckEditor : MonoBehaviour
 
         foreach (var card in deckList)
         {
-            GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
-            CardUI cardUIScript = cardUI.GetComponent<CardUI>();
-            cardUIScript.SetCardData(card);
-
-            // デッキからカードを削除するボタンを追加
-            Button removeButton = cardUI.GetComponentInChildren<Button>();
-            removeButton.onClick.AddListener(() => RemoveCardFromDeck(card));
+            CreateCardData(card);
         }
         AdjustDeckContentHeight();
+    }
+
+    void CreateCardData(CardData card) {
+        GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
+        CardUI cardUIScript = cardUI.GetComponent<CardUI>();
+        cardUIScript.SetCardData(card);
+
+        // デッキからカードを削除するボタンを追加
+        Button removeButton = cardUI.GetComponentInChildren<Button>();
+        removeButton.onClick.AddListener(() => RemoveCardFromDeck(card));
     }
 
     void AdjustContentHeight()
@@ -174,7 +179,7 @@ public class DeckEditor : MonoBehaviour
     // デッキの保存処理
     public void SaveDeck()
     {
-        // 現在選択されているデッキのデータをJSON形式に変換
+        // 現在選択されているデッキのデータをJSON形式に変換こ
         DeckData deckData = new DeckData();
         deckData.cards = deckList;
 
