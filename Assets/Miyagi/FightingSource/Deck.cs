@@ -61,10 +61,12 @@ public class Deck : MonoBehaviour
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();
             string effect;
+            Debug.Log(data.type + "data_type");
             switch (data.type)
             {
                 case "Normal":
                     effect = data.normal_effect;
+                    Debug.Log(effect + " : effectType");
                     card.Init(data.card_name, CardType.Normal, effect, data.normal_amount, data.normal_cost);
                     _deck_card.Add(card);
 

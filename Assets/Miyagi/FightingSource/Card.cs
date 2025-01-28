@@ -9,7 +9,7 @@ public class Card : MonoBehaviour
     const string EFFECT_HEAL_TEXT = "Heal";
     const string EFFECT_DRAW_TEXT = "Draw";
     const string EFFECT_HOPE_CHANGE = "Hope";
-    const string EFFECT_DESPAIR_CHANGE = "DESPAIR";
+    const string EFFECT_DESPAIR_CHANGE = "Despire";
 
     ParameterData _parameter_data_controller;
     [HideInInspector] float EFFECT_DISTANCE = 100;

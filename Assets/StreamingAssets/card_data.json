@@ -98,7 +98,7 @@
         },
         {
             "card_name": "超高校級のアイドル",
-            "type": "Noramal",
+            "type": "Normal",
             "normal_effect": "Hope",
             "normal_amount": 0,
             "normal_cost": 1,
@@ -114,7 +114,7 @@
         },
         {
             "card_name": "コロシアイ",
-            "type": "Noramal",
+            "type": "Normal",
             "normal_effect": "Despire",
             "normal_amount": 0,
             "normal_cost": 1,
@@ -194,7 +194,7 @@
         },
         {
             "card_name": "超高校級の暴走族",
-            "type": "Only Despair",
+            "type": "OnlyDespair",
             "normal_effect": "",
             "normal_amount": 0,
             "normal_cost": 0,
