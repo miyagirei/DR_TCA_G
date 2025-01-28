@@ -25,6 +25,8 @@ public class DeckEditor : MonoBehaviour
     [SerializeField] private GameObject deckSelectPanel;
     [SerializeField] private GameObject deckEditorPanel;
 
+    Dictionary<GameObject, CardData> _card_obj = new Dictionary<GameObject, CardData>();
+
     void Start()
     {
         cardLoader = GetComponent<CardLoader>(); // CardLoader スクリプトを取得
@@ -115,7 +117,9 @@ public class DeckEditor : MonoBehaviour
             if (cardCount < 4) // 同名カードが4枚未満であれば追加
             {
                 deckList.Add(card);
-                UpdateDeckUI();
+                CreateCardData(card);
+
+                //UpdateDeckUI();
             }
             else
             {
@@ -124,11 +128,13 @@ public class DeckEditor : MonoBehaviour
         AdjustDeckContentHeight();
     }
 
-    void RemoveCardFromDeck(CardData card)
+    void RemoveCardFromDeck(GameObject card)
     {
-        deckList.Remove(card);
-        UpdateDeckUI();
-        
+        deckList.Remove(_card_obj[card]);
+        Destroy(card);
+        AdjustDeckContentHeight();
+        //UpdateDeckUI();
+
     }
 
     void UpdateDeckUI()
@@ -150,10 +156,10 @@ public class DeckEditor : MonoBehaviour
         GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
         CardUI cardUIScript = cardUI.GetComponent<CardUI>();
         cardUIScript.SetCardData(card);
-
+        _card_obj.Add(cardUI, card);
         // デッキからカードを削除するボタンを追加
         Button removeButton = cardUI.GetComponentInChildren<Button>();
-        removeButton.onClick.AddListener(() => RemoveCardFromDeck(card));
+        removeButton.onClick.AddListener(() => RemoveCardFromDeck(cardUI));
     }
 
     void AdjustContentHeight()
