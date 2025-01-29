@@ -36,6 +36,9 @@ public class PlayingManager : MonoBehaviour
     bool _turn_change_animation = false;
     Player _turn_player;
 
+    bool _display_damage = false;
+    float _display_damage_time = 0;
+
     PlayingSituation _turn_situation = PlayingSituation.Hopeful;
 
     void ResetProgressTime() => _progress_time = 0;
@@ -84,6 +87,18 @@ public class PlayingManager : MonoBehaviour
 
         _player1_UI.Display(_player1);
         _player2_UI.Display(_player2);
+
+        if (_display_damage && _display_damage_time < 2.0)
+        {
+            _display_damage_time += Time.deltaTime;
+            return;
+        }
+        else if (_display_damage && _display_damage_time > 2.0)
+        {
+            _player1_UI.ShowDamage(0,false);
+            _display_damage_time = 0;
+            _display_damage = false;
+        }
 
         if (_turn_change_animation && _progress_time < TURN_CHANGE_TIME) {
             _player1_UI.DisplayTurnChangePanel(_turn_player ,_turn_situation, true );
@@ -137,6 +152,16 @@ public class PlayingManager : MonoBehaviour
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().IsPlayedCard(player);
             played_card.Effect(player , enemy , player.GetCardPos() , player.GetCardScale() , _turn_situation);
+
+
+            int damage = previous_hp - enemy.GetHP(); // ダメージ計算
+            if (damage > 0)
+            {
+                _display_damage = true;
+                _player1_UI.ShowDamage(damage,true); // ダメージ表示
+            }
+
+
             PlayingLogger.LogStatic(player.GetName() + "が効果を発動 : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player , _turn_situation) + ")", Color.green);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
