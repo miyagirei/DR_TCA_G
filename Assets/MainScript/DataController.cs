@@ -240,7 +240,7 @@ public class DataController : MonoBehaviour
     {
         CardListWrapper card_list_wrapper = ConvertDictionaryToWrapper(paramDataCard);
         string json = JsonUtility.ToJson(card_list_wrapper, true);
-        string file_path = Path.Combine(Application.streamingAssetsPath, "card_data" + ".json");
+        string file_path = Path.Combine(Application.persistentDataPath, "card_data" + ".json");
         File.WriteAllText(file_path, json);
     }
 

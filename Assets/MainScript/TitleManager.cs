@@ -6,7 +6,7 @@ using System.IO;
 public class TitleManager : MonoBehaviour
 {
     void ClearImageFolder() {
-        string image_folder_path = Path.Combine(Application.streamingAssetsPath, "Image");
+        string image_folder_path = Path.Combine(Application.persistentDataPath, "Image");
 
         if (Directory.Exists(image_folder_path)) {
             string[] files = Directory.GetFiles(image_folder_path);

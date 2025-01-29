@@ -10,7 +10,7 @@ public class PersonalDataController : MonoBehaviour
     {
         string file_path = Application.persistentDataPath + "/personal_data" + ".json";
 
-        if (File.Exists(file_path)) {
+        if (!File.Exists(file_path)) {
             PersonalData personal_data = new PersonalData();
             personal_data.RESOLUTION = 1080;
             Save(personal_data);

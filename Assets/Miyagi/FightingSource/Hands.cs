@@ -70,7 +70,7 @@ public class Hands : MonoBehaviour
         Card new_card = card_obj.GetComponent<Card>();
 
         string file_name = origin.GetName() + ".png";
-        string image_path = Path.Combine(Application.streamingAssetsPath, "Image", file_name);
+        string image_path = Path.Combine(Application.persistentDataPath, "Image", file_name);
 
         if (File.Exists(image_path))
         {

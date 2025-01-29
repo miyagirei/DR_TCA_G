@@ -25,6 +25,7 @@ public class ParameterData : MonoBehaviour
     public bool isSameVersion() => _same_version;
     public bool isLoaded() => _loaded;
     public bool isDetermine() => _determine;
+    public bool isError() => _data_controller.isDataError();
 
     void Start()
     {
@@ -78,7 +79,7 @@ public class ParameterData : MonoBehaviour
     }
 
     public Parameter GetParameterData(string json_file_name) {
-        string file_path = Path.Combine(Application.streamingAssetsPath, json_file_name + ".json");
+        string file_path = Path.Combine(Application.persistentDataPath, json_file_name + ".json");
 
         if (File.Exists(file_path))
         {
@@ -114,7 +115,7 @@ public class ParameterData : MonoBehaviour
 
 
         string json = JsonUtility.ToJson(parameter, true);
-        string file_path = Path.Combine(Application.streamingAssetsPath, json_file_name + ".json");
+        string file_path = Path.Combine(Application.persistentDataPath, json_file_name + ".json");
         File.WriteAllText(file_path, json);
     }
 }
