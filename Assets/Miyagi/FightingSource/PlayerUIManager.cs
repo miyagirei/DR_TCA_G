@@ -17,6 +17,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject UI_Playlog;
     [SerializeField] ParticleSystem UI_Particle_Side_Left;
     [SerializeField] ParticleSystem UI_Particle_Side_Right;
+    [SerializeField] Text DamageText;
     private void Start()
     {
         AssingPlaylogButton();
@@ -26,6 +27,7 @@ public class PlayerUIManager : MonoBehaviour
         module_right.startColor = Color.clear;
         UI_Particle_Side_Left.Play();
         UI_Particle_Side_Right.Play();
+        DamageText.gameObject.SetActive(false);
     }
     public void Display(Player player)
     {
@@ -161,4 +163,11 @@ public class PlayerUIManager : MonoBehaviour
     void PlaylogDisplaySwitching() {
         UI_Playlog.SetActive(!UI_Playlog.activeSelf);
     }
+
+    public void ShowDamage(int damage , bool active)
+    {
+        DamageText.text = damage.ToString();
+        DamageText.gameObject.SetActive(active);
+    }
+
 }
