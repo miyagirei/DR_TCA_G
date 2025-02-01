@@ -9,9 +9,12 @@ public class Card : MonoBehaviour
     const string EFFECT_HEAL_TEXT = "Heal";
     const string EFFECT_DRAW_TEXT = "Draw";
     const string EFFECT_HOPE_CHANGE = "Hope";
-    const string EFFECT_DESPAIR_CHANGE = "Despire";
+    const string EFFECT_DESPAIR_CHANGE = "Despair";
     const string EFFECT_TURN_CONDITION_HOPE = "Hopeful";
     const string EFFECT_TURN_CONDITION_DESPAIR = "Desperate";
+    const string EFFECT_ENEMY_CONDITION_NORMAL = "CalmDown";
+    const string EFFECT_ENEMY_CONDITION_HOPE = "GiveHope";
+    const string EFFECT_ENEMY_CONDITION_DESPAIR = "GiveDespair";
 
     ParameterData _parameter_data_controller;
     [HideInInspector] float EFFECT_DISTANCE = 100;
@@ -546,6 +549,12 @@ public class Card : MonoBehaviour
                 return EFFECT_TURN_CONDITION_HOPE;
             case 6:
                 return EFFECT_TURN_CONDITION_DESPAIR;
+            case 7:
+                return EFFECT_ENEMY_CONDITION_NORMAL;
+            case 8:
+                return EFFECT_ENEMY_CONDITION_HOPE;
+            case 9:
+                return EFFECT_ENEMY_CONDITION_DESPAIR;
         }
 
         return null;
@@ -596,6 +605,18 @@ public class Card : MonoBehaviour
                 break;
             case EFFECT_TURN_CONDITION_DESPAIR:
                 situation.SetSituation(Situation.PlayingSituation.Desperate);
+                break;
+            case EFFECT_ENEMY_CONDITION_NORMAL:
+                enemy.SetNormal();
+                Debug.Log("EnemyNormal");
+                break;
+            case EFFECT_ENEMY_CONDITION_HOPE:
+                enemy.SetHope();
+                Debug.Log("EnemyHope");
+                break;
+            case EFFECT_ENEMY_CONDITION_DESPAIR:
+                enemy.SetDespair();
+                Debug.Log("EnemyDespair");
                 break;
         }
     }
