@@ -21,7 +21,7 @@ public class Hands : MonoBehaviour
 
     void Update()
     {
-        Check();
+
     }
 
     public int GetCardCount() => _hands_card.Count;
@@ -54,36 +54,6 @@ public class Hands : MonoBehaviour
         return null;
     }
 
-    //”jŠü‚µ‚Ä‚æ‚µ
-    void Check() {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.origin);
-            if (!hit2d)
-            {
-                return;
-            }
-
-            GameObject selectObj = hit2d.transform.gameObject;
-            if (!selectObj.TryGetComponent<Card>(out Card card))
-            {
-                return;
-            }
-
-            //Debug.Log(card.GetName() + ":" + card.GetDamage());
-
-        }
-
-        if (!Input.GetKeyDown(KeyCode.A)) {
-            return;
-        }
-
-        for (int i = 0; i < _hands_card.Count; i++) {
-            //Debug.Log(_hands[i].GetName() + ":" + _hands[i].GetDamage());
-        }
-    }
-
     //
     private void ApplyTextureWithPixelsPerUnit(Texture2D texture, float pixels_per_unit , GameObject obj)
     {
@@ -100,7 +70,7 @@ public class Hands : MonoBehaviour
         Card new_card = card_obj.GetComponent<Card>();
 
         string file_name = origin.GetName() + ".png";
-        string image_path = Path.Combine(Application.streamingAssetsPath, "Image", file_name);
+        string image_path = Path.Combine(Application.persistentDataPath, "Image", file_name);
 
         if (File.Exists(image_path))
         {
@@ -302,5 +272,15 @@ public class Hands : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public void ReleaseDragState() {
+        foreach (Card card in _hands_card)
+        {
+            if (card.GetDragging())
+            {
+                card.ReturnCard();
+            }
+        }
     }
 }

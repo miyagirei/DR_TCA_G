@@ -66,7 +66,7 @@ public class CardLoader : MonoBehaviour
 
     public List<CardData> GetNetworkCardData(string json_file_name)
     {
-        string file_path = Path.Combine(Application.streamingAssetsPath, json_file_name + ".json");
+        string file_path = Path.Combine(Application.persistentDataPath, json_file_name + ".json");
 
         if (File.Exists(file_path))
         {

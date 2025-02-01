@@ -8,7 +8,7 @@ using System.Net;
 public class ImageDownloader : MonoBehaviour
 {
     [SerializeField]string _file_id = "";
-    [SerializeField]string _folder_path = Path.Combine(Application.streamingAssetsPath, "Image");
+    string _folder_path;
     bool _is_finish = false;
     bool _exist_data = false;
     bool _error = false;
@@ -28,22 +28,32 @@ public class ImageDownloader : MonoBehaviour
         _file_id = null;
         _error = false;
         _exist_data = false;
-        if (!Directory.Exists(_folder_path)) {
+        _folder_path = Path.Combine(Application.persistentDataPath, "Image");
+        if (!Directory.Exists(_folder_path))
+        {
             Directory.CreateDirectory(_folder_path);
+            Debug.Log("create");
+        }
+        else {
+            Debug.Log("exist_folder");
         }
 
         string[] files = Directory.GetFiles(_folder_path);
 
         int data_card_num = 0;
-        string file_path = Path.Combine(Application.streamingAssetsPath, "card_data" + ".json");
+        string file_path = Path.Combine(Application.persistentDataPath, "card_data" + ".json");
         if (File.Exists(file_path))
         {
             string json = File.ReadAllText(file_path);
 
             CardListWrapper card_list_wrapper = JsonUtility.FromJson<CardListWrapper>(json);
             data_card_num = card_list_wrapper.cards.Count;
+            Debug.Log("");
         }
-
+        else {
+            data_card_num = 99999;
+            Debug.LogError("card_dataÇ™Ç†ÇËÇ‹ÇπÇÒ");
+        }
 
         if (files.Length >= data_card_num)
         {
@@ -56,6 +66,7 @@ public class ImageDownloader : MonoBehaviour
             _files_length = files.Length;
             Debug.Log("FilesLength : " + files.Length);
         }
+
     }
     private void Update()
     {
@@ -66,7 +77,7 @@ public class ImageDownloader : MonoBehaviour
     public void DownloadAndSave(string png_name , string file_id)
     {
         string file_name = png_name + ".png";
-        string image_path = Path.Combine(Application.streamingAssetsPath, "Image", file_name);
+        string image_path = Path.Combine(Application.persistentDataPath, "Image", file_name);
         if (File.Exists(image_path)) {
             _is_finish = true;
             Debug.Log("ë∂ç›ÇµÇƒÇ¢ÇÈÉtÉ@ÉCÉãÇ≈Ç∑");

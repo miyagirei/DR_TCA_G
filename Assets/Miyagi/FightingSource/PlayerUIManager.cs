@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PlayerUIManager : MonoBehaviour
 {
     [SerializeField] Text UI_Player_HP;
-    [SerializeField] Text UI_Player_Condition;
+    [SerializeField] Slider UI_Player_HP_Image;
     [SerializeField] Button UI_Player_Turn_Change_Button;
     [SerializeField] GameObject UI_Turn_Change_Panel;
     [SerializeField] Text UI_Turn_Change_Player;
@@ -17,7 +17,10 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject UI_Playlog;
     [SerializeField] ParticleSystem UI_Particle_Side_Left;
     [SerializeField] ParticleSystem UI_Particle_Side_Right;
-    [SerializeField] Text DamageText;
+    [SerializeField] SpriteRenderer Image_Player;
+
+    int _current_hp;
+    float _hp_cooltime;
     private void Start()
     {
         AssingPlaylogButton();
@@ -27,7 +30,8 @@ public class PlayerUIManager : MonoBehaviour
         module_right.startColor = Color.clear;
         UI_Particle_Side_Left.Play();
         UI_Particle_Side_Right.Play();
-        DamageText.gameObject.SetActive(false);
+        _current_hp = 100;
+        _hp_cooltime = 0;
     }
     public void Display(Player player)
     {
@@ -41,7 +45,22 @@ public class PlayerUIManager : MonoBehaviour
         {
             return;
         }
-        UI_Player_HP.text = player.GetName() + ":" + $"{player.GetHP()}";
+        UI_Player_HP.text = "" + player.GetHP();
+        if (_current_hp > player.GetHP() * 10)
+        {
+            _hp_cooltime += Time.deltaTime;
+            if (_hp_cooltime >= 0.1) {
+                _hp_cooltime = 0;
+                _current_hp--;
+            }
+        }
+        else {
+            _current_hp = player.GetHP() * 10;
+        }
+
+        UI_Player_HP_Image.value = _current_hp;
+        UI_Player_HP_Image.maxValue = player.GetMaxHP() * 10;
+        UI_Player_HP_Image.minValue = 0;
     }
 
 
@@ -51,11 +70,9 @@ public class PlayerUIManager : MonoBehaviour
         {
             return;
         }
-        string condition = "no info";
 
         if (player.GetNormalCondition())
         {
-            condition = "Normal";
             ChangeParticleColor(UI_Particle_Side_Left, Color.clear) ;
             ChangeParticleColor(UI_Particle_Side_Right, Color.clear);
             UI_Particle_Side_Left.GetComponent<Renderer>().enabled = false;
@@ -63,7 +80,6 @@ public class PlayerUIManager : MonoBehaviour
         }
         else if (player.GetHopeCondition())
         {
-            condition = "Hope";
             ChangeParticleColor(UI_Particle_Side_Left , Color.white);
             ChangeParticleColor(UI_Particle_Side_Right , Color.white);
             UI_Particle_Side_Left.GetComponent<Renderer>().enabled = true;
@@ -71,14 +87,11 @@ public class PlayerUIManager : MonoBehaviour
         }
         else if (player.GetDespairCondition())
         {
-            condition = "Despair";
             ChangeParticleColor(UI_Particle_Side_Left, Color.black);
             ChangeParticleColor(UI_Particle_Side_Right, Color.black);
             UI_Particle_Side_Left.gameObject.GetComponent<Renderer>().enabled = true;
             UI_Particle_Side_Right.gameObject.GetComponent<Renderer>().enabled = true;
         }
-
-        UI_Player_Condition.text = player.GetName() + ":" + condition;
     }
 
     void ChangeParticleColor(ParticleSystem particle , Color color) {
@@ -164,10 +177,17 @@ public class PlayerUIManager : MonoBehaviour
         UI_Playlog.SetActive(!UI_Playlog.activeSelf);
     }
 
-    public void ShowDamage(int damage , bool active)
-    {
-        DamageText.text = damage.ToString();
-        DamageText.gameObject.SetActive(active);
+    public void ChangePlayerImage(CharacterType character) {
+        CharacterTypeInfomation character_info = new CharacterTypeInfomation();
+        Image_Player.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character)));
     }
 
+    Sprite TextureToSprite(Texture2D texture)
+    {
+        return Sprite.Create(
+            texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 1.0f)
+        );
+    }
 }

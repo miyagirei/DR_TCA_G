@@ -33,11 +33,27 @@ public class LoadingCardData : MonoBehaviour
 
     private void Update()
     {
-        _download_count_text.text = "download : " + _download_count + "\n now : " + _image_downloader.getFilesLength() + "\n" + _image_downloader.getDownloadInfo();
+        if (_parameter_data.isError()) {
+            _download_count_text.text = "ErrorÇ™î≠ê∂";
+            SceneManager.LoadScene("TitleScene");
+            return;
+        }
+
+        _download_count_text.text = "parameter : "+ _parameter_data.isLoaded() + 
+            "\nversion_check : " + _parameter_data.isDetermine() +
+            "\ndownload : " + _download_count + 
+            "\nnow_import : " + _image_downloader.getFilesLength() + 
+            "\nsame_version : " + _parameter_data.isSameVersion() + 
+            "\nexist_full_image : " + _image_downloader.IsImageData() + 
+            "\ndownload_now... : " + _is_image_downloading +
+            "\nloading_info : " + _image_downloader.getDownloadInfo(); 
+
         if (!_parameter_data.isLoaded()) {
             return;
         }
-        if (!_parameter_data.isDetermine()) {
+
+        if (!_parameter_data.isDetermine())
+        {
             return;
         }
 
@@ -64,8 +80,6 @@ public class LoadingCardData : MonoBehaviour
         }
 
         if (_parameter_data.isSameVersion() && _null_check && _image_downloader.IsImageData() && !_is_image_downloading) {
-            Debug.Log("SameVersion" + _parameter_data.isSameVersion());
-            _download_count_text.text = _parameter_data.isSameVersion() + ":" + _null_check + ":" + _image_downloader.IsImageData() + ":\n" + _is_image_downloading + ":" + _image_downloader.getFilesLength() + "\n" + _image_downloader.getDownloadInfo();
             SceneManager.LoadScene("HomeScene");
         }
 

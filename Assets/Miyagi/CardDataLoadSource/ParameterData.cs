@@ -17,6 +17,7 @@ public class ParameterData : MonoBehaviour
     [HideInInspector] float CARD_MOVING_SPEED = 2f;
     [HideInInspector] int RESET_CARD_COUNT = 0;
     [HideInInspector] float VERSION = 0.00f;
+    [HideInInspector] int PLAYER_MAX_HP = 10;
 
     bool _same_version = false;
     bool _loaded = false;
@@ -24,6 +25,7 @@ public class ParameterData : MonoBehaviour
     public bool isSameVersion() => _same_version;
     public bool isLoaded() => _loaded;
     public bool isDetermine() => _determine;
+    public bool isError() => _data_controller.isDataError();
 
     void Start()
     {
@@ -44,6 +46,7 @@ public class ParameterData : MonoBehaviour
         CARD_MOVING_SPEED = await _data_controller.GetParamValueFloat("CARD_MOVING_SPEED");
         RESET_CARD_COUNT = await _data_controller.GetParamValueInt("RESET_CARDS_COUNT");
         VERSION = await _data_controller.GetParamValueFloat("VERSION");
+        PLAYER_MAX_HP = await _data_controller.GetParamValueInt("PLAYER_MAX_HP");
         _loaded = true;
     }
 
@@ -76,7 +79,7 @@ public class ParameterData : MonoBehaviour
     }
 
     public Parameter GetParameterData(string json_file_name) {
-        string file_path = Path.Combine(Application.streamingAssetsPath, json_file_name + ".json");
+        string file_path = Path.Combine(Application.persistentDataPath, json_file_name + ".json");
 
         if (File.Exists(file_path))
         {
@@ -108,9 +111,11 @@ public class ParameterData : MonoBehaviour
         parameter.CARD_MOVING_SPEED = CARD_MOVING_SPEED;
         parameter.RESET_CARD_COUNT = RESET_CARD_COUNT;
         parameter.VERSION = VERSION;
-        
+        parameter.PLAYER_MAX_HP = PLAYER_MAX_HP;
+
+
         string json = JsonUtility.ToJson(parameter, true);
-        string file_path = Path.Combine(Application.streamingAssetsPath, json_file_name + ".json");
+        string file_path = Path.Combine(Application.persistentDataPath, json_file_name + ".json");
         File.WriteAllText(file_path, json);
     }
 }
@@ -127,4 +132,5 @@ public class Parameter
     public float CARD_MOVING_SPEED = 2f;
     public int RESET_CARD_COUNT = 0;
     public float VERSION = 0.01f;
+    public int PLAYER_MAX_HP = 10;
 }
