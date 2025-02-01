@@ -40,7 +40,7 @@ public class PlayingManager : MonoBehaviour
     bool _display_damage = false;
     float _display_damage_time = 0;
 
-    PlayingSituation _turn_situation = PlayingSituation.Hopeful;
+    Situation _turn_situation = new Situation();
 
     CharacterType _player_character_type = CharacterType.Monokuma;
     CharacterType _enemy_character_type = CharacterType.Monokuma;
@@ -112,12 +112,12 @@ public class PlayingManager : MonoBehaviour
         }
 
         if (_turn_change_animation && _progress_time < TURN_CHANGE_TIME) {
-            _player1_UI.DisplayTurnChangePanel(_turn_player ,_turn_situation, true );
+            _player1_UI.DisplayTurnChangePanel(_turn_player ,_turn_situation.GetSituation(), true );
             _player1_UI.DisplayTurnChangeButton(false);
             _player1_UI.DisplayTimer(GetTimer(), false);
             return;
         }else if (_turn_change_animation && _progress_time > TURN_CHANGE_TIME) {
-            _player1_UI.DisplayTurnChangePanel(_turn_player, _turn_situation, false);
+            _player1_UI.DisplayTurnChangePanel(_turn_player, _turn_situation.GetSituation(), false);
             ResetProgressTime();
            
             _turn_change_animation = false;
@@ -173,7 +173,7 @@ public class PlayingManager : MonoBehaviour
             }
 
 
-            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player , _turn_situation) + ")", Color.green);
+            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player , _turn_situation.GetSituation()) + ")", Color.green);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
@@ -206,7 +206,7 @@ public class PlayingManager : MonoBehaviour
             int previous_hp = enemy.GetHP();
             Card played_card = player.GetHands().CheckMostExpensiveCardYouCanPay(player);
             played_card.Effect(player, enemy, player.GetCardPos(), player.GetCardScale() , _turn_situation);
-            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player, _turn_situation) + ")", Color.red);
+            PlayingLogger.LogStatic(player.GetName() + "‚ªŒø‰Ê‚ð”­“® : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player, _turn_situation.GetSituation()) + ")", Color.red);
             player.GetHands().TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
@@ -346,14 +346,14 @@ public class PlayingManager : MonoBehaviour
         }
     }
 
-    void ChangeSituation() {
-        if (_turn_situation == PlayingSituation.Hopeful)
-        {
-            _turn_situation = PlayingSituation.Desperate;
-        }
-        else 
-        {
-            _turn_situation = PlayingSituation.Hopeful;
-        }
-    }
+    //void ChangeSituation() {
+    //    if (_turn_situation == Situation.PlayingSituation.Hopeful)
+    //    {
+    //        _turn_situation = Situation.PlayingSituation.Desperate;
+    //    }
+    //    else 
+    //    {
+    //        _turn_situation = Situation.PlayingSituation.Hopeful;
+    //    }
+    //}
 }

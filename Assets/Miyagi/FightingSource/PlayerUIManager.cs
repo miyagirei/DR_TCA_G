@@ -134,14 +134,14 @@ public class PlayerUIManager : MonoBehaviour
         UI_Player_Turn_Change_Button.gameObject.SetActive(active);
     }
 
-    public void DisplayTurnChangePanel(Player turn_player , PlayingSituation situation ,bool active) {
+    public void DisplayTurnChangePanel(Player turn_player , Situation.PlayingSituation situation ,bool active) {
         UI_Turn_Change_Player.text = turn_player.GetName() + "のターン";
         switch (situation) {
-            case PlayingSituation.Hopeful:
+            case Situation.PlayingSituation.Hopeful:
                 UI_Turn_Situation.text = "希望ターン";
                 UI_Turn_Situation.color = Color.yellow;
                 break;
-            case PlayingSituation.Desperate:
+            case Situation.PlayingSituation.Desperate:
                 UI_Turn_Situation.text = "絶望ターン";
                 UI_Turn_Situation.color = new Color(1,0,1);
                 break;

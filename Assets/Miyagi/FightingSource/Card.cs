@@ -10,6 +10,8 @@ public class Card : MonoBehaviour
     const string EFFECT_DRAW_TEXT = "Draw";
     const string EFFECT_HOPE_CHANGE = "Hope";
     const string EFFECT_DESPAIR_CHANGE = "Despire";
+    const string EFFECT_TURN_CONDITION_HOPE = "Hopeful";
+    const string EFFECT_TURN_CONDITION_DESPAIR = "Desperate";
 
     ParameterData _parameter_data_controller;
     [HideInInspector] float EFFECT_DISTANCE = 100;
@@ -385,33 +387,141 @@ public class Card : MonoBehaviour
                 break;
         }
     }
+    void ActivateDraw(Player player, Vector3 location, Vector3 scale, int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            if (player.GetDeck().GetDeckCount() == 0)
+            {
+                break;
+            }
 
-    //カードを出したときの効果
-    public void Effect(Player player, Player enemy, Vector3 location, Vector3 scale, PlayingSituation situation)
+            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location, scale, player.GetDeck());
+        }
+    }
+
+    public int GetCostByCondition(Player player)
     {
         if (GetIfNormalCard())
         {
-            EffectList(_normal_effect, player, enemy, location, scale, GetNormalAmount(), GetNormalAmount());
+            return GetCost();
+        }
+
+        if (player.GetHopeCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyHope))
+        {
+            return GetCostOfHope();
+        }
+
+        if (player.GetDespairCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyDespair))
+        {
+            return GetCostOfDespair();
+        }
+
+        return 9999;
+    }
+    public int GetCostByCardType(CardType card_type, bool is_hope = true)
+    {
+        switch (card_type)
+        {
+            case CardType.Normal:
+                return GetCost();
+            case CardType.OnlyHope:
+                return GetCostOfHope();
+            case CardType.OnlyDespair:
+                return GetCostOfDespair();
+            case CardType.HopeAndDespair:
+                if (is_hope)
+                {
+                    return GetCostOfHope();
+                }
+                else
+                {
+                    return GetCostOfDespair();
+                }
+        }
+
+        return 9999;
+    }
+    public int GetAmountByCondition(Player player , Situation.PlayingSituation situation)
+    {
+        if (GetCardType() == CardType.Normal)
+        {
+            return GetNormalAmount();
+        }
+
+        if (GetCardType() == CardType.HopeAndDespair)
+        {
+            if (player.GetHopeCondition())
+            {
+                if (situation == Situation.PlayingSituation.Hopeful) {
+                    return GetHopeBonusAmount();
+                }
+
+                return GetHopeAmount();
+            }
+            if (player.GetDespairCondition())
+            {
+                if (situation == Situation.PlayingSituation.Desperate)
+                {
+                    return GetDespairBonusAmount();
+                }
+                return GetDespairAmount();
+            }
+            return 0;
+        }
+
+        if (GetCardType() == CardType.OnlyHope)
+        {
+            return GetHopeAmount();
+        }
+
+        if (GetCardType() == CardType.OnlyDespair)
+        {
+            return GetDespairAmount();
+        }
+
+        return 0;
+    }
+
+    void Moving()
+    {
+        if (!_is_moving)
+        {
+            return;
+        }
+        if (Vector3.Distance(transform.position, GetPos()) < 0.01f)
+        {
+            _is_moving = false;
+            return;
+        }
+        this.transform.position = Vector3.MoveTowards(transform.position, GetPos(), MOVING_SPEED * Time.deltaTime);
+    }
+    //カードを出したときの効果
+    public void Effect(Player player, Player enemy, Vector3 location, Vector3 scale, Situation situation)
+    {
+        if (GetIfNormalCard())
+        {
+            EffectList(_normal_effect, player, enemy, location, scale, GetNormalAmount(), GetNormalAmount(), situation);
             return;
         }
         else if (!GetIfNormalCard() && player.GetHopeCondition() && !player.GetDespairCondition())
         {
-            if (situation == PlayingSituation.Hopeful)
+            if (situation.GetSituation() == Situation.PlayingSituation.Hopeful)
             {
-                EffectList(_effect_hope, player, enemy, location, scale, GetHopeAmount(), GetHopeBonusAmount(), true);
+                EffectList(_effect_hope, player, enemy, location, scale, GetHopeAmount(), GetHopeBonusAmount(), situation, true);
                 return;
             }
-            EffectList(_effect_hope, player, enemy, location, scale, GetHopeAmount(), GetHopeBonusAmount());
+            EffectList(_effect_hope, player, enemy, location, scale, GetHopeAmount(), GetHopeBonusAmount(), situation);
             return;
         }
         else if (!GetIfNormalCard() && !player.GetHopeCondition() && player.GetDespairCondition())
         {
-            if (situation == PlayingSituation.Desperate)
+            if (situation.GetSituation() == Situation.PlayingSituation.Desperate)
             {
-                EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount(), true);
+                EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount(), situation, true);
                 return;
             }
-            EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount());
+            EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount() , situation);
             return;
         }
         Debug.LogError("効果が発動できませんでした");
@@ -432,25 +542,17 @@ public class Card : MonoBehaviour
                 return EFFECT_HOPE_CHANGE;
             case 4:
                 return EFFECT_DESPAIR_CHANGE;
+            case 5:
+                return EFFECT_TURN_CONDITION_HOPE;
+            case 6:
+                return EFFECT_TURN_CONDITION_DESPAIR;
         }
 
         return null;
     }
 
-    void ActivateDraw(Player player, Vector3 location, Vector3 scale, int amount)
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            if (player.GetDeck().GetDeckCount() == 0)
-            {
-                break;
-            }
 
-            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location, scale, player.GetDeck());
-        }
-    }
-
-    void EffectList(string effect_text, Player player, Player enemy, Vector3 location, Vector3 scale, int amount, int bonus_amount, bool situation_match = false)
+    void EffectList(string effect_text, Player player, Player enemy, Vector3 location, Vector3 scale, int amount, int bonus_amount, Situation situation ,bool situation_match = false)
     {
         switch (effect_text)
         {
@@ -482,60 +584,21 @@ public class Card : MonoBehaviour
                 ActivateDraw(player, location, scale, amount);
                 break;
             case EFFECT_HOPE_CHANGE:
-                Debug.Log("希望チェンジ");
+                //Debug.Log("希望チェンジ");
                 player.SetHope();
                 break;
             case EFFECT_DESPAIR_CHANGE:
-                Debug.Log("絶望チェンジ");
+                //Debug.Log("絶望チェンジ");
                 player.SetDespair();
+                break;
+            case EFFECT_TURN_CONDITION_HOPE:
+                situation.SetSituation(Situation.PlayingSituation.Hopeful);
+                break;
+            case EFFECT_TURN_CONDITION_DESPAIR:
+                situation.SetSituation(Situation.PlayingSituation.Desperate);
                 break;
         }
     }
-
-    public int GetCostByCondition(Player player)
-    {
-        if (GetIfNormalCard())
-        {
-            return GetCost();
-        }
-
-        if (player.GetHopeCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyHope))
-        {
-            return GetCostOfHope();
-        }
-
-        if (player.GetDespairCondition() && (GetCardType() == CardType.HopeAndDespair || GetCardType() == CardType.OnlyDespair))
-        {
-            return GetCostOfDespair();
-        }
-
-        return 9999;
-    }
-
-    public int GetCostByCardType(CardType card_type, bool is_hope = true)
-    {
-        switch (card_type)
-        {
-            case CardType.Normal:
-                return GetCost();
-            case CardType.OnlyHope:
-                return GetCostOfHope();
-            case CardType.OnlyDespair:
-                return GetCostOfDespair();
-            case CardType.HopeAndDespair:
-                if (is_hope)
-                {
-                    return GetCostOfHope();
-                }
-                else
-                {
-                    return GetCostOfDespair();
-                }
-        }
-
-        return 9999;
-    }
-
 
     public string GetEffectByCondition(Player player)
     {
@@ -574,58 +637,4 @@ public class Card : MonoBehaviour
         return null;
     }
 
-    public int GetAmountByCondition(Player player , PlayingSituation situation)
-    {
-        if (GetCardType() == CardType.Normal)
-        {
-            return GetNormalAmount();
-        }
-
-        if (GetCardType() == CardType.HopeAndDespair)
-        {
-            if (player.GetHopeCondition())
-            {
-                if (situation == PlayingSituation.Hopeful) {
-                    return GetHopeBonusAmount();
-                }
-
-                return GetHopeAmount();
-            }
-            if (player.GetDespairCondition())
-            {
-                if (situation == PlayingSituation.Desperate)
-                {
-                    return GetDespairBonusAmount();
-                }
-                return GetDespairAmount();
-            }
-            return 0;
-        }
-
-        if (GetCardType() == CardType.OnlyHope)
-        {
-            return GetHopeAmount();
-        }
-
-        if (GetCardType() == CardType.OnlyDespair)
-        {
-            return GetDespairAmount();
-        }
-
-        return 0;
-    }
-
-    void Moving()
-    {
-        if (!_is_moving)
-        {
-            return;
-        }
-        if (Vector3.Distance(transform.position, GetPos()) < 0.01f)
-        {
-            _is_moving = false;
-            return;
-        }
-        this.transform.position = Vector3.MoveTowards(transform.position, GetPos(), MOVING_SPEED * Time.deltaTime);
-    }
 }
