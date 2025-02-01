@@ -18,6 +18,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] ParticleSystem UI_Particle_Side_Left;
     [SerializeField] ParticleSystem UI_Particle_Side_Right;
     [SerializeField] SpriteRenderer Image_Player;
+    [SerializeField] Text UI_Damage;
 
     int _current_hp;
     float _hp_cooltime;
@@ -189,5 +190,11 @@ public class PlayerUIManager : MonoBehaviour
                 new Rect(0, 0, texture.width, texture.height),
                 new Vector2(0.5f, 1.0f)
         );
+    }
+
+    public void ShowDamage(int damage, bool active)
+    {
+        UI_Damage.text = damage.ToString();
+        UI_Damage.gameObject.SetActive(active);
     }
 }
