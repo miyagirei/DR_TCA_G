@@ -110,6 +110,8 @@ public class CardData
     public int despair_cost;
     public int despair_bonus_amount;
     public string image;
+    public string restrictions;
+    public int restrictions_amount;
 }
 
 [System.Serializable]

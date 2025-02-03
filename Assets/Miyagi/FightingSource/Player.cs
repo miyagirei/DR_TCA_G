@@ -22,13 +22,13 @@ public class Player {
         _max_hp = hp;
         _hp = hp;
         _is_current_player = is_current_player;
-        _deck = deck;
-        _hands = hands;
         _is_win = false;
         _is_hope = false;
         _is_despair = false;
         _card_pos = card_pos;
         _card_scale = card_scale;
+        _deck = deck;
+        _hands = hands;
         _character_type = character;
     }
 

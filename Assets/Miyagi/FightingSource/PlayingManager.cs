@@ -7,6 +7,13 @@ using UnityEngine.SceneManagement;
 public class PlayingManager : MonoBehaviour
 {
     [SerializeField] ParameterData _parameter_data_controller;
+    [HideInInspector]float CPU_THINGKING_TIME = 0;
+    [HideInInspector] float SCENE_CHANGE_TIME = 0;
+    [HideInInspector] float TURN_CHANGE_TIME = 0;
+    [HideInInspector] float CARD_EFFECT_DISTANCE = 0;
+    [HideInInspector] float TIME_UNTIL_TIME_RUNS_OUT = 0;
+    [HideInInspector] int RESET_CARDS_COUNT = 0;
+    [HideInInspector] int PLAYER_MAX_HP = 0;
 
     const int MAX_HP = 10;
     [SerializeField] Text _result_Text;
@@ -23,13 +30,6 @@ public class PlayingManager : MonoBehaviour
 
     float _progress_time = 0;
     bool _conclusion = false;
-    [HideInInspector]float CPU_THINGKING_TIME = 0;
-    [HideInInspector] float SCENE_CHANGE_TIME = 0;
-    [HideInInspector] float TURN_CHANGE_TIME = 0;
-    [HideInInspector] float CARD_EFFECT_DISTANCE = 0;
-    [HideInInspector] float TIME_UNTIL_TIME_RUNS_OUT = 0;
-    [HideInInspector] int RESET_CARDS_COUNT = 0;
-    [HideInInspector] int PLAYER_MAX_HP = 0;
 
     bool _cpu_draw = false;
     float _cpu_incapacity_time = 0;
@@ -52,8 +52,8 @@ public class PlayingManager : MonoBehaviour
     public void SetCharacterType(CharacterType player , CharacterType enemy) {
         _player_character_type = player;
         _enemy_character_type = enemy;
-        _player1_UI.ChangePlayerImage(player , _player1);
-        _player2_UI.ChangePlayerImage(enemy , _player2);
+        _player1_UI.ChangePlayerImage(player);
+        _player2_UI.ChangePlayerImage(enemy);
     }
     void Start()
     {
@@ -69,10 +69,10 @@ public class PlayingManager : MonoBehaviour
         ResetProgressTime();
         _conclusion = false;
         _player1 = new Player("player" , PLAYER_MAX_HP, true , _deck1 , _hands1 ,new Vector3(0, -4) , new Vector3(2.8f , 4f , 1), _player_character_type);
-        _turn_player = _player1;
 
         _player2 = new Player("enemy" , PLAYER_MAX_HP, false , _deck2 , _hands2 , new Vector3(3.0f, -0.5f) , new Vector3(0.7f, 1, 1), _enemy_character_type);
 
+        _turn_player = _player1;
         _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
         RandomolyChooseTurnPlayer();
 
@@ -118,7 +118,9 @@ public class PlayingManager : MonoBehaviour
         }
 
         if (_enemy_previous_hope != _player2.GetHopeCondition() || _enemy_previous_despair != _player2.GetDespairCondition()) {
-            SetCharacterType(_player_character_type, _enemy_character_type);
+            _player1_UI.ChangePlayerImage(_player_character_type, _player1.GetHopeCondition(), _player1.GetDespairCondition());
+            _player2_UI.ChangePlayerImage(_enemy_character_type, _player2.GetHopeCondition(), _player2.GetDespairCondition());
+
             _enemy_previous_hope = _player2.GetHopeCondition();
             _enemy_previous_despair = _player2.GetDespairCondition();
         }
@@ -163,6 +165,11 @@ public class PlayingManager : MonoBehaviour
         if (player.GetHands().IsPlayedCard(player) != null)
         {
             if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard(player).GetCostByCondition(player)) {
+                player.GetHands().IsPlayedCard(player).ReturnCard();
+                return;
+            }
+
+            if (!player.GetHands().IsPlayedCard(player).MetRestrictions(player)) {
                 player.GetHands().IsPlayedCard(player).ReturnCard();
                 return;
             }

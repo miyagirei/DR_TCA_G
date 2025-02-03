@@ -1,3 +1,4 @@
+using UnityEngine;
 public enum CharacterType
 {
     NULL,
@@ -8,9 +9,9 @@ public enum CharacterType
 
 public class CharacterTypeInfomation
 {
-    public string GetCharacterFile(CharacterType character, Player player)
+    public string GetCharacterFile(CharacterType character, bool hope = false, bool despair = false)
     {
-        if (player.GetHopeCondition())
+        if (hope)
         {
             switch (character)
             {
@@ -21,7 +22,7 @@ public class CharacterTypeInfomation
             }
         }        
         
-        if (player.GetDespairCondition())
+        if (despair)
         {
             switch (character)
             {

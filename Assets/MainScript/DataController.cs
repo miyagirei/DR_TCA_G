@@ -19,7 +19,7 @@ public class DataController : MonoBehaviour
     [SerializeField]
     private string sheet_name = "testSub";
 
-    private string apiUrl = "https://script.google.com/macros/s/AKfycbwFK5K8om7HSiX8fQ_QXE9XOx2piojxZY4_9nn4CtfJIr3ezwx_OG1k9lvJlvR4NJb7/exec";
+    private string apiUrl = "https://script.google.com/macros/s/AKfycbxcbOEFl9zibk0jP_ce4h1tJpYedcQOakLG907NzilrQfe56ofo8mw0dvyO6az0bA3J/exec";
 
     private Dictionary<string, float> paramDataF = new Dictionary<string, float>();
     private Dictionary<string, int> paramDataI = new Dictionary<string, int>();
@@ -111,6 +111,8 @@ public class DataController : MonoBehaviour
             card_data.hope_cost = int.Parse(row["despair_cost"].ToString());
             card_data.despair_bonus_amount = int.Parse(row["despair_bonus_amount"].ToString());
             card_data.image = row["image"].ToString();
+            card_data.restrictions = row["restrictions"].ToString();
+            card_data.restrictions_amount = int.Parse(row["restrictions_amount"].ToString());
 
             paramDataCard.Add(card_data.card_name, card_data);
         }

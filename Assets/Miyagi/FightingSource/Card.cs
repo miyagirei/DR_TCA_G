@@ -16,6 +16,9 @@ public class Card : MonoBehaviour
     const string EFFECT_ENEMY_CONDITION_HOPE = "GiveHope";
     const string EFFECT_ENEMY_CONDITION_DESPAIR = "GiveDespair";
 
+    const string RESTRICTIONS_GREATER_HP = "HpGreater";
+    const string RESTRICTIONS_LESS_HP = "HpLess";
+
     ParameterData _parameter_data_controller;
     [HideInInspector] float EFFECT_DISTANCE = 100;
     [SerializeField] float MOVING_SPEED = 2f;
@@ -42,6 +45,9 @@ public class Card : MonoBehaviour
     [SerializeField] int _cost_despair;//絶望コスト
     [SerializeField] int _despair_bonus_amount;//絶望一致ボーナス
 
+    [SerializeField] string _restrictions;//制限条件
+    [SerializeField] int _restrictions_amount;//制限条件コスト
+
     [Header("デバック")]
     [SerializeField] Vector3 _return_pos;//戻るときの場所
     [SerializeField] bool _is_card_played = false;//プレイするカードかどうか
@@ -52,10 +58,12 @@ public class Card : MonoBehaviour
     [SerializeField] bool _is_normal = true;//通常カードであるかの判定
     [SerializeField] bool _is_moving = false;//アニメーション移動を起こすかどうかの判定
 
-    public void Init(string name, CardType type, string effect, int amount, int cost, int bonus_amount = 0)
+    public void Init(string name, CardType type, string effect, int amount, int cost, string restrictions, int restrictions_amount, int bonus_amount = 0)
     {
         _card_name = name;
         _card_type = type;
+        _restrictions = restrictions;
+        _restrictions_amount = restrictions_amount;
         switch (_card_type)
         {
             case CardType.Normal:
@@ -83,7 +91,7 @@ public class Card : MonoBehaviour
         _return_pos = transform.position;
     }
 
-    public void Init(string name, string hope, int hope_amount, int bonus_hope, int hope_cost, string despair, int despair_amount, int bonus_despair, int despair_cost)
+    public void Init(string name, string hope, int hope_amount, int bonus_hope, int hope_cost, string despair, int despair_amount, int bonus_despair, int despair_cost, string restrictions, int restrictions_amount)
     {
         _card_name = name;
         _effect_hope = hope;
@@ -99,6 +107,9 @@ public class Card : MonoBehaviour
         _return_pos = transform.position;
         _is_normal = false;
         _card_type = CardType.HopeAndDespair;
+
+        _restrictions = restrictions;
+        _restrictions_amount = restrictions_amount;
     }
 
     void Start()
@@ -139,6 +150,8 @@ public class Card : MonoBehaviour
     public bool GetDragging() => _is_dragging;
     public void SetScale(Vector3 scale) => this.transform.localScale = scale;
     public void SetMoving(bool moving) => _is_moving = moving;
+    public string GetRestrictions() => _restrictions;
+    public int GetRestrictionsAmount() => _restrictions_amount;
 
     private void Update()
     {
@@ -445,7 +458,7 @@ public class Card : MonoBehaviour
 
         return 9999;
     }
-    public int GetAmountByCondition(Player player , Situation.PlayingSituation situation)
+    public int GetAmountByCondition(Player player, Situation.PlayingSituation situation)
     {
         if (GetCardType() == CardType.Normal)
         {
@@ -456,7 +469,8 @@ public class Card : MonoBehaviour
         {
             if (player.GetHopeCondition())
             {
-                if (situation == Situation.PlayingSituation.Hopeful) {
+                if (situation == Situation.PlayingSituation.Hopeful)
+                {
                     return GetHopeBonusAmount();
                 }
 
@@ -499,6 +513,30 @@ public class Card : MonoBehaviour
         }
         this.transform.position = Vector3.MoveTowards(transform.position, GetPos(), MOVING_SPEED * Time.deltaTime);
     }
+
+    public bool MetRestrictions(Player player)
+    {
+        switch (GetRestrictions())
+        {
+            case "":
+                return true;
+            case RESTRICTIONS_GREATER_HP:
+                if (player.GetHP() > GetRestrictionsAmount())
+                {
+                    return true;
+                }
+                return false;
+            case RESTRICTIONS_LESS_HP:
+                if (player.GetHP() < GetRestrictionsAmount())
+                {
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    }
+
     //カードを出したときの効果
     public void Effect(Player player, Player enemy, Vector3 location, Vector3 scale, Situation situation)
     {
@@ -524,7 +562,7 @@ public class Card : MonoBehaviour
                 EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount(), situation, true);
                 return;
             }
-            EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount() , situation);
+            EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount(), situation);
             return;
         }
         Debug.LogError("効果が発動できませんでした");
@@ -561,7 +599,7 @@ public class Card : MonoBehaviour
     }
 
 
-    void EffectList(string effect_text, Player player, Player enemy, Vector3 location, Vector3 scale, int amount, int bonus_amount, Situation situation ,bool situation_match = false)
+    void EffectList(string effect_text, Player player, Player enemy, Vector3 location, Vector3 scale, int amount, int bonus_amount, Situation situation, bool situation_match = false)
     {
         switch (effect_text)
         {

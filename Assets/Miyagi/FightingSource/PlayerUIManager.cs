@@ -190,9 +190,9 @@ public class PlayerUIManager : MonoBehaviour
         UI_Playlog.SetActive(!UI_Playlog.activeSelf);
     }
 
-    public void ChangePlayerImage(CharacterType character , Player player) {
+    public void ChangePlayerImage(CharacterType character , bool hope = false, bool despair = false) {
         CharacterTypeInfomation character_info = new CharacterTypeInfomation();
-        Image_Player.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character , player)));
+        Image_Player.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character , hope, despair)));
     }
 
     Sprite TextureToSprite(Texture2D texture)

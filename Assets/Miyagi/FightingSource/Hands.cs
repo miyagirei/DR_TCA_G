@@ -87,10 +87,10 @@ public class Hands : MonoBehaviour
         
         if (origin.GetCardType() == CardType.HopeAndDespair) {
             new_card.Init(origin.GetName(), origin.GetHopeEffect(),origin.GetHopeAmount(), origin.GetHopeBonusAmount(), origin.GetCostOfHope(), 
-                origin.GetDespairEffect() , origin.GetDespairAmount() , origin.GetDespairBonusAmount(), origin.GetCostOfDespair());
+                origin.GetDespairEffect() , origin.GetDespairAmount() , origin.GetDespairBonusAmount(), origin.GetCostOfDespair() , origin.GetRestrictions() , origin.GetRestrictionsAmount());
         }
         else {
-            new_card.Init(origin.GetName(), origin.GetCardType(), origin.GetEffectByCardType(origin.GetCardType()), origin.GetAmountByCardType(origin.GetCardType()),origin.GetCostByCardType(origin.GetCardType()), origin.GetBonusAmountByCardType(origin.GetCardType()));
+            new_card.Init(origin.GetName(), origin.GetCardType(), origin.GetEffectByCardType(origin.GetCardType()), origin.GetAmountByCardType(origin.GetCardType()),origin.GetCostByCardType(origin.GetCardType()), origin.GetRestrictions(), origin.GetRestrictionsAmount(), origin.GetBonusAmountByCardType(origin.GetCardType()));
         }
 
         new_card.CreatePopup();
@@ -151,7 +151,9 @@ public class Hands : MonoBehaviour
         bool change = false;
         for (int i = 0; i < _hands_card.Count; i++)
         {
-            if (most_card.GetCostByCondition(player) < _hands_card[i].GetCostByCondition(player) && _hands_card.Count - 1 > _hands_card[i].GetCostByCondition(player))
+            if (most_card.GetCostByCondition(player) < _hands_card[i].GetCostByCondition(player) &&
+                _hands_card.Count - 1 > _hands_card[i].GetCostByCondition(player) && 
+                _hands_card[i].MetRestrictions(player))
             {
                 most_card = _hands_card[i];
                 change = true;

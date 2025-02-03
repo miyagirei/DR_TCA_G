@@ -49,10 +49,10 @@ public class EnemyUIManager : MonoBehaviour
     }
 
 
-    public void ChangePlayerImage(CharacterType character , Player player)
+    public void ChangePlayerImage(CharacterType character , bool hope = false, bool despair = false)
     {
         CharacterTypeInfomation character_info = new CharacterTypeInfomation();
-        Image_Enemy.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character , player)));
+        Image_Enemy.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character , hope , despair)));
     }
 
     Sprite TextureToSprite(Texture2D texture)
