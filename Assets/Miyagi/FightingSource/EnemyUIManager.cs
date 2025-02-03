@@ -7,7 +7,6 @@ public class EnemyUIManager : MonoBehaviour
 {
     [SerializeField] Text UI_Enemy_HP;
     [SerializeField] Slider UI_Enemy_HP_Image;
-    [SerializeField] Text UI_Enemy_Condition;
     [SerializeField] SpriteRenderer Image_Enemy;
 
     int _current_hp;
@@ -20,7 +19,6 @@ public class EnemyUIManager : MonoBehaviour
     public void Display(Player enemy)
     {
         DisplayPlayerHP(enemy);
-        DisplayPlayerCondition(enemy);
     }
 
     void DisplayPlayerHP(Player player)
@@ -51,34 +49,10 @@ public class EnemyUIManager : MonoBehaviour
     }
 
 
-    void DisplayPlayerCondition(Player player)
-    {
-        if (player == null)
-        {
-            return;
-        }
-        string condition = "no info";
-
-        if (player.GetNormalCondition())
-        {
-            condition = "Normal";
-        }
-        else if (player.GetHopeCondition())
-        {
-            condition = "Hope";
-        }
-        else if (player.GetDespairCondition())
-        {
-            condition = "Despair";
-        }
-
-        UI_Enemy_Condition.text = player.GetName() + ":" + condition;
-    }
-
-    public void ChangePlayerImage(CharacterType character)
+    public void ChangePlayerImage(CharacterType character , Player player)
     {
         CharacterTypeInfomation character_info = new CharacterTypeInfomation();
-        Image_Enemy.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character)));
+        Image_Enemy.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(character , player)));
     }
 
     Sprite TextureToSprite(Texture2D texture)

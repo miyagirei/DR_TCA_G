@@ -35,8 +35,10 @@ public class ChooseDeckSceneManager : MonoBehaviour
         else if(_player_character_type == CharacterType.NULL){
             _player_character_type = CharacterType.MAX - 1;
         }
+        Player main_player = new Player("player", 1, true, new Deck(), new Hands(), new Vector3(0, -4), new Vector3(2.8f, 4f, 1), _player_character_type);
+
         CharacterTypeInfomation character_info = new CharacterTypeInfomation();
-        _player_sprite.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(_player_character_type)));
+        _player_sprite.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterFile(_player_character_type , main_player)));
         
     }
     public void OnSelectButtonClicked(int deckIndex)
