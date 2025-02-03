@@ -20,6 +20,12 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] SpriteRenderer Image_Player;
     [SerializeField] Text UI_Damage;
 
+    Vector3 Player_Turn_Change_Button_Scale = new Vector3(1, 1, 1);
+    Vector3 Enemy_Turn_Change_Button_Scale = new Vector3(0.5f, 0.5f, 0.5f);
+
+    Vector3 Player_Turn_Change_Button_Pos = new Vector3(850, -200, 1);
+    Vector3 Enemy_Turn_Change_Button_Pos = new Vector3(400,0, 1);
+    const float TURN_CHANGE_BUTTON_SPEED = 400f;
     int _current_hp;
     float _hp_cooltime;
     private void Start()
@@ -128,10 +134,16 @@ public class PlayerUIManager : MonoBehaviour
     public void DisplayTurnChangeButton(bool active) {
         if (!active)
         {
-            UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+            //UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+            UI_Player_Turn_Change_Button.interactable = false;
+            UI_Player_Turn_Change_Button.gameObject.transform.localScale = Vector3.MoveTowards(UI_Player_Turn_Change_Button.gameObject.transform.localScale , Enemy_Turn_Change_Button_Scale , Time.deltaTime);
+            UI_Player_Turn_Change_Button.gameObject.transform.localPosition = Vector3.MoveTowards(UI_Player_Turn_Change_Button.gameObject.transform.localPosition, Enemy_Turn_Change_Button_Pos, TURN_CHANGE_BUTTON_SPEED * Time.deltaTime);
             return;
         }
-        UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+        //UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+        UI_Player_Turn_Change_Button.interactable = true;
+        UI_Player_Turn_Change_Button.gameObject.transform.localScale = Vector3.MoveTowards(UI_Player_Turn_Change_Button.gameObject.transform.localScale , Player_Turn_Change_Button_Scale , Time.deltaTime);
+        UI_Player_Turn_Change_Button.gameObject.transform.localPosition = Vector3.MoveTowards(UI_Player_Turn_Change_Button.gameObject.transform.localPosition, Player_Turn_Change_Button_Pos, TURN_CHANGE_BUTTON_SPEED * Time.deltaTime);
     }
 
     public void DisplayTurnChangePanel(Player turn_player , Situation.PlayingSituation situation ,bool active) {
