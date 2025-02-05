@@ -15,6 +15,7 @@ public class Card : MonoBehaviour
     const string EFFECT_ENEMY_CONDITION_NORMAL = "CalmDown";
     const string EFFECT_ENEMY_CONDITION_HOPE = "GiveHope";
     const string EFFECT_ENEMY_CONDITION_DESPAIR = "GiveDespair";
+    const string EFFECT_TRASH_CARD = "Trash";
 
     const string RESTRICTIONS_GREATER_HP = "HpGreater";
     const string RESTRICTIONS_LESS_HP = "HpLess";
@@ -616,7 +617,7 @@ public class Card : MonoBehaviour
                 //Debug.Log("‰ñ•œ:" + GetHealAmount() + "or" + GetBonusHealAmount());
                 if (situation_match)
                 {
-                    enemy.AddHP(bonus_amount);
+                    player.AddHP(bonus_amount);
                     break;
                 }
                 player.AddHP(amount);
@@ -655,6 +656,13 @@ public class Card : MonoBehaviour
             case EFFECT_ENEMY_CONDITION_DESPAIR:
                 enemy.SetDespair();
                 Debug.Log("EnemyDespair");
+                break;
+            case EFFECT_TRASH_CARD:
+                if (situation_match)
+                {
+                    enemy.GetHands().TrashCardRandom(bonus_amount);
+                }
+                enemy.GetHands().TrashCardRandom(amount);
                 break;
         }
     }

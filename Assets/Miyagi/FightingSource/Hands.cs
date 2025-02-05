@@ -285,4 +285,13 @@ public class Hands : MonoBehaviour
             }
         }
     }
+
+    //カードをランダムで捨てさせる
+    public void TrashCardRandom(int count) {
+        for(int i = 0; i < count; i++)
+        {
+            Card card = _hands_card[Random.Range(0, _hands_card.Count - 1)];
+            TrashCard(card);
+        }
+    }
 }
