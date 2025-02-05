@@ -19,6 +19,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] ParticleSystem UI_Particle_Side_Right;
     [SerializeField] SpriteRenderer Image_Player;
     [SerializeField] Text UI_Damage;
+    [SerializeField] Button UI_Trash_Box;
 
     Vector3 Player_Turn_Change_Button_Scale = new Vector3(1, 1, 1);
     Vector3 Enemy_Turn_Change_Button_Scale = new Vector3(0.5f, 0.5f, 0.5f);
@@ -129,6 +130,15 @@ public class PlayerUIManager : MonoBehaviour
     public void AssingTurnChangeButton(System.Action action)
     {
         AssignButtonAction(UI_Player_Turn_Change_Button, action);
+    }
+
+    public void AssingTrashBoxButton(System.Action action) {
+        AssignButtonAction(UI_Trash_Box, action);
+    }
+
+    public void TogglePressableStateTrashBox(bool state)
+    {
+        UI_Trash_Box.interactable = state;
     }
 
     public void DisplayTurnChangeButton(bool active) {

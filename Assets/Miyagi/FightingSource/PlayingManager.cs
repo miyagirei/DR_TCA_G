@@ -47,6 +47,10 @@ public class PlayingManager : MonoBehaviour
 
     bool _enemy_previous_hope = false;
     bool _enemy_previous_despair = false;
+
+    bool _online_trash_box = false;
+
+    void SwitchOnlineTrashBox() => _online_trash_box = !_online_trash_box;
     void ResetProgressTime() => _progress_time = 0;
 
     public void SetCharacterType(CharacterType player , CharacterType enemy) {
@@ -74,6 +78,8 @@ public class PlayingManager : MonoBehaviour
 
         _turn_player = _player1;
         _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
+        _player1_UI.AssingTrashBoxButton(() => SwitchOnlineTrashBox());
+
         RandomolyChooseTurnPlayer();
 
         _enemy_previous_hope = false;
@@ -162,8 +168,10 @@ public class PlayingManager : MonoBehaviour
 
     //ƒvƒŒƒCƒ„[‚ª‘€ì
     void PlayerMoveing(Player player , Player enemy) {
+
         if (player.GetHands().IsPlayedCard(player) != null)
         {
+
             if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard(player).GetCostByCondition(player)) {
                 player.GetHands().IsPlayedCard(player).ReturnCard();
                 return;
@@ -173,6 +181,9 @@ public class PlayingManager : MonoBehaviour
                 player.GetHands().IsPlayedCard(player).ReturnCard();
                 return;
             }
+
+            _online_trash_box = false;
+            _player1_UI.TogglePressableStateTrashBox(false);
 
             if (!player.GetHands().isCardSelectionValid(player.GetHands().IsPlayedCard(player).GetCostByCondition(player))) {
                 player.GetHands().ShowAvailableCards(player.GetHands().IsPlayedCard(player));
@@ -199,7 +210,24 @@ public class PlayingManager : MonoBehaviour
             player.GetHands().discardSelectedCards();
             player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
             player.GetHands().SelectedPlayable(true);
+            _player1_UI.TogglePressableStateTrashBox(true);
+            
             checkResult();
+        }
+
+        if (_online_trash_box)
+        {
+            player.GetHands().ShowAvailableCards(null);
+
+            if (player.GetHands().IsCanDiscardCard())
+            {
+                player.GetHands().discardSelectedCards();
+                player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
+                player.GetHands().SelectedPlayable(true);
+                _online_trash_box = false;
+            }
+
+            return;
         }
     }
 
