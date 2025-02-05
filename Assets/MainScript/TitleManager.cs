@@ -52,6 +52,10 @@ public class TitleManager : MonoBehaviour
     private void Start()
     {
         PersonalDataController personal_controller = new PersonalDataController();
+        SetSliderValueToMixer("GeneralMaster", _master_volume);
+        SetSliderValueToMixer("GeneralBGM", _bgm_volume);
+        SetSliderValueToMixer("GeneralSE", _se_volume);
+
         _master_volume.value =  personal_controller.Load().AUDIO_MASTER;
         _bgm_volume.value =  personal_controller.Load().AUDIO_BGM;
         _se_volume.value =  personal_controller.Load().AUDIO_SE;
@@ -65,10 +69,6 @@ public class TitleManager : MonoBehaviour
 
         _audio_button.onClick.AddListener(() => SwitchAudioPanel(true));
         _audio_back_button.onClick.AddListener(() => SwitchAudioPanel(false));
-
-        SetSliderValueToMixer("GeneralMaster", _master_volume);
-        SetSliderValueToMixer("GeneralBGM", _bgm_volume);
-        SetSliderValueToMixer("GeneralSE", _se_volume);
     }
     void Update()
     {
@@ -85,16 +85,29 @@ public class TitleManager : MonoBehaviour
 
     void LoadNextScene()
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         SceneManager.LoadScene("CardDataLoadScene");
     }
 
     void SwitchSettingPanel(bool display) {
         _move_setting_panel = display;
+
+        if (display)
+        {
+            SoundManager.PlaySoundStatic(SoundType.DecisionSound);
+        }
+        else if (!display) {
+            SoundManager.PlaySoundStatic(SoundType.ReturnSound);
+        }
     }    
     void SwitchAudioPanel(bool display) {
         _move_audio_panel = display;
-        
-        if (!display) {
+
+        if (display)
+        {
+            SoundManager.PlaySoundStatic(SoundType.DecisionSound);
+        } else if (!display) {
+            SoundManager.PlaySoundStatic(SoundType.ReturnSound);
             PersonalDataController controller = new PersonalDataController();
             PersonalData personal_data = new PersonalData();
 

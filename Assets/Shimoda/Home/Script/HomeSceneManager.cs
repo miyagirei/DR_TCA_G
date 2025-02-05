@@ -154,6 +154,7 @@ public class HomeSceneManager : MonoBehaviour
 
     void OnCardButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         _move_main_panel = false;
         _move_card_panel = true;
         _move_battle_panel = false;
@@ -161,6 +162,7 @@ public class HomeSceneManager : MonoBehaviour
     }
     void OnHomeButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.ReturnSound);
         _move_main_panel = true;
         _move_card_panel = false;
         _move_battle_panel = false;
@@ -168,6 +170,7 @@ public class HomeSceneManager : MonoBehaviour
     }
     void OnBattleButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         _move_main_panel = false;
         _move_card_panel = false;
         _move_battle_panel = true;
@@ -175,6 +178,7 @@ public class HomeSceneManager : MonoBehaviour
     }
     void OnOptionButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         _move_main_panel = false;
         _move_card_panel = false;
         _move_battle_panel = false;
@@ -182,14 +186,17 @@ public class HomeSceneManager : MonoBehaviour
     }
     void OnCardListButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         SceneManager.LoadScene("CardListScene");
     }
     void OnCardDeckButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         SceneManager.LoadScene("CardDeckScene");
     }
     void OnBattleToBattleButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         SceneManager.LoadScene("ChooseDeckScene");
     }
 
