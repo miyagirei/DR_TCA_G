@@ -1,15 +1,18 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class HomeSceneManager : MonoBehaviour
 {
     const float CANVAS_MOVE_SPEED = 500f;
     const float INVISIBLE_MOVE_SPEED = 1800f;
     const float SPEED_SUPPRESSION_VALUE = 300f;
+    const float PANEL_MOVE_SPEED = 3000f;
+    const float ROTATE_PANEL_SPEED = 180f;
 
     [Header("MainButton")]
-    
+
     [SerializeField] Vector3 _back_button_invisible_pos = new Vector3(-1160, -640, 0);
     [SerializeField] Vector3 _back_button_visible_pos = new Vector3(-760, -440, 0);
     public Button _button_back;
@@ -29,6 +32,11 @@ public class HomeSceneManager : MonoBehaviour
     [SerializeField] Vector3 _option_button_visible_pos = new Vector3(450, -290, 0);
     public GameObject _panel_player_or_setting;
 
+    [SerializeField] bool _move_card_panel = false;
+    [SerializeField] bool _move_main_panel = false;
+    [SerializeField] bool _move_battle_panel = false;
+    [SerializeField] bool _move_option_panel = false;
+
     [Header("CardInside")]
     public Button buttonDeck;
     public Button buttonCardList;
@@ -39,20 +47,34 @@ public class HomeSceneManager : MonoBehaviour
     [SerializeField] Button _button_yes;
     [SerializeField] Button _button_no;
 
-    [SerializeField] GameObject _setting_panel;
+    [SerializeField, Header("Setting")] GameObject _setting_panel;
     [SerializeField] Button _button_open_setting_panel;
     [SerializeField] Button _button_close_setting_panel;
     [SerializeField] Dropdown _dropdown_button;
-    [SerializeField] Button _button_setting_save;
     [SerializeField] PersonalDataController _personal_data_controller;
+    [SerializeField] Vector3 _invisible_setting_pos = new Vector3(2000, 0, 0);
     PersonalData _personal_data = new PersonalData();
+    [SerializeField] Button _button_open_audio_panel;
+    [SerializeField] Button _button_close_audio_panel;
+    [SerializeField] AudioMixer _mixer;
+    [SerializeField] Slider _master_volume;
+    [SerializeField] Slider _bgm_volume;
+    [SerializeField] Slider _se_volume;
 
-    [SerializeField] bool _move_card_panel = false;
-    [SerializeField] bool _move_main_panel = false;
-    [SerializeField] bool _move_battle_panel = false;
-    [SerializeField] bool _move_option_panel = false;
+    [SerializeField] float _rotate_x_setting = 0;
+    [SerializeField] float _waiting_rotate_x_setting = 90f;
+    [SerializeField] bool _move_setting_panel = false;
+    [SerializeField] bool _move_audio_panel = false;
     void Start()
     {
+        SetSliderValueToMixer("GeneralMaster", _master_volume);
+        SetSliderValueToMixer("GeneralBGM", _bgm_volume);
+        SetSliderValueToMixer("GeneralSE", _se_volume);
+
+        _master_volume.value = _personal_data_controller.Load().AUDIO_MASTER;
+        _bgm_volume.value = _personal_data_controller.Load().AUDIO_BGM;
+        _se_volume.value = _personal_data_controller.Load().AUDIO_SE;
+
         _button_card.onClick.AddListener(OnCardButtonClicked);
         _button_back.onClick.AddListener(OnHomeButtonClicked);
         _button_battle.onClick.AddListener(OnBattleButtonClicked);
@@ -65,10 +87,12 @@ public class HomeSceneManager : MonoBehaviour
         _button_yes.onClick.AddListener(OnExitButtonClicked);
         _button_no.onClick.AddListener(() => OnPanelButton(_check_the_end_panel, false));
 
-        //_button_open_setting_panel.onClick.AddListener(() => OnPanelButton(_setting_panel , true));//セッティング要素を考え直してください
-        _button_close_setting_panel.onClick.AddListener(() => OnPanelButton(_setting_panel, false));
+        _button_open_setting_panel.onClick.AddListener(() => OnMovePanel(ref _move_setting_panel , true));//セッティング要素を考え直してください
+        _button_close_setting_panel.onClick.AddListener(() => OnMovePanel(ref _move_setting_panel ,false));
         _dropdown_button.onValueChanged.AddListener((value) => ChangeSolution(value));
-        _button_setting_save.onClick.AddListener(() => SaveSetting());
+
+        _button_open_audio_panel.onClick.AddListener(() => OnMovePanel(ref _move_audio_panel, true));
+        _button_close_audio_panel.onClick.AddListener(() => OnMovePanel(ref _move_audio_panel, false));
     }
 
     private void Update()
@@ -92,12 +116,15 @@ public class HomeSceneManager : MonoBehaviour
         {
             MoveMainPanel(_button_option, _button_battle, _button_card, _move_option_panel, _panel_player_or_setting, _panel_story_or_battle, _panel_deck_or_list);
         }
+
+        MoveSettingPanel();
+        MoveAudioPanel();
     }
 
     void MoveMainPanel()
     {
         _button_back.gameObject.transform.localPosition = Vector3.MoveTowards(_button_back.gameObject.transform.localPosition, _back_button_invisible_pos, INVISIBLE_MOVE_SPEED * Time.deltaTime);
-        
+
         _button_card.gameObject.transform.localPosition = Vector3.MoveTowards(_button_card.gameObject.transform.localPosition, _card_button_visible_pos, INVISIBLE_MOVE_SPEED * Time.deltaTime);
         _button_battle.gameObject.transform.localPosition = Vector3.MoveTowards(_button_battle.gameObject.transform.localPosition, _battle_button_visible_pos, INVISIBLE_MOVE_SPEED * Time.deltaTime);
         _button_option.gameObject.transform.localPosition = Vector3.MoveTowards(_button_option.gameObject.transform.localPosition, _option_button_visible_pos, INVISIBLE_MOVE_SPEED * Time.deltaTime);
@@ -111,7 +138,7 @@ public class HomeSceneManager : MonoBehaviour
             Vector3.Distance(_button_option.gameObject.transform.localPosition, _option_button_visible_pos) < 10)
         {
             _button_back.gameObject.transform.localPosition = _back_button_invisible_pos;
-            
+
             _button_card.gameObject.transform.localPosition = _card_button_visible_pos;
             _button_battle.gameObject.transform.localPosition = _battle_button_visible_pos;
             _button_option.gameObject.transform.localPosition = _option_button_visible_pos;
@@ -167,6 +194,8 @@ public class HomeSceneManager : MonoBehaviour
         _move_card_panel = false;
         _move_battle_panel = false;
         _move_option_panel = false;
+        _move_setting_panel = false;
+        _move_audio_panel = false;
     }
     void OnBattleButtonClicked()
     {
@@ -211,7 +240,82 @@ public class HomeSceneManager : MonoBehaviour
 
     void OnPanelButton(GameObject panel, bool view)
     {
+        if (view)
+        {
+            SoundManager.PlaySoundStatic(SoundType.DecisionSound);
+        }
+        else if (!view) {
+            SoundManager.PlaySoundStatic(SoundType.ReturnSound);
+        }
         panel.gameObject.SetActive(view);
+
+    }
+
+    void OnMovePanel(ref bool panel , bool view )
+    {
+
+        panel = view;
+
+        if (view)
+        {
+            SoundManager.PlaySoundStatic(SoundType.DecisionSound);
+        }
+        else if (!view)
+        {
+            SoundManager.PlaySoundStatic(SoundType.ReturnSound);
+            _personal_data_controller.Save(_personal_data);
+        }
+    }
+
+
+    void MoveSettingPanel()
+    {
+        if (_move_setting_panel)
+        {
+            if (Vector3.Distance(_setting_panel.transform.localPosition, new Vector3(0, 0, 0)) <= 10) {
+                _setting_panel.transform.localPosition = new Vector3(0, 0, 0);
+                return;
+            }
+
+            _setting_panel.transform.localPosition = Vector3.MoveTowards(_setting_panel.transform.localPosition, new Vector3(0, 0, 0), PANEL_MOVE_SPEED * Time.deltaTime);
+        }
+        else if (!_move_setting_panel)
+        {
+            if (Vector3.Distance(_setting_panel.transform.localPosition, _invisible_setting_pos) <= 10)
+            {
+                _setting_panel.transform.localPosition = _invisible_setting_pos;
+                return;
+            }
+
+            _setting_panel.transform.localPosition = Vector3.MoveTowards(_setting_panel.transform.localPosition, _invisible_setting_pos, PANEL_MOVE_SPEED * Time.deltaTime);
+        }
+    }
+
+    void MoveAudioPanel()
+    {
+        if (_move_audio_panel)
+        {
+            _setting_panel.gameObject.GetComponent<RectTransform>().rotation = Quaternion.Euler(_rotate_x_setting, 0, 0);
+
+            if (_rotate_x_setting >= _waiting_rotate_x_setting)
+            {
+                _rotate_x_setting = _waiting_rotate_x_setting;
+                return;
+            }
+
+            _rotate_x_setting += ROTATE_PANEL_SPEED * Time.deltaTime;
+        }
+        else if (!_move_audio_panel)
+        {
+            _setting_panel.gameObject.GetComponent<RectTransform>().rotation = Quaternion.Euler(_rotate_x_setting, 0, 0);
+            if (_rotate_x_setting <= 0f)
+            {
+                _rotate_x_setting = 0f;
+                return;
+            }
+
+            _rotate_x_setting -= ROTATE_PANEL_SPEED * Time.deltaTime;
+        }
     }
 
     void ChangeSolution(int value)
@@ -246,8 +350,11 @@ public class HomeSceneManager : MonoBehaviour
         };
     }
 
-    void SaveSetting()
+    private float ConvertVolume2dB(float volume) =>
+    Mathf.Clamp(20f * Mathf.Log10(Mathf.Clamp(volume, 0f, 1f)), -80f, 0f);
+
+    private void SetSliderValueToMixer(string group_name, Slider slider)
     {
-        _personal_data_controller.Save(_personal_data);
+        slider.onValueChanged.AddListener(value => _mixer.SetFloat(group_name, ConvertVolume2dB(value)));
     }
 }

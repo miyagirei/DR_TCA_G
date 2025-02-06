@@ -45,8 +45,7 @@ public class LoadingCardData : MonoBehaviour
             "\nnow_import : " + _image_downloader.getFilesLength() + 
             "\nsame_version : " + _parameter_data.isSameVersion() + 
             "\nexist_full_image : " + _image_downloader.IsImageData() + 
-            "\ndownload_now... : " + _is_image_downloading +
-            "\nloading_info : " + _image_downloader.getDownloadInfo(); 
+            "\ndownload_now... : " + _is_image_downloading; 
 
         if (!_parameter_data.isLoaded()) {
             return;
