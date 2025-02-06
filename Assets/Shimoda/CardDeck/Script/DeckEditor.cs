@@ -25,14 +25,19 @@ public class DeckEditor : MonoBehaviour
     [SerializeField] private GameObject deckSelectPanel;
     [SerializeField] private GameObject deckEditorPanel;
 
-    List<CardData> _prefab_deck_obj = new List<CardData>();
-    Dictionary<CardData, GameObject> _deck_data = new Dictionary<CardData, GameObject>();
-
-    List<CardData> _prefab_card_obj = new List<CardData>();
-    Dictionary<CardData, GameObject> _card_data = new Dictionary<CardData, GameObject>();
-
     int _loading_count = 0;
     int _deck_count = 0;
+    //List<CardData> _prefab_deck_obj = new List<CardData>();
+    //Dictionary<CardData, GameObject> _deck_data = new Dictionary<CardData, GameObject>();
+
+    //List<CardData> _prefab_card_obj = new List<CardData>();
+    //Dictionary<CardData, GameObject> _card_data = new Dictionary<CardData, GameObject>();
+    List<GameObject> _prefab_deck_obj = new List<GameObject>();
+    Dictionary<GameObject, CardData> _deck_data = new Dictionary<GameObject, CardData>();
+
+    List<GameObject> _prefab_card_obj = new List<GameObject>();
+    Dictionary<GameObject, CardData> _card_data = new Dictionary<GameObject, CardData>();
+
 
     void Start()
     {
@@ -93,8 +98,9 @@ public class DeckEditor : MonoBehaviour
             return;
         }
 
-        CardUI card_ui = _card_data[_prefab_card_obj[_loading_count]].GetComponent<CardUI>();
-        card_ui.SetCardData(_prefab_card_obj[_loading_count]);
+        GameObject card_UI = _prefab_card_obj[_loading_count];
+        CardUI card_ui = card_UI.GetComponent<CardUI>();
+        card_ui.SetCardData(_card_data[card_UI]);
         _loading_count++;
     }    
     void DisplayCards()
@@ -107,11 +113,11 @@ public class DeckEditor : MonoBehaviour
             foreach (var card in cardList)
             {
                 GameObject cardUI = Instantiate(cardUIPrefab, cardListParent);
-                _prefab_card_obj.Add(card);
-                _card_data.Add(card, cardUI);
+                _prefab_card_obj.Add(cardUI);
+                _card_data.Add(cardUI, card);
 
                 Button addButton = cardUI.GetComponentInChildren<Button>();
-                addButton.onClick.AddListener(() => AddCardToDeck(card));
+                addButton.onClick.AddListener(() => AddCardToDeck(cardUI));
             }
             AdjustContentHeight();
         }
@@ -129,8 +135,9 @@ public class DeckEditor : MonoBehaviour
         }
 
         Debug.Log(_deck_count + "count : " + _deck_data.Count );
-        CardUI card_ui = _deck_data[_prefab_deck_obj[_deck_count]].GetComponent<CardUI>();
-        card_ui.SetCardData(_prefab_deck_obj[_deck_count]);
+        GameObject card_UI = _prefab_deck_obj[_deck_count];
+        CardUI card_ui = card_UI.GetComponent<CardUI>();
+        card_ui.SetCardData(_deck_data[card_UI]);
         _deck_count++;
     }
     void DisplayDeck()
@@ -143,18 +150,17 @@ public class DeckEditor : MonoBehaviour
         }
 
         _deck_count = 0;
-        List<CardData> cardList = deckList; 
 
-        if (cardList != null)
+        if (deckList != null)
         {
-            foreach (var card in cardList)
+            foreach (var card in deckList)
             {
                 GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
-                _deck_data.Add(card, cardUI);
-                _prefab_deck_obj.Add(card);
+                _deck_data.Add(cardUI, card);
+                _prefab_deck_obj.Add(cardUI);
                 // デッキからカードを削除するボタンを追加
                 Button removeButton = cardUI.GetComponentInChildren<Button>();
-                removeButton.onClick.AddListener(() => RemoveCardFromDeck(card));
+                removeButton.onClick.AddListener(() => RemoveCardFromDeck(cardUI));
 
             }
             AdjustContentHeight();
@@ -165,8 +171,9 @@ public class DeckEditor : MonoBehaviour
         }
     }
 
-    void AddCardToDeck(CardData card)
+    void AddCardToDeck(GameObject card_UI)
     {
+        CardData card = _card_data[card_UI];
             // デッキに同名のカードが4枚未満であれば追加
             int cardCount = deckList.FindAll(c => c.card_name == card.card_name).Count;
             if (cardCount < 4) // 同名カードが4枚未満であれば追加
@@ -182,11 +189,18 @@ public class DeckEditor : MonoBehaviour
         AdjustDeckContentHeight();
     }
 
-    void RemoveCardFromDeck(CardData card)
+    void RemoveCardFromDeck(GameObject card_UI)
     {
         SoundManager.PlaySoundStatic(SoundType.TrashSound);
-        deckList.Remove(card);
-        Destroy(_deck_data[card]);
+
+        if (_deck_data.ContainsKey(card_UI)) {
+            CardData card = _deck_data[card_UI];
+            deckList.Remove(card);
+            Destroy(card_UI);
+            _deck_data.Remove(card_UI);
+            _prefab_deck_obj.Remove(card_UI);
+        }
+        
         AdjustDeckContentHeight();
 
     }
@@ -194,13 +208,13 @@ public class DeckEditor : MonoBehaviour
     void CreateCardData(CardData card) {
         SoundManager.PlaySoundStatic(SoundType.DrawSound);
         GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
-        _deck_data.Add(card, cardUI);
-        _prefab_deck_obj.Add(card);
+        _deck_data.Add(cardUI, card);
+        _prefab_deck_obj.Add(cardUI);
         CardUI card_ui = cardUI.GetComponent<CardUI>();
         card_ui.SetCardData(card);
         // デッキからカードを削除するボタンを追加
         Button removeButton = cardUI.GetComponentInChildren<Button>();
-        removeButton.onClick.AddListener(() => RemoveCardFromDeck(card));
+        removeButton.onClick.AddListener(() => RemoveCardFromDeck(cardUI));
         _deck_count++;
     }
 

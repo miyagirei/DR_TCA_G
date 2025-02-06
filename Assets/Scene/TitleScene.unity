@@ -502,7 +502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23169c7366a905a4fb41fc2503fd2e6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _test_sound: 1
+  _test_sound: 0
   _test_type: 0
 --- !u!1 &258875019
 GameObject:
@@ -2006,6 +2006,7 @@ MonoBehaviour:
   _start_BGM: Title_BGM
   _main_BGM: BGM_ReBeautifulMorning
   _fight_BGM: BGM_BOX15
+  _result_BGM: BGM_BeautifulDays
 --- !u!1 &1097996866
 GameObject:
   m_ObjectHideFlags: 0
