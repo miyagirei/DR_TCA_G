@@ -14,6 +14,7 @@ public class SoundManager : MonoBehaviour
     const string SE_DRAW = "SE_Draw";
     const string SE_CALM_DOWN = "SE_CalmDown";
     const string SE_TRASH = "SE_Trash";
+    const string SE_ALERTS = "SE_Alerts";
 
     private static SoundManager instance;
     [SerializeField] bool _test_sound = false;
@@ -92,6 +93,10 @@ public class SoundManager : MonoBehaviour
                 this.GetComponent<AudioSource>().pitch = 1f;
                 source_file = SE_TRASH;
                 break;
+            case SoundType.AlertsSound:
+                this.GetComponent<AudioSource>().pitch = 1f;
+                source_file = SE_ALERTS;
+                break;
             default:
                 return;
         }
@@ -115,5 +120,6 @@ public enum SoundType
     DespairSound,
     DrawSound,
     CalmDownSound,
-    TrashSound
+    TrashSound,
+    AlertsSound
 }

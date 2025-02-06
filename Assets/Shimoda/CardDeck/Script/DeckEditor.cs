@@ -176,6 +176,7 @@ public class DeckEditor : MonoBehaviour
             }
             else
             {
+                SoundManager.PlaySoundStatic(SoundType.AlertsSound);
                 Debug.Log("このカードは4枚までしか追加できません");
             }
         AdjustDeckContentHeight();
@@ -183,6 +184,7 @@ public class DeckEditor : MonoBehaviour
 
     void RemoveCardFromDeck(CardData card)
     {
+        SoundManager.PlaySoundStatic(SoundType.TrashSound);
         deckList.Remove(card);
         Destroy(_deck_data[card]);
         AdjustDeckContentHeight();
@@ -190,6 +192,7 @@ public class DeckEditor : MonoBehaviour
     }
 
     void CreateCardData(CardData card) {
+        SoundManager.PlaySoundStatic(SoundType.DrawSound);
         GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
         _deck_data.Add(card, cardUI);
         _prefab_deck_obj.Add(card);
@@ -224,6 +227,8 @@ public class DeckEditor : MonoBehaviour
     // デッキの保存処理
     public void SaveDeck()
     {
+        SoundManager.PlaySoundStatic(SoundType.HopeSound);
+
         // 現在選択されているデッキのデータをJSON形式に変換こ
         DeckData deckData = new DeckData();
         deckData.cards = deckList;
@@ -240,6 +245,8 @@ public class DeckEditor : MonoBehaviour
 
     public void SetMainDeck()
     {
+        SoundManager.PlaySoundStatic(SoundType.HopeSound);
+
         PlayerPrefs.SetInt("SelectedDeck", (currentDeckIndex + 1));
         PlayerPrefs.Save();
         Debug.Log($"デッキ "+(currentDeckIndex + 1)+" が選択されました");
@@ -248,6 +255,7 @@ public class DeckEditor : MonoBehaviour
     // デッキ選択ボタンの処理
     public void OnDeckButtonClicked(int deckIndex)
     {
+        SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         currentDeckIndex = deckIndex;
         LoadDeck(); // 選択したデッキを読み込む
         deckSelectPanel.SetActive(false); // デッキ選択画面を非表示
@@ -257,6 +265,7 @@ public class DeckEditor : MonoBehaviour
     // 戻るボタン
     public void OnBackButtonClicked()
     {
+        SoundManager.PlaySoundStatic(SoundType.ReturnSound);
         deckSelectPanel.SetActive(true); // デッキ選択画面を表示
         deckEditorPanel.SetActive(false); // デッキ編集画面を非表示
     }

@@ -29,6 +29,7 @@ public class ResultDataController : MonoBehaviour
     }
 
     void SceneTrans(string scene_name) {
+        SoundManager.PlaySoundStatic(SoundType.ReturnSound);
         SceneManager.LoadScene(scene_name);
     }
 }
