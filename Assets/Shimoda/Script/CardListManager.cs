@@ -8,6 +8,7 @@ public class CardListManager : MonoBehaviour
     // Start is called before the first frame update
     public void backToHome()
     {
+        SoundManager.PlaySoundStatic(SoundType.ReturnSound);
         SceneManager.LoadScene("HomeScene");
     }
 }

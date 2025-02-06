@@ -25,7 +25,14 @@ public class DeckEditor : MonoBehaviour
     [SerializeField] private GameObject deckSelectPanel;
     [SerializeField] private GameObject deckEditorPanel;
 
-    Dictionary<GameObject, CardData> _card_obj = new Dictionary<GameObject, CardData>();
+    List<CardData> _prefab_deck_obj = new List<CardData>();
+    Dictionary<CardData, GameObject> _deck_data = new Dictionary<CardData, GameObject>();
+
+    List<CardData> _prefab_card_obj = new List<CardData>();
+    Dictionary<CardData, GameObject> _card_data = new Dictionary<CardData, GameObject>();
+
+    int _loading_count = 0;
+    int _deck_count = 0;
 
     void Start()
     {
@@ -36,29 +43,6 @@ public class DeckEditor : MonoBehaviour
         cardList = cardLoader.GetNetworkCardData("card_data");
         LoadDeck(); // 初期デッキを読み込む
         DisplayCards(); // カードリストを表示
-    }
-
-    void LoadCardList(string jsonFileName)
-    {
-        // JSONファイルからカードリストを読み込む
-        TextAsset jsonFile = Resources.Load<TextAsset>(jsonFileName);
-        if (jsonFile != null)
-        {
-            CardListWrapper cardListWrapper = JsonUtility.FromJson<CardListWrapper>(jsonFile.text);
-            if (cardListWrapper != null && cardListWrapper.cards != null)
-            {
-                cardList = cardListWrapper.cards;
-                Debug.Log("カードリストの読み込み成功");
-            }
-            else
-            {
-                Debug.LogError("カードリストの読み込みに失敗しました");
-            }
-        }
-        else
-        {
-            Debug.LogError("カードリストのJSONファイルが見つかりません");
-        }
     }
 
     void LoadDeck()
@@ -78,36 +62,107 @@ public class DeckEditor : MonoBehaviour
             {
                 deckList = deckData.cards; // デッキリストに復元
                 Debug.Log("デッキが読み込まれました: " + filePath);
-                UpdateDeckUI();
+                DisplayDeck();
             }
             else
             {
                 Debug.LogError("デッキデータの読み込みに失敗しました");
                 deckList.Clear(); // デッキリストを空にする
-                UpdateDeckUI(); // 空のデッキUIを更新
+                DisplayDeck();
             }
         }
         else
         {
             Debug.Log("保存されたデッキが見つかりません: " + filePath);
             deckList.Clear(); // デッキリストを空にする
-            UpdateDeckUI(); // 空のデッキUIを更新
+            //UpdateDeckUI(); // 空のデッキUIを更新
+            DisplayDeck();
         }
     }
 
+    private void Update()
+    {
+        SetImageData();
+        SetDeckImage();
+    }
+
+    void SetImageData()
+    {
+        if (_loading_count >= _card_data.Count)
+        {
+            return;
+        }
+
+        CardUI card_ui = _card_data[_prefab_card_obj[_loading_count]].GetComponent<CardUI>();
+        card_ui.SetCardData(_prefab_card_obj[_loading_count]);
+        _loading_count++;
+    }    
     void DisplayCards()
     {
-        foreach (var card in cardList)
-        {
-            GameObject cardUI = Instantiate(cardUIPrefab, cardListParent);
-            CardUI cardUIScript = cardUI.GetComponent<CardUI>();
-            cardUIScript.SetCardData(card);
+        cardLoader.Get("card_data");
+        List<CardData> cardList = cardLoader.GetCardList(); // CardLoader からカードリストを取得
 
-            // カードにデッキに追加するボタンを追加
-            Button addButton = cardUI.GetComponentInChildren<Button>();
-            addButton.onClick.AddListener(() => AddCardToDeck(card));
+        if (cardList != null)
+        {
+            foreach (var card in cardList)
+            {
+                GameObject cardUI = Instantiate(cardUIPrefab, cardListParent);
+                _prefab_card_obj.Add(card);
+                _card_data.Add(card, cardUI);
+
+                Button addButton = cardUI.GetComponentInChildren<Button>();
+                addButton.onClick.AddListener(() => AddCardToDeck(card));
+            }
+            AdjustContentHeight();
         }
-        AdjustContentHeight();
+        else
+        {
+            Debug.LogError("カードリストが取得できません");
+        }
+    }
+    
+    void SetDeckImage()
+    {
+        if (_deck_count >= _deck_data.Count)
+        {
+            return;
+        }
+
+        Debug.Log(_deck_count + "count : " + _deck_data.Count );
+        CardUI card_ui = _deck_data[_prefab_deck_obj[_deck_count]].GetComponent<CardUI>();
+        card_ui.SetCardData(_prefab_deck_obj[_deck_count]);
+        _deck_count++;
+    }
+    void DisplayDeck()
+    {
+        _deck_data.Clear();
+        _prefab_deck_obj.Clear();
+        foreach (Transform child in deckListParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        _deck_count = 0;
+        List<CardData> cardList = deckList; 
+
+        if (cardList != null)
+        {
+            foreach (var card in cardList)
+            {
+                GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
+                _deck_data.Add(card, cardUI);
+                _prefab_deck_obj.Add(card);
+                // デッキからカードを削除するボタンを追加
+                Button removeButton = cardUI.GetComponentInChildren<Button>();
+                removeButton.onClick.AddListener(() => RemoveCardFromDeck(card));
+
+            }
+            AdjustContentHeight();
+        }
+        else
+        {
+            Debug.LogError("カードリストが取得できません");
+        }
     }
 
     void AddCardToDeck(CardData card)
@@ -118,8 +173,6 @@ public class DeckEditor : MonoBehaviour
             {
                 deckList.Add(card);
                 CreateCardData(card);
-
-                //UpdateDeckUI();
             }
             else
             {
@@ -128,38 +181,24 @@ public class DeckEditor : MonoBehaviour
         AdjustDeckContentHeight();
     }
 
-    void RemoveCardFromDeck(GameObject card)
+    void RemoveCardFromDeck(CardData card)
     {
-        deckList.Remove(_card_obj[card]);
-        Destroy(card);
+        deckList.Remove(card);
+        Destroy(_deck_data[card]);
         AdjustDeckContentHeight();
-        //UpdateDeckUI();
 
-    }
-
-    void UpdateDeckUI()
-    {
-        // デッキ内のカードを更新
-        foreach (Transform child in deckListParent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        foreach (var card in deckList)
-        {
-            CreateCardData(card);
-        }
-        AdjustDeckContentHeight();
     }
 
     void CreateCardData(CardData card) {
         GameObject cardUI = Instantiate(cardUIPrefab, deckListParent);
-        CardUI cardUIScript = cardUI.GetComponent<CardUI>();
-        cardUIScript.SetCardData(card);
-        _card_obj.Add(cardUI, card);
+        _deck_data.Add(card, cardUI);
+        _prefab_deck_obj.Add(card);
+        CardUI card_ui = cardUI.GetComponent<CardUI>();
+        card_ui.SetCardData(card);
         // デッキからカードを削除するボタンを追加
         Button removeButton = cardUI.GetComponentInChildren<Button>();
-        removeButton.onClick.AddListener(() => RemoveCardFromDeck(cardUI));
+        removeButton.onClick.AddListener(() => RemoveCardFromDeck(card));
+        _deck_count++;
     }
 
     void AdjustContentHeight()
@@ -220,22 +259,6 @@ public class DeckEditor : MonoBehaviour
     {
         deckSelectPanel.SetActive(true); // デッキ選択画面を表示
         deckEditorPanel.SetActive(false); // デッキ編集画面を非表示
-    }
-
-    // デッキ選択画面のUIボタンを設定
-    void SetDeckButtons()
-    {
-        for (int i = 0; i < deckNames.Length; i++)
-        {
-            GameObject deckButton = new GameObject("DeckButton" + i);
-            Button button = deckButton.AddComponent<Button>();
-            button.GetComponentInChildren<Text>().text = deckNames[i];
-
-            int deckIndex = i;
-            button.onClick.AddListener(() => OnDeckButtonClicked(deckIndex));
-
-            deckButton.transform.SetParent(deckSelectPanel.transform);
-        }
     }
 }
 

@@ -28,7 +28,13 @@ public class CardUI : MonoBehaviour
             byte[] image_data = File.ReadAllBytes(image_path);
             Texture2D texture = new Texture2D(2, 2);
             texture.LoadImage(image_data);
-            ApplyTextureWithPixelsPerUnit(texture, personal_data.Load().RESOLUTION, this.gameObject);
+            if(personal_data.Load().RESOLUTION != 0)
+            {
+                ApplyTextureWithPixelsPerUnit(texture, personal_data.Load().RESOLUTION, this.gameObject);
+            }
+            else {
+                ApplyTextureWithPixelsPerUnit(texture, 1000, this.gameObject);
+            }
 
         }
         else
