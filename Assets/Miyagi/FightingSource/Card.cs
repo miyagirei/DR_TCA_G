@@ -605,7 +605,7 @@ public class Card : MonoBehaviour
         switch (effect_text)
         {
             case EFFECT_ATTACK_TEXT:
-                //Debug.Log("攻撃:" + amount + "or" + GetBonusDamage());
+                SoundManager.PlaySoundStatic(SoundType.AttackSound);
                 if (situation_match)
                 {
                     enemy.AddHP(-bonus_amount);
@@ -614,7 +614,7 @@ public class Card : MonoBehaviour
                 enemy.AddHP(-amount);
                 break;
             case EFFECT_HEAL_TEXT:
-                //Debug.Log("回復:" + GetHealAmount() + "or" + GetBonusHealAmount());
+                SoundManager.PlaySoundStatic(SoundType.HealSound);
                 if (situation_match)
                 {
                     player.AddHP(bonus_amount);
@@ -623,7 +623,7 @@ public class Card : MonoBehaviour
                 player.AddHP(amount);
                 break;
             case EFFECT_DRAW_TEXT:
-                //Debug.Log("ドロー:" + GetDrawAmount() + "or" + GetBonusDrawAmount());
+                SoundManager.PlaySoundStatic(SoundType.DrawSound);
                 if (situation_match)
                 {
                     ActivateDraw(player, location, scale, bonus_amount);
@@ -632,32 +632,38 @@ public class Card : MonoBehaviour
                 ActivateDraw(player, location, scale, amount);
                 break;
             case EFFECT_HOPE_CHANGE:
-                //Debug.Log("希望チェンジ");
+                SoundManager.PlaySoundStatic(SoundType.HopeSound);
                 player.SetHope();
                 break;
             case EFFECT_DESPAIR_CHANGE:
-                //Debug.Log("絶望チェンジ");
+                SoundManager.PlaySoundStatic(SoundType.DespairSound);
                 player.SetDespair();
                 break;
             case EFFECT_TURN_CONDITION_HOPE:
+                SoundManager.PlaySoundStatic(SoundType.HopefulSound);
                 situation.SetSituation(Situation.PlayingSituation.Hopeful);
                 break;
             case EFFECT_TURN_CONDITION_DESPAIR:
+                SoundManager.PlaySoundStatic(SoundType.DesperateSound);
                 situation.SetSituation(Situation.PlayingSituation.Desperate);
                 break;
             case EFFECT_ENEMY_CONDITION_NORMAL:
+                SoundManager.PlaySoundStatic(SoundType.CalmDownSound);
                 enemy.SetNormal();
                 Debug.Log("EnemyNormal");
                 break;
             case EFFECT_ENEMY_CONDITION_HOPE:
+                SoundManager.PlaySoundStatic(SoundType.HopeSound);
                 enemy.SetHope();
                 Debug.Log("EnemyHope");
                 break;
             case EFFECT_ENEMY_CONDITION_DESPAIR:
+                SoundManager.PlaySoundStatic(SoundType.DespairSound);
                 enemy.SetDespair();
                 Debug.Log("EnemyDespair");
                 break;
             case EFFECT_TRASH_CARD:
+                SoundManager.PlaySoundStatic(SoundType.DespairSound);
                 if (situation_match)
                 {
                     enemy.GetHands().TrashCardRandom(bonus_amount);

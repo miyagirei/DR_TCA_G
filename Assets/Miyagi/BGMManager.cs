@@ -7,6 +7,7 @@ public class BGMManager : MonoBehaviour
 {
     [SerializeField] string _start_BGM;
     [SerializeField] string _main_BGM;
+    [SerializeField] string _fight_BGM;
 
     string _now_bgm;
     void Start()
@@ -33,6 +34,19 @@ public class BGMManager : MonoBehaviour
                 this.GetComponent<AudioSource>().clip = bgm;
                 this.GetComponent<AudioSource>().Play();
             }
+        }        
+        
+        if (SceneManager.GetActiveScene().name == "GameFightingScene") {
+
+            if(_now_bgm != _fight_BGM)
+            {
+                _now_bgm = _fight_BGM;
+                AudioClip bgm = Resources.Load<AudioClip>("Audio/" + _fight_BGM);
+                this.GetComponent<AudioSource>().clip = bgm;
+                this.GetComponent<AudioSource>().Play();
+            }
         }
     }
+
+    public void ChangeFightBGM(string bgm) => _fight_BGM = bgm;
 }
