@@ -18,9 +18,10 @@ public class ChooseDeckSceneManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PersonalDataController personal_data_controller = new PersonalDataController();
         selectedDeckIndex = PlayerPrefs.GetInt("SelectedDeck", 0) - 1;
         UpdateButtonHighlight();
-        _player_character_type = CharacterType.Monokuma;
+        _player_character_type = personal_data_controller.Load().CHARACTER_TYPE;
         CharacterChange(0);
         _character_change_right_button.onClick.AddListener(() => CharacterChange(1));
         _character_change_left_button.onClick.AddListener(() => CharacterChange(-1));

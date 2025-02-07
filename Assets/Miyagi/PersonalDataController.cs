@@ -53,4 +53,5 @@ public class PersonalData
     public float AUDIO_BGM = 0f;
     public float AUDIO_SE = 0f;
     public int RESOLUTION = 0;
+    public CharacterType CHARACTER_TYPE = CharacterType.Monokuma; 
 }

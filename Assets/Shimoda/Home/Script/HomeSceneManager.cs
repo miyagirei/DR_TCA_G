@@ -65,11 +65,21 @@ public class HomeSceneManager : MonoBehaviour
     [SerializeField] float _waiting_rotate_x_setting = 90f;
     [SerializeField] bool _move_setting_panel = false;
     [SerializeField] bool _move_audio_panel = false;
+
+    [SerializeField] Image _character_sprite;
+
+    [SerializeField] Button _player_setting_button;
+    [SerializeField] Button _player_setting_button_back;
+    [SerializeField] GameObject _player_setting_panel;
+    [SerializeField] bool _move_player_setting_panel;
+    [SerializeField] Dropdown _player_setting_dropdown;
+
     void Start()
     {
         SetSliderValueToMixer("GeneralMaster", _master_volume);
         SetSliderValueToMixer("GeneralBGM", _bgm_volume);
         SetSliderValueToMixer("GeneralSE", _se_volume);
+        SetImageCharacter();
 
         _master_volume.value = _personal_data_controller.Load().AUDIO_MASTER;
         _bgm_volume.value = _personal_data_controller.Load().AUDIO_BGM;
@@ -93,6 +103,10 @@ public class HomeSceneManager : MonoBehaviour
 
         _button_open_audio_panel.onClick.AddListener(() => OnMovePanel(ref _move_audio_panel, true));
         _button_close_audio_panel.onClick.AddListener(() => OnMovePanel(ref _move_audio_panel, false));
+
+        _player_setting_button.onClick.AddListener(() => OnMovePanel(ref _move_player_setting_panel , true));
+        _player_setting_button_back.onClick.AddListener(() => OnMovePanel(ref _move_player_setting_panel, false));
+        _player_setting_dropdown.onValueChanged.AddListener((value) => ChangePlayerCharacter(value));
     }
 
     private void Update()
@@ -119,6 +133,7 @@ public class HomeSceneManager : MonoBehaviour
 
         MoveSettingPanel();
         MoveAudioPanel();
+        MovePlayerSettingPanel();
     }
 
     void MoveMainPanel()
@@ -186,6 +201,7 @@ public class HomeSceneManager : MonoBehaviour
         _move_card_panel = true;
         _move_battle_panel = false;
         _move_option_panel = false;
+        _move_player_setting_panel = false;
     }
     void OnHomeButtonClicked()
     {
@@ -196,6 +212,7 @@ public class HomeSceneManager : MonoBehaviour
         _move_option_panel = false;
         _move_setting_panel = false;
         _move_audio_panel = false;
+        _move_player_setting_panel = false;
     }
     void OnBattleButtonClicked()
     {
@@ -204,6 +221,7 @@ public class HomeSceneManager : MonoBehaviour
         _move_card_panel = false;
         _move_battle_panel = true;
         _move_option_panel = false;
+        _move_player_setting_panel = false;
     }
     void OnOptionButtonClicked()
     {
@@ -212,6 +230,7 @@ public class HomeSceneManager : MonoBehaviour
         _move_card_panel = false;
         _move_battle_panel = false;
         _move_option_panel = true;
+        _move_player_setting_panel = false;
     }
     void OnCardListButtonClicked()
     {
@@ -253,7 +272,6 @@ public class HomeSceneManager : MonoBehaviour
 
     void OnMovePanel(ref bool panel , bool view )
     {
-
         panel = view;
 
         if (view)
@@ -357,4 +375,68 @@ public class HomeSceneManager : MonoBehaviour
     {
         slider.onValueChanged.AddListener(value => _mixer.SetFloat(group_name, ConvertVolume2dB(value)));
     }
+
+    void SetImageCharacter() {
+        CharacterTypeInfomation character_info = new CharacterTypeInfomation();
+        _character_sprite.sprite = TextureToSprite(Resources.Load<Texture2D>(character_info.GetCharacterImage(_personal_data_controller.Load().CHARACTER_TYPE)));
+    }
+    Sprite TextureToSprite(Texture2D texture)
+    {
+        return Sprite.Create(
+            texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0f)
+        );
+    }
+
+    void MovePlayerSettingPanel()
+    {
+        if (_move_player_setting_panel)
+        {
+            if (Vector3.Distance(_player_setting_panel.transform.localPosition, new Vector3(0, 0, 0)) <= 10)
+            {
+                _player_setting_panel.transform.localPosition = new Vector3(0, 0, 0);
+                return;
+            }
+
+            _player_setting_panel.transform.localPosition = Vector3.MoveTowards(_player_setting_panel.transform.localPosition, new Vector3(0, 0, 0), PANEL_MOVE_SPEED * Time.deltaTime);
+        }
+        else if (!_move_player_setting_panel)
+        {
+            if (Vector3.Distance(_player_setting_panel.transform.localPosition, _invisible_setting_pos) <= 10)
+            {
+                _player_setting_panel.transform.localPosition = _invisible_setting_pos;
+                return;
+            }
+
+            _player_setting_panel.transform.localPosition = Vector3.MoveTowards(_player_setting_panel.transform.localPosition, _invisible_setting_pos, PANEL_MOVE_SPEED * Time.deltaTime);
+        }
+    }
+
+    void ChangePlayerCharacter(int value)
+    {
+        Debug.Log("Solution :" + value);
+        switch (value)
+        {
+            case 0:
+                _personal_data.CHARACTER_TYPE = CharacterType.Monokuma;
+                break;
+            case 1:
+                _personal_data.CHARACTER_TYPE = CharacterType.NaegiMakoto;
+                break;
+            case 2:
+                _personal_data.CHARACTER_TYPE = CharacterType.CelestiaLudenberg;
+                break;
+            case 3:
+                _personal_data.CHARACTER_TYPE = CharacterType.YamadaHifumi;
+                break;
+            case 4:
+                _personal_data.CHARACTER_TYPE = CharacterType.EnoshimaJunko;
+                break;
+        };
+
+        _personal_data_controller.Save(_personal_data);
+        SetImageCharacter();
+    }
+
 }
