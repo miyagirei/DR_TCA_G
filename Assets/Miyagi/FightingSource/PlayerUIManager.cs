@@ -219,4 +219,15 @@ public class PlayerUIManager : MonoBehaviour
         UI_Damage.text = damage.ToString();
         UI_Damage.gameObject.SetActive(active);
     }
+
+    public void ChangeImageTrashBox(bool open) {
+        if (open) {
+            UI_Trash_Box.GetComponent<Image>().sprite = TextureToSprite(Resources.Load<Texture2D>("UI_Trash_Box_Open"));
+        }
+        else
+        {
+            UI_Trash_Box.GetComponent<Image>().sprite = TextureToSprite(Resources.Load<Texture2D>("UI_Trash_Box_Close"));
+
+        }
+    }
 }

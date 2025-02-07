@@ -11,37 +11,34 @@ public class CharacterTypeInfomation
 {
     public string GetCharacterFile(CharacterType character, bool hope = false, bool despair = false)
     {
-        if (hope)
-        {
-            switch (character)
-            {
-                case CharacterType.Monokuma:
-                    return "monokuma_01";
-                case CharacterType.NaegiMakoto:
-                    return "naegi_01";
-            }
-        }        
-        
-        if (despair)
-        {
-            switch (character)
-            {
-                case CharacterType.Monokuma:
-                    return "monokuma_02";
-                case CharacterType.NaegiMakoto:
-                    return "naegi_02";
-            }
-        }
-
+        string file_name = "Character/";
         switch (character)
         {
             case CharacterType.Monokuma:
-                return "monokuma_00";
+
+                file_name += "monokuma_" + GetNumber(hope, despair);
+                break;
+
             case CharacterType.NaegiMakoto:
-                return "naegi_00";
+                file_name += "naegi_" + GetNumber(hope , despair);
+                break;
             default:
-                return null;
+                file_name = null;
+                break;
         }
+
+        return file_name;
     }
 
+    string GetNumber(bool hope, bool despair) {
+        if (hope)
+        {
+             return "01";
+        }
+        else if (despair)
+        {
+            return "02";
+        }
+        return "00";
+    }
 }

@@ -49,10 +49,18 @@ public class PlayingManager : MonoBehaviour
     bool _enemy_previous_despair = false;
 
     bool _online_trash_box = false;
+    bool _reset_card = false;
     string _start_fight_bgm = "BGM_BOX15";
     string _final_fight_bgm = "BGM_DANGANRONPA";
 
-    void SwitchOnlineTrashBox() => _online_trash_box = !_online_trash_box;
+    void SwitchOnlineTrashBox()
+    {
+        _online_trash_box = !_online_trash_box;
+
+        if (!_online_trash_box) {
+            _reset_card = true;
+        }
+    }
     void ResetProgressTime() => _progress_time = 0;
 
     public void SetCharacterType(CharacterType player, CharacterType enemy)
@@ -82,6 +90,7 @@ public class PlayingManager : MonoBehaviour
         _turn_player = _player1;
         _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
         _player1_UI.AssingTrashBoxButton(() => SwitchOnlineTrashBox());
+        _player1_UI.ChangeImageTrashBox(_online_trash_box);
         RandomolyChooseTurnPlayer();
 
         _enemy_previous_hope = false;
@@ -175,6 +184,8 @@ public class PlayingManager : MonoBehaviour
                 _player1_UI.DisplayCardEffectDistance(CARD_EFFECT_DISTANCE, false);
             }
         }
+
+
         if (_player2.IsCurrentPlayer())
         {
             CPUMoving(_player2, _player1);
@@ -238,9 +249,18 @@ public class PlayingManager : MonoBehaviour
             checkResult();
         }
 
+        if (_reset_card) {
+            player.GetHands().discardSelectedCards();
+            player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
+            player.GetHands().SelectedPlayable(true);
+            _player1_UI.ChangeImageTrashBox(_online_trash_box);
+            _reset_card = false;
+        }
+
         if (_online_trash_box)
         {
             player.GetHands().ShowAvailableCards(null);
+            _player1_UI.ChangeImageTrashBox(_online_trash_box);
 
             if (player.GetHands().IsCanDiscardCard())
             {
@@ -248,6 +268,7 @@ public class PlayingManager : MonoBehaviour
                 player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
                 player.GetHands().SelectedPlayable(true);
                 _online_trash_box = false;
+                _player1_UI.ChangeImageTrashBox(_online_trash_box);
             }
 
             return;
@@ -439,6 +460,7 @@ public class PlayingManager : MonoBehaviour
         }
     }
 
+    //‚Ç‚¿‚ç‚©‚ÌHP‚ª”¼•ª‚É‚È‚Á‚½ŽžBGM‚ð‚©‚¯‚é
     void ChangeBGM()
     {
         if (GameObject.Find("BGMManager") != null)

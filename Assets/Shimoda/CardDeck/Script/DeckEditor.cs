@@ -27,11 +27,7 @@ public class DeckEditor : MonoBehaviour
 
     int _loading_count = 0;
     int _deck_count = 0;
-    //List<CardData> _prefab_deck_obj = new List<CardData>();
-    //Dictionary<CardData, GameObject> _deck_data = new Dictionary<CardData, GameObject>();
 
-    //List<CardData> _prefab_card_obj = new List<CardData>();
-    //Dictionary<CardData, GameObject> _card_data = new Dictionary<CardData, GameObject>();
     List<GameObject> _prefab_deck_obj = new List<GameObject>();
     Dictionary<GameObject, CardData> _deck_data = new Dictionary<GameObject, CardData>();
 
