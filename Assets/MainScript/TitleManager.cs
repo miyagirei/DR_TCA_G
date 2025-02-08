@@ -83,7 +83,7 @@ public class TitleManager : MonoBehaviour
         }
     }
 
-    void LoadNextScene()
+    public void LoadNextScene()
     {
         SoundManager.PlaySoundStatic(SoundType.DecisionSound);
         SceneManager.LoadScene("CardDataLoadScene");
