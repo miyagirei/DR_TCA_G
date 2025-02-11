@@ -81,6 +81,12 @@ public class TitleManager : MonoBehaviour
             ClearImageFolder();
             return;
         }
+
+        if (Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)) 
+        {
+            SceneManager.LoadScene("PhotonTestScene");
+            return;
+        }
     }
 
     public void LoadNextScene()

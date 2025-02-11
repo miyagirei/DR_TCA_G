@@ -108,7 +108,7 @@ public class DataController : MonoBehaviour
             card_data.hope_bonus_amount = int.Parse(row["hope_bonus_amount"].ToString());
             card_data.despair_effect = row["despair_effect"].ToString();
             card_data.despair_amount = int.Parse(row["despair_amount"].ToString());
-            card_data.hope_cost = int.Parse(row["despair_cost"].ToString());
+            card_data.despair_cost = int.Parse(row["despair_cost"].ToString());
             card_data.despair_bonus_amount = int.Parse(row["despair_bonus_amount"].ToString());
             card_data.image = row["image"].ToString();
             card_data.restrictions = row["restrictions"].ToString();

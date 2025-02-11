@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/ResultScene.unity
     guid: 0818231549d876442875719046853a8e
+  - enabled: 1
+    path: Assets/Miyagi/PhotonTest/PhotonTestScene.unity
+    guid: fcd5fc60a1f33e048b721ec30e772d9a
   m_configObjects: {}
