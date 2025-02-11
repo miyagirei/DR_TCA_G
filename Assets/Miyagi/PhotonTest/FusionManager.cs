@@ -4,7 +4,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 
-public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
+public class FusionManager : MonoBehaviour,INetworkRunnerCallbacks
 {
     [SerializeField] NetworkRunner _runner_prefab;
      NetworkRunner _runner;
@@ -14,17 +14,22 @@ public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
     async void Start()
     {
         _runner = Instantiate(_runner_prefab);
-
         _runner.AddCallbacks(this);
+
         var result = await _runner.StartGame(new StartGameArgs()
         {
-            GameMode = GameMode.AutoHostOrClient,
+            GameMode = GameMode.Shared,
             SessionName = "TestSession",
             SceneManager = _runner.GetComponent<NetworkSceneManagerDefault>()
         });
 
         if (result.Ok) {
             Debug.Log("Photon Host Start");
+
+            var random_value = UnityEngine.Random.insideUnitCircle * 5f;
+            var spawn_position = new Vector3(random_value.x, random_value.y, 0f);
+
+            _runner.Spawn(_player_prefab, spawn_position, Quaternion.identity, _runner.LocalPlayer);
         }
         else
         {
@@ -33,29 +38,33 @@ public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
         
     }
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
-        Debug.Log("PlayerJoined : " + player);
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        //Debug.Log("PlayerJoined : " + player);
 
-        if (!runner.IsServer) { return; }
+        //if (!runner.IsServer) { return; }
 
-        var random_value = UnityEngine.Random.insideUnitCircle * 5f;
-        var spawn_position = new Vector3(random_value.x, random_value.y, 0f);
+        //var random_value = UnityEngine.Random.insideUnitCircle * 5f;
+        //var spawn_position = new Vector3(random_value.x, random_value.y, 0f);
 
-        var avater = runner.Spawn(_player_prefab, spawn_position, Quaternion.identity, player);
-        runner.SetPlayerObject(player, avater);
+        //var avater = runner.Spawn(_player_prefab, spawn_position, Quaternion.identity, player);
+        //runner.SetPlayerObject(player, avater);
     }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
-        if (!runner.IsServer) { return; }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        //if (!runner.IsServer) { return; }
 
-        if (runner.TryGetPlayerObject(player, out var avatar)) {
-            runner.Despawn(avatar);
-        }
+        //if (runner.TryGetPlayerObject(player, out var avatar))
+        //{
+        //    runner.Despawn(avatar);
+        //}
     }
-    public void OnInput(NetworkRunner runner, NetworkInput input) {
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
         Debug.Log("Input : " + input);
         var data = new NetworkInputData();
 
-        data.Direction = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"),0f );
+        data.Direction = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
 
         input.Set(data);
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
-public class TestPhotonMove : NetworkBehaviour
+public class TestPhotonMove : NetworkTransform
 {
 
     void Start()
@@ -15,8 +15,6 @@ public class TestPhotonMove : NetworkBehaviour
         Debug.Log("Fixed Update");
         if (GetInput(out NetworkInputData data))
         {
-
-            data.Direction.Normalize();
 
             this.transform.position += data.Direction;
 
