@@ -11,16 +11,22 @@ public class CardUI : MonoBehaviour , IPointerUpHandler , IPointerDownHandler
     [SerializeField] private TMP_Text cardEffectText;
     [SerializeField] private TMP_Text cardCostText;
     [SerializeField] GameObject _image;
-    [SerializeField] Canvas _my_canvas;
     [SerializeField] float _init_image_size_x;
     [SerializeField] float _init_image_size_y;
     int _init_sorting;
+    bool _on_pointer;
 
     void Start() {
         _init_image_size_x = _image.transform.localScale.x;
         _init_image_size_y = _image.transform.localScale.y;
-        _my_canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-        _init_sorting = _my_canvas.sortingOrder;
+        _init_sorting = this.transform.GetSiblingIndex();
+        _on_pointer = false;
+    }
+
+    void Update() {
+        if (_init_sorting != this.transform.GetSiblingIndex() && !_on_pointer) {
+            _init_sorting = this.transform.GetSiblingIndex();
+        }
     }
 
     public void SetCardData(CardData card)
@@ -68,16 +74,22 @@ public class CardUI : MonoBehaviour , IPointerUpHandler , IPointerDownHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        _on_pointer = false;
+        _image.GetComponentInParent<GridLayoutGroup>().enabled = true;
         _image.transform.localPosition = new Vector3(0 , 0);
         _image.transform.localScale = new Vector3(_init_image_size_x , _init_image_size_y);
-        _my_canvas.sortingOrder = _init_sorting;
+        this.transform.SetSiblingIndex(_init_sorting);
+        Debug.Log(_init_sorting);
+        Debug.Log(this.transform.GetSiblingIndex());
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        _on_pointer = true;
+        _image.GetComponentInParent<GridLayoutGroup>().enabled = false;
         _image.transform.position = new Vector3(Screen.width / 2 , Screen.height / 2);
         _image.transform.localScale = new Vector3(_init_image_size_x * 3 , _init_image_size_y * 3);
-        _my_canvas.sortingOrder = 9999;
         this.GetComponentInParent<ScrollRect>().transform.SetAsLastSibling();
+        this.transform.SetAsLastSibling();
     }
 }
