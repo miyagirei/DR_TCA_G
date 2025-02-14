@@ -34,6 +34,7 @@ public class DeckEditor : MonoBehaviour
     List<GameObject> _prefab_card_obj = new List<GameObject>();
     Dictionary<GameObject, CardData> _card_data = new Dictionary<GameObject, CardData>();
 
+    [SerializeField] Text _deck_card_count_text;
 
     void Start()
     {
@@ -85,6 +86,7 @@ public class DeckEditor : MonoBehaviour
     {
         SetImageData();
         SetDeckImage();
+        DisplayDeckCardCount();
     }
 
     void SetImageData()
@@ -280,6 +282,10 @@ public class DeckEditor : MonoBehaviour
         SoundManager.PlaySoundStatic(SoundType.ReturnSound);
         deckSelectPanel.SetActive(true); // デッキ選択画面を表示
         deckEditorPanel.SetActive(false); // デッキ編集画面を非表示
+    }
+
+    void DisplayDeckCardCount() {
+        _deck_card_count_text.text = "カード枚数 : " + _deck_data.Count;
     }
 }
 
