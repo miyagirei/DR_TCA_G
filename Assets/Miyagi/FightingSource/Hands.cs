@@ -6,7 +6,7 @@ public class Hands : MonoBehaviour
 {
     string _name = "";
     public void SetName(string name) => _name = name;
-    public string GetName() =>  _name;
+    public string GetName() => _name;
     ParameterData _parameter_data_controller;
     [SerializeField] List<Card> _hands_card = new List<Card>();
     [SerializeField] GameObject _card_prefab;
@@ -258,8 +258,20 @@ public class Hands : MonoBehaviour
         float correction = (-(_hands_card.Count - 1) * scale.x) / 2;
         for (int i = 0; i < _hands_card.Count; i++)
         {
-            _hands_card[i].SetPos(new Vector3(i * scale.x + correction + pos.x, pos.y));
-            _hands_card[i].SetScale(scale);
+            if (_hands_card.Count * scale.x < 16f)
+            {
+                _hands_card[i].SetPos(new Vector3(i * scale.x + correction + pos.x, pos.y));
+                _hands_card[i].SetScale(scale);
+            }
+            else
+            {
+                float corrected_size_x = 16f / _hands_card.Count;
+                float corrected_size_y = corrected_size_x / scale.x * scale.y;
+                Vector3 new_scale = new Vector3(corrected_size_x, corrected_size_y);
+                correction = (-(_hands_card.Count - 1) * new_scale.x) / 2;
+                _hands_card[i].SetPos(new Vector3(i * new_scale.x + correction + pos.x, pos.y));
+                _hands_card[i].SetScale(new_scale);
+            }
             //_hands_card[i].ReturnPos();
         }
     }

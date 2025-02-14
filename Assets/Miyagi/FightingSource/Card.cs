@@ -354,7 +354,7 @@ public class Card : MonoBehaviour
     private void OnMouseEnter()
     {
         _is_hovering = true;
-        _popup_instance.SetActive(true);
+        //_popup_instance.SetActive(true);
     }
 
     //ポップアップ表示
@@ -370,7 +370,7 @@ public class Card : MonoBehaviour
     private void OnMouseExit()
     {
         _is_hovering = false;
-        _popup_instance.SetActive(false);
+        //_popup_instance.SetActive(false);
     }
 
     //新しいポップアップの作成
