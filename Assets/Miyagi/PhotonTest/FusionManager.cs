@@ -4,7 +4,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 
-public class FusionManager : MonoBehaviour,INetworkRunnerCallbacks
+public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] NetworkRunner _runner_prefab;
      NetworkRunner _runner;
@@ -61,7 +61,6 @@ public class FusionManager : MonoBehaviour,INetworkRunnerCallbacks
     }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        Debug.Log("Input : " + input);
         var data = new NetworkInputData();
 
         data.Direction = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
@@ -81,6 +80,12 @@ public class FusionManager : MonoBehaviour,INetworkRunnerCallbacks
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
     public void OnSceneLoadDone(NetworkRunner runner) { }
     public void OnSceneLoadStart(NetworkRunner runner) { }
+
+    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player){ }
+    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj , PlayerRef player) { }
+    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player , ReliableKey key, ArraySegment<byte> data) { }
+    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player , ReliableKey key, float data) { }
 }
 
 public struct NetworkInputData : INetworkInput

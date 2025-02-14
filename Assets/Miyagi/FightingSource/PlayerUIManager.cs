@@ -49,7 +49,7 @@ public class PlayerUIManager : MonoBehaviour
 
     void DisplayPlayerHP(Player player)
     {
-        if (player == null)
+        if (player.GetName() == null)
         {
             return;
         }
@@ -74,7 +74,7 @@ public class PlayerUIManager : MonoBehaviour
 
     void DisplayPlayerCondition(Player player)
     {
-        if (player == null)
+        if (player.GetName() == null)
         {
             return;
         }
@@ -151,6 +151,7 @@ public class PlayerUIManager : MonoBehaviour
             return;
         }
         //UI_Player_Turn_Change_Button.gameObject.SetActive(active);
+        Debug.Log("MoveingButton");
         UI_Player_Turn_Change_Button.interactable = true;
         UI_Player_Turn_Change_Button.gameObject.transform.localScale = Vector3.MoveTowards(UI_Player_Turn_Change_Button.gameObject.transform.localScale , Player_Turn_Change_Button_Scale , Time.deltaTime);
         UI_Player_Turn_Change_Button.gameObject.transform.localPosition = Vector3.MoveTowards(UI_Player_Turn_Change_Button.gameObject.transform.localPosition, Player_Turn_Change_Button_Pos, TURN_CHANGE_BUTTON_SPEED * Time.deltaTime);

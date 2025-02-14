@@ -84,11 +84,15 @@ public class PlayingManager : MonoBehaviour
         ResetProgressTime();
         _conclusion = false;
         _player1 = new Player("player", PLAYER_MAX_HP, true, _deck1, _hands1, new Vector3(0, -4), new Vector3(2.8f, 4f, 1), _player_character_type);
+        _hands1.SetName(_player1.GetName() + "hands");
+        _deck1.SetName(_player1.GetName() + "deck");
 
         _player2 = new Player("enemy", PLAYER_MAX_HP, false, _deck2, _hands2, new Vector3(3.0f, -0.5f), new Vector3(0.7f, 1, 1), _enemy_character_type);
+        _hands2.SetName(_player2.GetName() + "hands");
+        _deck2.SetName(_player2.GetName() + "deck");
 
         _turn_player = _player1;
-        _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2));
+        _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2 , _hands2 , _deck2));
         _player1_UI.AssingTrashBoxButton(() => SwitchOnlineTrashBox());
         _player1_UI.ChangeImageTrashBox(_online_trash_box);
         RandomolyChooseTurnPlayer();
@@ -107,6 +111,9 @@ public class PlayingManager : MonoBehaviour
     public float GetTimer() => TIME_UNTIL_TIME_RUNS_OUT - _progress_time;
     void Update()
     {
+        Debug.Log(_turn_player.GetName());
+        Debug.Log(_player1.IsCurrentPlayer() + ":1");
+        Debug.Log(_player2.IsCurrentPlayer() + ":2");
         if (_parameter_data_controller.GetParameterData("parameter_data") == null)
         {
             SceneManager.LoadScene("ResultScene");
@@ -171,11 +178,11 @@ public class PlayingManager : MonoBehaviour
         _player1_UI.DisplayTimer(GetTimer(), true);
         if (_player1.IsCurrentPlayer())
         {
-            PlayerMoveing(_player1, _player2);
+            PlayerMoveing(_player1, _player2 ,_hands1 ,_deck1 , _hands2 ,_deck2);
             DebugWin();
             _player1_UI.DisplayTurnChangeButton(true);
 
-            if (_player1.GetHands().IsDraggingCard())
+            if (_hands1.IsDraggingCard())
             {
                 _player1_UI.DisplayCardEffectDistance(CARD_EFFECT_DISTANCE, true);
             }
@@ -188,7 +195,7 @@ public class PlayingManager : MonoBehaviour
 
         if (_player2.IsCurrentPlayer())
         {
-            CPUMoving(_player2, _player1);
+            CPUMoving(_player2, _player1 , _hands2 , _deck2 , _hands1 , _deck1);
             DebugLose();
             _player1_UI.DisplayTurnChangeButton(false);
         }
@@ -197,36 +204,36 @@ public class PlayingManager : MonoBehaviour
     }
 
     //プレイヤーが操作
-    void PlayerMoveing(Player player, Player enemy)
+    void PlayerMoveing(Player player, Player enemy , Hands p_hands , Deck p_deck , Hands e_hands, Deck e_deck)
     {
 
-        if (player.GetHands().IsPlayedCard(player) != null)
+        if (p_hands.IsPlayedCard(player) != null)
         {
 
-            if (player.GetHands().GetCardCount() <= player.GetHands().IsPlayedCard(player).GetCostByCondition(player))
+            if (p_hands.GetCardCount() <= p_hands.IsPlayedCard(player).GetCostByCondition(player))
             {
-                player.GetHands().IsPlayedCard(player).ReturnCard();
+                p_hands.IsPlayedCard(player).ReturnCard();
                 return;
             }
 
-            if (!player.GetHands().IsPlayedCard(player).MetRestrictions(player))
+            if (!p_hands.IsPlayedCard(player).MetRestrictions(player))
             {
-                player.GetHands().IsPlayedCard(player).ReturnCard();
+                p_hands.IsPlayedCard(player).ReturnCard();
                 return;
             }
 
             _online_trash_box = false;
             _player1_UI.TogglePressableStateTrashBox(false);
 
-            if (!player.GetHands().isCardSelectionValid(player.GetHands().IsPlayedCard(player).GetCostByCondition(player)))
+            if (!p_hands.isCardSelectionValid(p_hands.IsPlayedCard(player).GetCostByCondition(player)))
             {
-                player.GetHands().ShowAvailableCards(player.GetHands().IsPlayedCard(player));
+                p_hands.ShowAvailableCards(p_hands.IsPlayedCard(player));
                 return;
             }
 
             int previous_hp = enemy.GetHP();
-            Card played_card = player.GetHands().IsPlayedCard(player);
-            played_card.Effect(player, enemy, player.GetCardPos(), player.GetCardScale(), _turn_situation);
+            Card played_card = p_hands.IsPlayedCard(player);
+            played_card.Effect(player, p_hands , p_deck , enemy, e_hands, e_deck, player.GetCardPos(), player.GetCardScale(), _turn_situation);
 
 
             int damage = previous_hp - enemy.GetHP(); // ダメージ計算
@@ -238,35 +245,35 @@ public class PlayingManager : MonoBehaviour
 
 
             PlayingLogger.LogStatic(player.GetName() + "が効果を発動 : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player, _turn_situation.GetSituation()) + ")", Color.green);
-            player.GetHands().TrashCard(played_card);
+            p_hands.TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
-            player.GetHands().discardSelectedCards();
-            player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
-            player.GetHands().SelectedPlayable(true);
+            p_hands.discardSelectedCards();
+            p_hands.arrangeCards(player.GetCardPos(), player.GetCardScale());
+            p_hands.SelectedPlayable(true);
             _player1_UI.TogglePressableStateTrashBox(true);
 
             checkResult();
         }
 
         if (_reset_card) {
-            player.GetHands().discardSelectedCards();
-            player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
-            player.GetHands().SelectedPlayable(true);
+            p_hands.discardSelectedCards();
+            p_hands.arrangeCards(player.GetCardPos(), player.GetCardScale());
+            p_hands.SelectedPlayable(true);
             _player1_UI.ChangeImageTrashBox(_online_trash_box);
             _reset_card = false;
         }
 
         if (_online_trash_box)
         {
-            player.GetHands().ShowAvailableCards(null);
+            p_hands.ShowAvailableCards(null);
             _player1_UI.ChangeImageTrashBox(_online_trash_box);
 
-            if (player.GetHands().IsCanDiscardCard())
+            if (p_hands.IsCanDiscardCard())
             {
-                player.GetHands().discardSelectedCards();
-                player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
-                player.GetHands().SelectedPlayable(true);
+                p_hands.discardSelectedCards();
+                p_hands.arrangeCards(player.GetCardPos(), player.GetCardScale());
+                p_hands.SelectedPlayable(true);
                 _online_trash_box = false;
                 _player1_UI.ChangeImageTrashBox(_online_trash_box);
             }
@@ -276,9 +283,10 @@ public class PlayingManager : MonoBehaviour
     }
 
     //CPUが操作
-    void CPUMoving(Player player, Player enemy)
+    void CPUMoving(Player player, Player enemy, Hands p_hands, Deck p_deck, Hands e_hands, Deck e_deck)
     {
         _cpu_incapacity_time += Time.deltaTime;
+        Debug.Log("CPU_MOVEING");
         if (_cpu_incapacity_time < CPU_THINGKING_TIME)
         {
             return;
@@ -286,7 +294,7 @@ public class PlayingManager : MonoBehaviour
         if (!_cpu_draw)
         {
 
-            player.GetHands().ResetHandCards(RESET_CARDS_COUNT, player.GetDeck(), player.GetCardPos(), player.GetCardScale());
+            p_hands.ResetHandCards(RESET_CARDS_COUNT, p_deck, player.GetCardPos(), player.GetCardScale());
             _cpu_draw = true;
             ResetCPUIncapacityTime();
         }
@@ -295,31 +303,32 @@ public class PlayingManager : MonoBehaviour
         {
             return;
         }
-        if (player.GetHands().CheckMostExpensiveCardYouCanPay(player) != null)
+        if (p_hands.CheckMostExpensiveCardYouCanPay(player) != null)
         {
-
+            Debug.Log("CheckPayCPU");
             int previous_hp = enemy.GetHP();
-            Card played_card = player.GetHands().CheckMostExpensiveCardYouCanPay(player);
-            played_card.Effect(player, enemy, player.GetCardPos(), player.GetCardScale(), _turn_situation);
+            Card played_card = p_hands.CheckMostExpensiveCardYouCanPay(player);
+            played_card.Effect(player, p_hands , p_deck ,enemy, e_hands, e_deck, player.GetCardPos(), player.GetCardScale(), _turn_situation);
             PlayingLogger.LogStatic(player.GetName() + "が効果を発動 : " + played_card.GetEffectByCondition(player) + "(" + played_card.GetAmountByCondition(player, _turn_situation.GetSituation()) + ")", Color.red);
-            player.GetHands().TrashCard(played_card);
+            p_hands.TrashCard(played_card);
             Debug.Log(previous_hp + " > " + enemy.GetHP());
 
             checkResult();
 
-            player.GetHands().discardSelectedCards();
-            player.GetHands().arrangeCards(player.GetCardPos(), player.GetCardScale());
-            player.GetHands().SelectedPlayable(true);
-            TurnChange(enemy);
+            p_hands.discardSelectedCards();
+            p_hands.arrangeCards(player.GetCardPos(), player.GetCardScale());
+            p_hands.SelectedPlayable(true);
+            TurnChange(enemy , e_hands , e_deck);
+            Debug.Log("PlayerTurnChange");
             ResetCPUIncapacityTime();
             return;
         }
 
-        if (player.GetHands().CheckMostExpensiveCardYouCanPay(player) == null)
+        if (p_hands.CheckMostExpensiveCardYouCanPay(player) == null)
         {
             Debug.Log("Non-Card");
             checkResult();
-            TurnChange(enemy);
+            TurnChange(enemy, e_hands, e_deck);
             ResetCPUIncapacityTime();
             return;//カードの枚数がコストを下回っていたら使えない
         }
@@ -331,40 +340,67 @@ public class PlayingManager : MonoBehaviour
     void ResetCPUIncapacityTime() => _cpu_incapacity_time = 0;
 
     //ターンを終了して相手に行動を移す
-    void TurnChange(Player turn)
+    void TurnChange(Player turn , Hands t_hands , Deck t_deck)
     {
+        Debug.Log(turn.GetName() + ":change : " + turn.IsCurrentPlayer());
         turn.SetCurrentPlayer(true);
-        turn.GetHands().SelectedPlayable(true);
-        turn.GetHands().arrangeCards(turn.GetCardPos(), turn.GetCardScale());
+        Debug.Log(turn.GetName() + ":late :" + turn.IsCurrentPlayer());
 
-        Hostile(turn).GetHands().ReleaseDragState();
-        Hostile(turn).GetHands().discardSelectedCards();
+        t_hands.SelectedPlayable(true);
+        t_hands.arrangeCards(turn.GetCardPos(), turn.GetCardScale());
+
+        Hostile(t_hands).ReleaseDragState();
+        Hostile(t_hands).discardSelectedCards();
         Hostile(turn).SetCurrentPlayer(false);
-        Hostile(turn).GetHands().SelectedPlayable(false);
-        Hostile(turn).GetHands().arrangeCards(Hostile(turn).GetCardPos(), Hostile(turn).GetCardScale());
+        Hostile(t_hands).SelectedPlayable(false);
+        Hostile(t_hands).arrangeCards(Hostile(turn).GetCardPos(), Hostile(turn).GetCardScale());
 
         ResetProgressTime();
         _cpu_draw = false;
         _turn_change_animation = true;
         _turn_player = turn;
-
-        if (turn.GetDeck().GetDeckCount() >= 0)
+     
+        if (t_deck.GetDeckCount() >= 0)
         {
-            turn.GetHands().ResetHandCards(RESET_CARDS_COUNT, turn.GetDeck(), turn.GetCardPos(), turn.GetCardScale());
-            turn.GetHands().SelectedPlayable(true);
+            Debug.Log("Count < 0");
+            t_hands.ResetHandCards(RESET_CARDS_COUNT, t_deck, turn.GetCardPos(), turn.GetCardScale());
+            t_hands.SelectedPlayable(true);
         }
+
+        Debug.Log( _player1.GetName() + ": check :" + _player1.IsCurrentPlayer() );
+        Debug.Log( _player2.GetName() + ": check :" + _player2.IsCurrentPlayer() );
     }
 
 
     //プレイヤー1ならプレイヤー2に、プレイヤー2ならプレイヤー1を返す
     Player Hostile(Player my)
     {
-        if (my == _player1)
+        if (my.GetName() == _player1.GetName())
         {
             return _player2;
         }
 
         return _player1;
+    }
+
+    Hands Hostile(Hands my)
+    {
+        if (my.GetName() == _hands1.GetName())
+        {
+            return _hands2;
+        }
+
+        return _hands1;
+    }    
+    
+    Deck Hostile(Deck my)
+    {
+        if (my.GetName() == _deck1.GetName())
+        {
+            return _deck2;
+        }
+
+        return _deck1;
     }
 
     //引き分けかどちらかが勝っているかを判定する
@@ -437,11 +473,11 @@ public class PlayingManager : MonoBehaviour
 
         if (random_player == 0)
         {
-            TurnChange(_player1);
+            TurnChange(_player1 , _hands1 , _deck1);
         }
         else
         {
-            TurnChange(_player2);
+            TurnChange(_player2, _hands2, _deck2);
         }
     }
 
@@ -456,7 +492,7 @@ public class PlayingManager : MonoBehaviour
 
         if (_progress_time >= TIME_UNTIL_TIME_RUNS_OUT)
         {
-            TurnChange(Hostile(_turn_player));
+            TurnChange(Hostile(_turn_player) , GetHands(Hostile(_turn_player)) , GetDeck(Hostile(_turn_player)));
         }
     }
 
@@ -470,5 +506,21 @@ public class PlayingManager : MonoBehaviour
                 GameObject.Find("BGMManager").GetComponent<BGMManager>().ChangeFightBGM(_final_fight_bgm);
             }
         }
+    }
+
+    Hands GetHands(Player player) {
+        if ( player.GetName() != _player1.GetName()) {
+            return _hands2;
+        }
+
+        return _hands1;
+    }    
+    
+    Deck GetDeck(Player player) {
+        if ( player.GetName() != _player1.GetName()) {
+            return _deck2;
+        }
+
+        return _deck1;
     }
 }

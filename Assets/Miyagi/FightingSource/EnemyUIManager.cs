@@ -23,7 +23,7 @@ public class EnemyUIManager : MonoBehaviour
 
     void DisplayPlayerHP(Player player)
     {
-        if (player == null)
+        if (player.GetName() == null)
         {
             return;
         }

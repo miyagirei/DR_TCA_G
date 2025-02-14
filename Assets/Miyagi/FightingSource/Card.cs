@@ -404,16 +404,16 @@ public class Card : MonoBehaviour
                 break;
         }
     }
-    void ActivateDraw(Player player, Vector3 location, Vector3 scale, int amount)
+    void ActivateDraw(Hands p_hands, Deck p_deck, Vector3 location, Vector3 scale, int amount)
     {
         for (int i = 0; i < amount; i++)
         {
-            if (player.GetDeck().GetDeckCount() == 0)
+            if (p_deck.GetDeckCount() == 0)
             {
                 break;
             }
 
-            player.GetHands().CreateCard(player.GetDeck().DrawDeck(), location, scale, player.GetDeck());
+            p_hands.CreateCard(p_deck.DrawDeck(), location, scale, p_deck);
         }
     }
 
@@ -539,31 +539,31 @@ public class Card : MonoBehaviour
     }
 
     //カードを出したときの効果
-    public void Effect(Player player, Player enemy, Vector3 location, Vector3 scale, Situation situation)
+    public void Effect(Player player, Hands p_hands, Deck p_deck, Player enemy, Hands e_hands, Deck e_deck, Vector3 location, Vector3 scale, Situation situation)
     {
         if (GetIfNormalCard())
         {
-            EffectList(_normal_effect, player, enemy, location, scale, GetNormalAmount(), GetNormalAmount(), situation);
+            EffectList(_normal_effect, player, p_hands, p_deck, enemy, e_hands, e_deck, location, scale, GetNormalAmount(), GetNormalAmount(), situation);
             return;
         }
         else if (!GetIfNormalCard() && player.GetHopeCondition() && !player.GetDespairCondition())
         {
             if (situation.GetSituation() == Situation.PlayingSituation.Hopeful)
             {
-                EffectList(_effect_hope, player, enemy, location, scale, GetHopeAmount(), GetHopeBonusAmount(), situation, true);
+                EffectList(_effect_hope, player, p_hands, p_deck, enemy, e_hands, e_deck, location, scale, GetHopeAmount(), GetHopeBonusAmount(), situation, true);
                 return;
             }
-            EffectList(_effect_hope, player, enemy, location, scale, GetHopeAmount(), GetHopeBonusAmount(), situation);
+            EffectList(_effect_hope, player, p_hands, p_deck, enemy, e_hands, e_deck, location, scale, GetHopeAmount(), GetHopeBonusAmount(), situation);
             return;
         }
         else if (!GetIfNormalCard() && !player.GetHopeCondition() && player.GetDespairCondition())
         {
             if (situation.GetSituation() == Situation.PlayingSituation.Desperate)
             {
-                EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount(), situation, true);
+                EffectList(_effect_despair, player, p_hands, p_deck, enemy, e_hands, e_deck, location, scale, GetDespairAmount(), GetDespairBonusAmount(), situation, true);
                 return;
             }
-            EffectList(_effect_despair, player, enemy, location, scale, GetDespairAmount(), GetDespairBonusAmount(), situation);
+            EffectList(_effect_despair, player, p_hands, p_deck, enemy, e_hands, e_deck, location, scale, GetDespairAmount(), GetDespairBonusAmount(), situation);
             return;
         }
         Debug.LogError("効果が発動できませんでした");
@@ -600,7 +600,7 @@ public class Card : MonoBehaviour
     }
 
 
-    void EffectList(string effect_text, Player player, Player enemy, Vector3 location, Vector3 scale, int amount, int bonus_amount, Situation situation, bool situation_match = false)
+    void EffectList(string effect_text, Player player, Hands p_hands, Deck p_deck, Player enemy, Hands e_hands, Deck e_deck, Vector3 location, Vector3 scale, int amount, int bonus_amount, Situation situation, bool situation_match = false)
     {
         switch (effect_text)
         {
@@ -626,10 +626,10 @@ public class Card : MonoBehaviour
                 SoundManager.PlaySoundStatic(SoundType.DrawSound);
                 if (situation_match)
                 {
-                    ActivateDraw(player, location, scale, bonus_amount);
+                    ActivateDraw(p_hands , p_deck, location, scale, bonus_amount);
                     break;
                 }
-                ActivateDraw(player, location, scale, amount);
+                ActivateDraw(p_hands, p_deck, location, scale, amount);
                 break;
             case EFFECT_HOPE_CHANGE:
                 SoundManager.PlaySoundStatic(SoundType.HopeSound);
@@ -666,9 +666,9 @@ public class Card : MonoBehaviour
                 SoundManager.PlaySoundStatic(SoundType.DespairSound);
                 if (situation_match)
                 {
-                    enemy.GetHands().TrashCardRandom(bonus_amount);
+                    e_hands.TrashCardRandom(bonus_amount);
                 }
-                enemy.GetHands().TrashCardRandom(amount);
+                e_hands.TrashCardRandom(amount);
                 break;
         }
     }

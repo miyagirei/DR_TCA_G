@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
+    string _name = "";
+    public void SetName(string name) => _name = name;
+    public string GetName() => _name;
+
     [SerializeField] bool playerDeck;
     [SerializeField] List<Card> _deck_card = new List<Card>();
 

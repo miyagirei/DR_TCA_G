@@ -113,6 +113,7 @@ public class DeckEditor : MonoBehaviour
                 _card_data.Add(cardUI, card);
 
                 Button addButton = cardUI.GetComponentInChildren<Button>();
+
                 addButton.onClick.AddListener(() => AddCardToDeck(cardUI));
             }
             AdjustContentHeight();
@@ -156,6 +157,7 @@ public class DeckEditor : MonoBehaviour
                 _prefab_deck_obj.Add(cardUI);
                 // デッキからカードを削除するボタンを追加
                 Button removeButton = cardUI.GetComponentInChildren<Button>();
+
                 removeButton.onClick.AddListener(() => RemoveCardFromDeck(cardUI));
 
             }

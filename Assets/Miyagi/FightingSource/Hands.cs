@@ -4,6 +4,9 @@ using UnityEngine;
 using System.IO;
 public class Hands : MonoBehaviour
 {
+    string _name = "";
+    public void SetName(string name) => _name = name;
+    public string GetName() =>  _name;
     ParameterData _parameter_data_controller;
     [SerializeField] List<Card> _hands_card = new List<Card>();
     [SerializeField] GameObject _card_prefab;
@@ -18,7 +21,6 @@ public class Hands : MonoBehaviour
         TRASH_DECIDED_HEIGHT = parameter_data.TRASH_DECIDED_HEIGHT;
         TRASH_UNDECIDED_HEIGHT = parameter_data.TRASH_UNDECIDED_HEIGHT;
     }
-
     void Update()
     {
 
@@ -265,6 +267,7 @@ public class Hands : MonoBehaviour
     //初期の枚数を越していた場合、ランダムに捨てるかつ、初期の枚数を下回っていた場合、初期枚数まで新しくカードを引く
     public void ResetHandCards(int cards, Deck deck, Vector3 pos, Vector3 scale)
     {
+        Debug.Log("ResetCard");
         if (cards == _hands_card.Count)
         {
             return;
