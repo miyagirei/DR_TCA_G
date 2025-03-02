@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-public class FusionEnemyUIManager : MonoBehaviour
+using Fusion;
+public class FusionEnemyUIManager : NetworkBehaviour
 {
     [SerializeField] Text UI_Enemy_HP;
     [SerializeField] Slider UI_Enemy_HP_Image;
@@ -11,9 +11,50 @@ public class FusionEnemyUIManager : MonoBehaviour
 
     int _current_hp;
     float _hp_cooltime;
-    void Start()
-    {
 
+    bool _set_image = false;
+    bool _spawn = false;
+    public override void Spawned()
+    {
+        _set_image = false;
+        _spawn = false;
+        if (GetEnemyPlayer() != PlayerRef.None)
+        {
+            if (Runner.GetPlayerObject(Runner.LocalPlayer) != null && Runner.GetPlayerObject(GetEnemyPlayer()))
+            {
+
+                NetworkObject other_player_obj = Runner.GetPlayerObject(GetEnemyPlayer());
+
+                ChangePlayerImage(other_player_obj.GetComponent<FusionPlayer>().GetCharacterType());
+                Debug.Log("Succsess:ChangeEnemyImage");
+
+                _set_image = true;
+            }
+        }
+
+        _spawn = true;
+    }
+
+    private void Update()
+    {
+        if (!_spawn)
+        {
+            return;
+        }
+
+        if (GetEnemyPlayer() != PlayerRef.None)
+        {
+            if (Runner.GetPlayerObject(Runner.LocalPlayer) != null && !_set_image && Runner.GetPlayerObject(GetEnemyPlayer()))
+            {
+
+                NetworkObject other_player_obj = Runner.GetPlayerObject(GetEnemyPlayer());
+
+                ChangePlayerImage(other_player_obj.GetComponent<FusionPlayer>().GetCharacterType());
+                Debug.Log("Succsess:ChangeEnemyImage");
+
+                _set_image = true;
+            }
+        }
     }
 
     public void Display(FusionPlayer enemy)
@@ -62,5 +103,18 @@ public class FusionEnemyUIManager : MonoBehaviour
                 new Rect(0, 0, texture.width, texture.height),
                 new Vector2(0.5f, 1.0f)
         );
+    }
+
+    PlayerRef GetEnemyPlayer()
+    {
+        foreach (var player in Runner.ActivePlayers)
+        {
+            if (player != Runner.LocalPlayer)
+            {
+                return player;
+            }
+        }
+
+        return PlayerRef.None;
     }
 }

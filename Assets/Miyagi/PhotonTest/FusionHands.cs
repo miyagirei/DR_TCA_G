@@ -99,6 +99,8 @@ public class FusionHands : MonoBehaviour
         }
         else
         {
+            Debug.Log(origin.GetName() + "originName");
+            Debug.Log(new_card.GetName() + "originName");
             new_card.Init(origin.GetName(), origin.GetCardType(), origin.GetEffectByCardType(origin.GetCardType()), origin.GetAmountByCardType(origin.GetCardType()), origin.GetCostByCardType(origin.GetCardType()), origin.GetRestrictions(), origin.GetRestrictionsAmount(), origin.GetBonusAmountByCardType(origin.GetCardType()));
         }
 

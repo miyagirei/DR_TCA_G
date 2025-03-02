@@ -19,8 +19,28 @@ public class FusionPlayer : NetworkBehaviour
     //Hands _hands;
     [Networked] public CharacterType _character_type { get; set; }
 
-    public FusionPlayer(string name, int hp, bool is_current_player, Vector3 card_pos, Vector3 card_scale, CharacterType character)
+    public override void Spawned()
     {
+        base.Spawned();
+        if (HasInputAuthority)
+        {
+            _name = "";
+            _max_hp = 0;
+            _hp = 0;
+            _is_current_player = false;
+            _is_win = false;
+            _is_hope = false;
+            _is_despair = false;
+            _card_pos = new Vector3(0,0,0);
+            _card_scale = new Vector3(0, 0, 0);
+
+            PersonalDataController personal = new PersonalDataController();
+            _character_type = personal.Load().CHARACTER_TYPE;
+        }
+
+    }
+
+    public void initialize(string name, int hp, bool is_current_player, Vector3 card_pos, Vector3 card_scale, CharacterType character) {
         _name = name;
         _max_hp = hp;
         _hp = hp;
@@ -30,8 +50,6 @@ public class FusionPlayer : NetworkBehaviour
         _is_despair = false;
         _card_pos = card_pos;
         _card_scale = card_scale;
-        //_deck = deck;
-        //_hands = hands;
         _character_type = character;
     }
 
@@ -42,7 +60,7 @@ public class FusionPlayer : NetworkBehaviour
     //public Deck GetDeck() => _deck;//山札を取得
     //public Hands GetHands() => _hands;//手札を取得
     public bool IsCurrentPlayer() => _is_current_player;//自身が動けるかどうかを取得
-    public void SetCurrentPlayer(bool played) { _is_current_player = played; Debug.Log("SetCurrent : " + _name + ":" + played); }//自身が動けるかどうかを操作
+    public void SetCurrentPlayer(bool played) => _is_current_player = played;//自身が動けるかどうかを操作
     public bool GetWinning() => _is_win;//勝利しているか取得する
     public void SetWinningState() => _is_win = true;//勝利している状態にする
     public bool GetNormalCondition() => !_is_hope && !_is_despair;//普通状態かどうかを取得
@@ -86,4 +104,5 @@ public class FusionPlayer : NetworkBehaviour
     {
         _is_current_player = value;
     }
+
 }

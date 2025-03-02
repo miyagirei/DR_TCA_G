@@ -13,28 +13,33 @@ public class FusionDeck : MonoBehaviour
     [SerializeField] List<Card> _deck_card = new List<Card>();
 
     private CardLoader cardLoader;
-    private List<CardData> _deckList = new List<CardData>();
+    [SerializeField]private List<CardData> _deckList = new List<CardData>();
     private void Start()
     {
-        if (playerDeck)
-        {
-            cardLoader = GetComponent<CardLoader>();
-            if (cardLoader != null)
-            {
-                _deckList = cardLoader.LoadCardDeck("deck" + PlayerPrefs.GetInt("SelectedDeck", 0)); // deck1.json を読み込む(一旦デバッグとして１つ目のデッキを読み込む)
-                Debug.Log(_deckList[0].restrictions + ": rest");
-            }
-            else
-            {
-                Debug.LogError("CardLoader スクリプトが見つかりません");
-            }
-            AddDeckCard();
-        }
-        else
-        {
-            DebugAddNewCard();
-        }
+        //if (playerDeck)
+        //{
+        //    cardLoader = GetComponent<CardLoader>();
+        //    if (cardLoader != null)
+        //    {
+        //        _deckList = cardLoader.LoadCardDeck("deck" + PlayerPrefs.GetInt("SelectedDeck", 0)); // deck1.json を読み込む(一旦デバッグとして１つ目のデッキを読み込む)
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("CardLoader スクリプトが見つかりません");
+        //    }
+        //    AddDeckCard();
+        //}
+        //else
+        //{
+        //    DebugAddNewCard();
+        //}
     }
+    public void SetList(List<CardData> list) {
+        _deckList = list;
+        Debug.Log(_deckList[0].card_name + ":SetList");
+        AddDeckCard();
+    }
+
     public Vector3 GetPos() => this.transform.position;
 
     public Card DrawDeck()
@@ -62,36 +67,36 @@ public class FusionDeck : MonoBehaviour
         int index = 0;
         foreach (var data in _deckList)
         {
-            GameObject card_obj = new GameObject(index + data.card_name);
+            GameObject card_obj = new GameObject(index + data.card_name.ToString());
             card_obj.transform.SetParent(this.transform);
             Card card = card_obj.AddComponent<Card>();
             string effect;
             Debug.Log(data.type + "data_type");
-            switch (data.type)
+            switch (data.type.ToString())
             {
                 case "Normal":
-                    effect = data.normal_effect;
+                    effect = data.normal_effect.ToString();
                     Debug.Log(effect + " : effectType");
-                    card.Init(data.card_name, CardType.Normal, effect, data.normal_amount, data.normal_cost, data.restrictions, data.restrictions_amount);
+                    card.Init(data.card_name.ToString(), CardType.Normal, effect, data.normal_amount, data.normal_cost, data.restrictions.ToString(), data.restrictions_amount);
                     _deck_card.Add(card);
 
                     break;
                 case "OnlyDespair":
-                    effect = data.despair_effect;
-                    card.Init(data.card_name, CardType.OnlyDespair, effect, data.despair_amount, data.despair_cost, data.restrictions, data.restrictions_amount, data.despair_bonus_amount);
+                    effect = data.despair_effect.ToString();
+                    card.Init(data.card_name.ToString(), CardType.OnlyDespair, effect, data.despair_amount, data.despair_cost, data.restrictions.ToString(), data.restrictions_amount, data.despair_bonus_amount);
                     _deck_card.Add(card);
 
                     break;
                 case "OnlyHope":
-                    effect = data.hope_effect;
-                    card.Init(data.card_name, CardType.OnlyHope, effect, data.hope_amount, data.hope_cost, data.restrictions, data.restrictions_amount, data.hope_bonus_amount);
+                    effect = data.hope_effect.ToString();
+                    card.Init(data.card_name.ToString(), CardType.OnlyHope, effect, data.hope_amount, data.hope_cost, data.restrictions.ToString(), data.restrictions_amount, data.hope_bonus_amount);
                     _deck_card.Add(card);
 
                     break;
                 case "HopeAndDespair":
-                    string hope_effect = data.hope_effect;
-                    string despair_effect = data.despair_effect;
-                    card.Init(data.card_name, hope_effect, data.hope_amount, data.hope_bonus_amount, data.hope_cost, despair_effect, data.despair_amount, data.despair_bonus_amount, data.despair_cost, data.restrictions, data.restrictions_amount);
+                    string hope_effect = data.hope_effect.ToString();
+                    string despair_effect = data.despair_effect.ToString();
+                    card.Init(data.card_name.ToString(), hope_effect, data.hope_amount, data.hope_bonus_amount, data.hope_cost, despair_effect, data.despair_amount, data.despair_bonus_amount, data.despair_cost, data.restrictions.ToString(), data.restrictions_amount);
                     _deck_card.Add(card);
 
                     break;

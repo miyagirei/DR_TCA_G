@@ -74,6 +74,8 @@ public class HomeSceneManager : MonoBehaviour
     [SerializeField] bool _move_player_setting_panel;
     [SerializeField] Dropdown _player_setting_dropdown;
 
+    [SerializeField] Button _fusion_button;
+
     void Start()
     {
         SetSliderValueToMixer("GeneralMaster", _master_volume);
@@ -107,6 +109,8 @@ public class HomeSceneManager : MonoBehaviour
         _player_setting_button.onClick.AddListener(() => OnMovePanel(ref _move_player_setting_panel , true));
         _player_setting_button_back.onClick.AddListener(() => OnMovePanel(ref _move_player_setting_panel, false));
         _player_setting_dropdown.onValueChanged.AddListener((value) => ChangePlayerCharacter(value));
+        
+        _fusion_button.onClick.AddListener(OnFusionButton);
     }
 
     private void Update()
@@ -437,6 +441,10 @@ public class HomeSceneManager : MonoBehaviour
 
         _personal_data_controller.Save(_personal_data);
         SetImageCharacter();
+    }
+
+    void OnFusionButton() {
+        SceneManager.LoadScene("PhotonTestScene");
     }
 
 }

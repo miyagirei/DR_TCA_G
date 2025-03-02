@@ -19,6 +19,7 @@ public class PhotonPlayingManager : NetworkBehaviour
     const int MAX_HP = 10;
     [SerializeField] Text _result_Text;
 
+    [SerializeField] FusionPlayer _prefab_player;
     [Networked] FusionPlayer _player1 { set; get; }
     [SerializeField] FusionDeck _deck1;
     [SerializeField] FusionHands _hands1;
@@ -29,7 +30,7 @@ public class PhotonPlayingManager : NetworkBehaviour
     [SerializeField] FusionHands _hands2;
     [SerializeField] FusionEnemyUIManager _player2_UI;
 
-    float _progress_time = 0;
+    [Networked] float _progress_time { get; set; } = 0;
     bool _conclusion = false;
 
     bool _cpu_draw = false;
@@ -43,8 +44,8 @@ public class PhotonPlayingManager : NetworkBehaviour
 
     Situation _turn_situation = new Situation();
 
-    CharacterType _player_character_type = CharacterType.Monokuma;
-    CharacterType _enemy_character_type = CharacterType.Monokuma;
+    [Networked] CharacterType _player_character_type { get; set; } = CharacterType.Monokuma;
+    CharacterType _enemy_character_type = CharacterType.Monokuma;//Ž©•ª‚¾‚¯‚Ìƒf[ƒ^‚Å‚¢‚¢‚Ì‚Å‘½•ªÁ‚·
 
     bool _enemy_previous_hope = false;
     bool _enemy_previous_despair = false;
@@ -54,6 +55,68 @@ public class PhotonPlayingManager : NetworkBehaviour
     string _start_fight_bgm = "BGM_BOX15";
     string _final_fight_bgm = "BGM_DANGANRONPA";
 
+    bool _is_spawn = false;
+
+    public override void Spawned()
+    {
+        base.Spawned();
+        Debug.Log("Spawned");
+
+        Parameter parameter_data = _parameter_data_controller.GetParameterData("parameter_data");
+        CPU_THINGKING_TIME = parameter_data.CPU_THINGKING_TIME;
+        SCENE_CHANGE_TIME = parameter_data.SCENE_CHANGE_TIME;
+        TURN_CHANGE_TIME = parameter_data.TURN_CHANGE_TIME;
+        CARD_EFFECT_DISTANCE = parameter_data.CARD_EFFECT_DISTANCE;
+        TIME_UNTIL_TIME_RUNS_OUT = parameter_data.TIME_UNTIL_TIME_RUNS_OUT;
+        RESET_CARDS_COUNT = parameter_data.RESET_CARD_COUNT;
+        PLAYER_MAX_HP = parameter_data.PLAYER_MAX_HP;
+
+        ResetProgressTime();
+        _conclusion = false;
+       
+        _player1 = Runner.Spawn(_prefab_player , position: Vector3.zero, rotation: Quaternion.identity);
+        _player2 = Runner.Spawn(_prefab_player , position: Vector3.zero, rotation: Quaternion.identity);
+        _turn_player = Runner.Spawn(_prefab_player, position: Vector3.zero, rotation: Quaternion.identity);
+
+        _player1.initialize("player", PLAYER_MAX_HP, true, new Vector3(0, -4), new Vector3(2.8f, 4f, 1), _player_character_type);
+        _player2.initialize("enemy", PLAYER_MAX_HP, false, new Vector3(3.0f, -0.5f), new Vector3(0.7f, 1, 1), _enemy_character_type);
+
+        PersonalDataController personal = new PersonalDataController();
+        _player1.SetCharacterType(personal.Load().CHARACTER_TYPE);
+
+        _hands1.SetName(_player1.GetName() + "hands");
+        _deck1.SetName(_player1.GetName() + "deck");
+
+        _hands2.SetName(_player2.GetName() + "hands");
+        _deck2.SetName(_player2.GetName() + "deck");
+
+        _turn_player = _player1;
+
+        _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2, _hands2, _deck2));
+        _player1_UI.AssingTrashBoxButton(() => SwitchOnlineTrashBox());
+        _player1_UI.ChangeImageTrashBox(_online_trash_box);
+        RandomolyChooseTurnPlayer();
+        Debug.Log("RundomChoosePlayer");
+
+        _enemy_previous_hope = false;
+        _enemy_previous_despair = false;
+
+        if (GameObject.Find("BGMManager") != null)
+        {
+            GameObject.Find("BGMManager").GetComponent<BGMManager>().ChangeFightBGM(_start_fight_bgm);
+        }
+
+        Debug.Log(RESET_CARDS_COUNT + "& SpawnEnd");
+
+
+
+        //if (SceneDataManager.Instance != null)
+        //{
+        //    _deck1.SetList(SceneDataManager.Instance.GetData("player_deck") as List<CardData>);
+        //    _deck2.SetList(SceneDataManager.Instance.GetData("opponent_deck") as List<CardData>);
+        //}
+        _is_spawn = true;
+    }
 
     void SwitchOnlineTrashBox()
     {
@@ -72,47 +135,72 @@ public class PhotonPlayingManager : NetworkBehaviour
         _player1_UI.ChangePlayerImage(player);
         _player2_UI.ChangePlayerImage(enemy);
     }
+
+
+    [Rpc(RpcSources.All, RpcTargets.Proxies)]
+    void RPC_SetEnemyImage() {
+        Debug.Log(_player1.GetCharacterType());
+    }
+
     void Start()
     {
-        Parameter parameter_data = _parameter_data_controller.GetParameterData("parameter_data");
-        CPU_THINGKING_TIME = parameter_data.CPU_THINGKING_TIME;
-        SCENE_CHANGE_TIME = parameter_data.SCENE_CHANGE_TIME;
-        TURN_CHANGE_TIME = parameter_data.TURN_CHANGE_TIME;
-        CARD_EFFECT_DISTANCE = parameter_data.CARD_EFFECT_DISTANCE;
-        TIME_UNTIL_TIME_RUNS_OUT = parameter_data.TIME_UNTIL_TIME_RUNS_OUT;
-        RESET_CARDS_COUNT = parameter_data.RESET_CARD_COUNT;
-        PLAYER_MAX_HP = parameter_data.PLAYER_MAX_HP;
+        //Parameter parameter_data = _parameter_data_controller.GetParameterData("parameter_data");
+        //CPU_THINGKING_TIME = parameter_data.CPU_THINGKING_TIME;
+        //SCENE_CHANGE_TIME = parameter_data.SCENE_CHANGE_TIME;
+        //TURN_CHANGE_TIME = parameter_data.TURN_CHANGE_TIME;
+        //CARD_EFFECT_DISTANCE = parameter_data.CARD_EFFECT_DISTANCE;
+        //TIME_UNTIL_TIME_RUNS_OUT = parameter_data.TIME_UNTIL_TIME_RUNS_OUT;
+        //RESET_CARDS_COUNT = parameter_data.RESET_CARD_COUNT;
+        //PLAYER_MAX_HP = parameter_data.PLAYER_MAX_HP;
 
-        ResetProgressTime();
-        _conclusion = false;
-        //_player1 = new FusionPlayer("player", PLAYER_MAX_HP, true, new Vector3(0, -4), new Vector3(2.8f, 4f, 1), _player_character_type);
-        _hands1.SetName(_player1.GetName() + "hands");
-        _deck1.SetName(_player1.GetName() + "deck");
+        //ResetProgressTime();
+        //_conclusion = false;
+        ////_player1 = new FusionPlayer("player", PLAYER_MAX_HP, true, new Vector3(0, -4), new Vector3(2.8f, 4f, 1), _player_character_type);
+        //_hands1.SetName(_player1.GetName() + "hands");
+        //_deck1.SetName(_player1.GetName() + "deck");
 
-        //_player2 = new FusionPlayer("enemy", PLAYER_MAX_HP, false, new Vector3(3.0f, -0.5f), new Vector3(0.7f, 1, 1), _enemy_character_type);
-        _hands2.SetName(_player2.GetName() + "hands");
-        _deck2.SetName(_player2.GetName() + "deck");
+        ////_player2 = new FusionPlayer("enemy", PLAYER_MAX_HP, false, new Vector3(3.0f, -0.5f), new Vector3(0.7f, 1, 1), _enemy_character_type);
+        //_hands2.SetName(_player2.GetName() + "hands");
+        //_deck2.SetName(_player2.GetName() + "deck");
 
-        _turn_player = _player1;
-        _player1_UI.AssingTurnChangeButton(() => TurnChange(_player2, _hands2, _deck2));
-        _player1_UI.AssingTrashBoxButton(() => SwitchOnlineTrashBox());
-        _player1_UI.ChangeImageTrashBox(_online_trash_box);
-        RandomolyChooseTurnPlayer();
+        //_turn_player = _player1;
+        //_player1_UI.AssingTurnChangeButton(() => TurnChange(_player2, _hands2, _deck2));
+        //_player1_UI.AssingTrashBoxButton(() => SwitchOnlineTrashBox());
+        //_player1_UI.ChangeImageTrashBox(_online_trash_box);
+        //RandomolyChooseTurnPlayer();
 
-        _enemy_previous_hope = false;
-        _enemy_previous_despair = false;
+        //_enemy_previous_hope = false;
+        //_enemy_previous_despair = false;
 
-        if (GameObject.Find("BGMManager") != null)
-        {
-            GameObject.Find("BGMManager").GetComponent<BGMManager>().ChangeFightBGM(_start_fight_bgm);
-        }
+        //if (GameObject.Find("BGMManager") != null)
+        //{
+        //    GameObject.Find("BGMManager").GetComponent<BGMManager>().ChangeFightBGM(_start_fight_bgm);
+        //}
 
-        Debug.Log(RESET_CARDS_COUNT);
+        //Debug.Log(RESET_CARDS_COUNT);
     }
 
     public float GetTimer() => TIME_UNTIL_TIME_RUNS_OUT - _progress_time;
     void Update()
     {
+        if (_is_spawn)
+        {
+            return;
+        }
+
+        //if (!Object.IsSpawnable)
+        //{
+        //    return;
+        //}
+
+        if (Input.GetKeyDown(KeyCode.J)) {
+            RPC_SetEnemyImage();
+        }
+
+        if (!HasStateAuthority) {
+            return;
+        }
+
         if (_parameter_data_controller.GetParameterData("parameter_data") == null)
         {
             SceneManager.LoadScene("ResultScene");
@@ -120,7 +208,10 @@ public class PhotonPlayingManager : NetworkBehaviour
             Debug.LogWarning("parameter_data‚ª‘¶Ý‚µ‚Ü‚¹‚ñ");
         }
 
-        _progress_time += Time.deltaTime;
+        if (HasStateAuthority)
+        {
+            _progress_time += Time.deltaTime;
+        }
 
         if (_conclusion)
         {
@@ -357,6 +448,7 @@ public class PhotonPlayingManager : NetworkBehaviour
 
         if (t_deck.GetDeckCount() >= 0)
         {
+            Debug.Log(t_hands.GetName() + ":hands:"+ t_deck.GetName() + ":deck");
             t_hands.ResetHandCards(RESET_CARDS_COUNT, t_deck, turn.GetCardPos(), turn.GetCardScale());
             t_hands.SelectedPlayable(true);
         }

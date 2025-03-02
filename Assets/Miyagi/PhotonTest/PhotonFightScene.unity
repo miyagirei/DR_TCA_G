@@ -373,6 +373,71 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &164703184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 164703187}
+  - component: {fileID: 164703186}
+  - component: {fileID: 164703185}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &164703185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164703184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3397502572
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 164703186}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &164703186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164703184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3b0a52fe8d079408a32bf1789706d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerPrefab: {fileID: 2314917305155188095, guid: 51e18a5f05f17914890ba5b21c01ec81, type: 3}
+--- !u!4 &164703187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164703184}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &174332317
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,6 +644,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerDeck: 0
   _deck_card: []
+  _deckList: []
 --- !u!1 &254873645
 GameObject:
   m_ObjectHideFlags: 0
@@ -784,7 +850,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hands_card: []
-  _card_prefab: {fileID: 368091840779260069, guid: bbc47bdccc3353643b02cf5a15a02889, type: 3}
+  _card_prefab: {fileID: 5203374641178316694, guid: 6d0b77b9dc833f34b9995d14f7205595, type: 3}
 --- !u!1 &392828739
 GameObject:
   m_ObjectHideFlags: 0
@@ -796,6 +862,7 @@ GameObject:
   - component: {fileID: 392828741}
   - component: {fileID: 392828742}
   - component: {fileID: 392828743}
+  - component: {fileID: 392828744}
   m_Layer: 0
   m_Name: PlayerUIManager
   m_TagString: Untagged
@@ -858,6 +925,25 @@ MonoBehaviour:
   Image_Player: {fileID: 1188913974}
   UI_Damage: {fileID: 795231709}
   UI_Trash_Box: {fileID: 1180279424}
+--- !u!114 &392828744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392828739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 960231702
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 392828743}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &656303769
 GameObject:
   m_ObjectHideFlags: 0
@@ -1317,6 +1403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 863892676}
   - component: {fileID: 863892678}
+  - component: {fileID: 863892679}
   m_Layer: 0
   m_Name: EnemyUIManager
   m_TagString: Untagged
@@ -1354,6 +1441,25 @@ MonoBehaviour:
   UI_Enemy_HP: {fileID: 1510139332}
   UI_Enemy_HP_Image: {fileID: 1564830302}
   Image_Enemy: {fileID: 1662469764}
+--- !u!114 &863892679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863892674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2362339773
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 863892678}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &923407663
 GameObject:
   m_ObjectHideFlags: 0
@@ -1682,8 +1788,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 114efde214270764389bbbf32a9355f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerDeck: 0
+  playerDeck: 1
   _deck_card: []
+  _deckList: []
 --- !u!1 &1145286945
 GameObject:
   m_ObjectHideFlags: 0
@@ -1781,7 +1888,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1158010283
 Transform:
   m_ObjectHideFlags: 0
@@ -1830,6 +1937,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _parameter_data_controller: {fileID: 1582977012}
   _result_Text: {fileID: 1145286948}
+  _prefab_player: {fileID: 2314917305155188095, guid: 51e18a5f05f17914890ba5b21c01ec81, type: 3}
   _deck1: {fileID: 1094009664}
   _hands1: {fileID: 1633508591}
   _player1_UI: {fileID: 392828743}
@@ -7489,7 +7597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hands_card: []
-  _card_prefab: {fileID: 368091840779260069, guid: bbc47bdccc3353643b02cf5a15a02889, type: 3}
+  _card_prefab: {fileID: 5203374641178316694, guid: 6d0b77b9dc833f34b9995d14f7205595, type: 3}
 --- !u!1 &1653407193
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,18 @@ public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     [SerializeField] NetworkPrefabRef _player_prefab;
 
+    //private List<NetworkCardData> _spawn_deck = new List<NetworkCardData>();
+    //[Networked, Capacity(40)] public NetworkLinkedList<NetworkCardData> _deck_list => default;
+    //[Networked, Capacity(40)] public NetworkLinkedList<NetworkCardData> _opponent_list => default;
+
+    //テスト用
+    //List<NetworkCardData> _deck_list = new List<NetworkCardData>();
+    //List<NetworkCardData> _opponent_list = new List<NetworkCardData>();
+
+    //bool _player_1 = false;
+    //bool _player_2 = false;
+
+    //bool _set_deck = false;
     async void Start()
     {
         _runner = Instantiate(_runner_prefab);
@@ -30,6 +42,21 @@ public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
             var spawn_position = new Vector3(random_value.x, random_value.y, 0f);
 
             _runner.Spawn(_player_prefab, spawn_position, Quaternion.identity, _runner.LocalPlayer);
+
+            //CardLoader loader = new CardLoader();
+            //_spawn_deck = loader.ConvertCardList(loader.LoadCardDeck("deck" + PlayerPrefs.GetInt("SelectedDeck", 0)));
+
+            //if (_runner.SessionInfo.PlayerCount == 1)
+            //{
+            //    Debug.Log("SendPlayer1");
+            //    SetPlayer1(_spawn_deck.ToArray());
+            //}
+            //else if (_runner.SessionInfo.PlayerCount == 2)
+            //{
+            //    Debug.Log("SendPlayer2");
+            //    SetPlayer2(_spawn_deck.ToArray());
+            //}
+            DontDestroyOnLoad(this);
         }
         else
         {
@@ -38,9 +65,10 @@ public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
         
     }
 
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        //Debug.Log("PlayerJoined : " + player);
+        Debug.Log("PlayerJoined : " + player.PlayerId);
 
         //if (!runner.IsServer) { return; }
 
@@ -86,6 +114,97 @@ public class FusionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player , ReliableKey key, ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player , ReliableKey key, float data) { }
+
+    //[Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    //void RPC_SendPlayer1(NetworkCardData[] received_cards)
+    //{
+    //    if (_player_1)
+    //    {
+    //        Debug.Log("Updated_Player1");
+    //        return;
+    //    }
+    //    Debug.Log("Update_Player1");
+    //    _deck_list.Clear();
+    //    foreach (var network_card in received_cards)
+    //    {
+    //        _deck_list.Add(network_card);
+
+    //    }
+    //    _player_1 = true;
+    //}
+
+    //[Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    //void RPC_SendPlayer2(NetworkCardData[] received_cards)
+    //{
+    //    if (_player_2)
+    //    {
+    //        Debug.Log("Updated_Player2");
+    //        return;
+    //    }
+    //    Debug.Log("Update_Player2");
+    //    _opponent_list.Clear();
+    //    foreach (var network_card in received_cards)
+    //    {
+    //        _opponent_list.Add(network_card);
+    //    }
+    //    _player_2 = true;
+
+    //}
+
+
+    //void SetPlayer1(NetworkCardData[] received_cards)
+    //{
+    //    if (_player_1)
+    //    {
+    //        Debug.Log("Updated_Player1");
+    //        return;
+    //    }
+    //    //_deck_list.Clear();
+
+    //    Debug.Log("Update_Player1");
+    //    foreach (var network_card in received_cards)
+    //    {
+    //        _deck_list.Add(network_card);
+
+    //    }
+    //    _player_1 = true;
+    //}
+
+    //void SetPlayer2(NetworkCardData[] received_cards)
+    //{
+    //    if (_player_2)
+    //    {
+    //        Debug.Log("Updated_Player2");
+    //        return;
+    //    }
+    //    //_opponent_list.Clear();
+    //    Debug.Log("Update_Player2");
+    //    foreach (var network_card in received_cards)
+    //    {
+    //        _opponent_list.Add(network_card);
+    //    }
+    //    _player_2 = true;
+
+    //}
+
+    //public void SetMyDeck() {
+
+    //    CardLoader loader = new CardLoader();
+    //    _spawn_deck = loader.ConvertCardList(loader.LoadCardDeck("deck" + PlayerPrefs.GetInt("SelectedDeck", 0)));
+        
+    //    if (_runner.SessionInfo.PlayerCount == 1)
+    //    {
+    //        Debug.Log("SendPlayer1");
+    //        SetPlayer1(_spawn_deck.ToArray());
+    //    }
+    //    else if (_runner.SessionInfo.PlayerCount == 2)
+    //    {
+    //        Debug.Log("SendPlayer2");
+    //        SetPlayer2(_spawn_deck.ToArray());
+    //    }
+
+    //    _set_deck = true;
+    //}
 }
 
 public struct NetworkInputData : INetworkInput

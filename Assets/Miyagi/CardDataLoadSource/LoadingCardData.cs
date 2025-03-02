@@ -105,7 +105,7 @@ public class LoadingCardData : MonoBehaviour
         while (_download_queue.Count > 0) {
             CardData current_card = _download_queue.Peek();
             Debug.Log(current_card.card_name + ":"+ _download_count );
-            _image_downloader.DownloadAndSave(current_card.card_name, current_card.image);
+            _image_downloader.DownloadAndSave(current_card.card_name.ToString(), current_card.image.ToString());
             while (!_image_downloader.IsFinish()) {
                 Debug.Log("not_finish");
                 yield return null;

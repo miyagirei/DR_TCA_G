@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Fusion;
 
-public class FusionPlayerUIManager : MonoBehaviour
+public class FusionPlayerUIManager : NetworkBehaviour
 {
     [SerializeField] Text UI_Player_HP;
     [SerializeField] Slider UI_Player_HP_Image;
@@ -29,8 +30,14 @@ public class FusionPlayerUIManager : MonoBehaviour
     const float TURN_CHANGE_BUTTON_SPEED = 400f;
     int _current_hp;
     float _hp_cooltime;
-    private void Start()
+
+    bool _set_image = false;
+    bool _spawn = false;
+    public override void Spawned()
     {
+        base.Spawned();
+        _set_image = false;
+        _spawn = false;
         AssingPlaylogButton();
         var module_left = UI_Particle_Side_Left.main;
         var module_right = UI_Particle_Side_Right.main;
@@ -40,7 +47,32 @@ public class FusionPlayerUIManager : MonoBehaviour
         UI_Particle_Side_Right.Play();
         _current_hp = 100;
         _hp_cooltime = 0;
+        if (Runner.GetPlayerObject(Runner.LocalPlayer) != null) {
+            CharacterType type = Runner.GetPlayerObject(Runner.LocalPlayer).GetComponent<FusionPlayer>().GetCharacterType();
+            ChangePlayerImage(type);
+            Debug.Log("Succsess:ChangePlayerImage");
+            _set_image = true;
+        }
+
+        _spawn = true;
     }
+
+    private void Update()
+    {
+        if (!_spawn)
+        {
+            return;
+        }
+
+        if (Runner.GetPlayerObject(Runner.LocalPlayer) != null && !_set_image)
+        {
+            CharacterType type = Runner.GetPlayerObject(Runner.LocalPlayer).GetComponent<FusionPlayer>().GetCharacterType();
+            ChangePlayerImage(type);
+            Debug.Log("Succsess:ChangePlayerImage");
+            _set_image = true;
+        }
+    }
+
     public void Display(FusionPlayer player)
     {
         DisplayPlayerHP(player);

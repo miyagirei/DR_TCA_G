@@ -94,9 +94,11 @@ public class DataController : MonoBehaviour
     {
         // JSONÉfÅ[É^ÇâêÕ
         JArray data = JArray.Parse(json_data);
+        int number = 0;
         foreach (JObject row in data)
         {
             CardData card_data = new CardData();
+            card_data.card_id = number;
             card_data.card_name = row["card"].ToString();
             card_data.type = row["card_type"].ToString();
             card_data.normal_effect = row["normal_effect"].ToString();
@@ -113,8 +115,9 @@ public class DataController : MonoBehaviour
             card_data.image = row["image"].ToString();
             card_data.restrictions = row["restrictions"].ToString();
             card_data.restrictions_amount = int.Parse(row["restrictions_amount"].ToString());
-
-            paramDataCard.Add(card_data.card_name, card_data);
+            
+            paramDataCard.Add(card_data.card_name.ToString(), card_data);
+            number++;
         }
     }
 

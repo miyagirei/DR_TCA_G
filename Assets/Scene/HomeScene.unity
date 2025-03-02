@@ -2752,7 +2752,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1386021892}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.6666667
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4776,6 +4776,7 @@ MonoBehaviour:
   _player_setting_panel: {fileID: 867879837}
   _move_player_setting_panel: 0
   _player_setting_dropdown: {fileID: 140305553}
+  _fusion_button: {fileID: 2028332924}
 --- !u!4 &1202374807
 Transform:
   m_ObjectHideFlags: 0
