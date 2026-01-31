@@ -19,7 +19,7 @@ public class DataController : MonoBehaviour
     [SerializeField]
     private string sheet_name = "testSub";
 
-    private string apiUrl = "https://script.google.com/macros/s/AKfycbxcbOEFl9zibk0jP_ce4h1tJpYedcQOakLG907NzilrQfe56ofo8mw0dvyO6az0bA3J/exec";
+    private string apiUrl = "https://script.google.com/macros/s/AKfycbw2JH1Gpd2IegewTYNlrae7h36Kp0kfH8J5QmSUEF1cc2tvpKNZgutzs9b3TC8GxiJB/exec";
 
     private Dictionary<string, float> paramDataF = new Dictionary<string, float>();
     private Dictionary<string, int> paramDataI = new Dictionary<string, int>();
